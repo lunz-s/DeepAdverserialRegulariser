@@ -1,0 +1,9 @@
+*.pyc
+*.jpg
+*.dcm
+*.xml
+Saves/*
+LUNA/*
+BSDS/*
+__pycache__/*
+.idea/*
