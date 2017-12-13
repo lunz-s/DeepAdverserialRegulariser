@@ -364,7 +364,7 @@ class denoiser(Data_pip):
                                                  self.mu: mu})
         self.writer.add_summary(summary, step)
 
-    def generate_training_images(self, batch_size, amount_steps, mu = mu_default, starting_point = 'FBP'):
+    def generate_training_images(self, batch_size, amount_steps, mu = mu_default):
         true_im = np.zeros(shape=(batch_size, 128,128,1))
         output_im = np.zeros(shape=(batch_size, 128, 128, 1))
         output_cor = np.zeros(shape=(batch_size, 128, 128, 1))
@@ -424,7 +424,7 @@ class denoiser(Data_pip):
             if k % 100 == 0:
                 self.create_optimized_images(512)
             true, cor, gen = self.generate_training_images(self.batch_size, amount_steps=amount_steps,
-                                                           mu = mu, starting_point= starting_point)
+                                                           mu = mu)
             # generate random distribution for rays
             epsilon = np.random.uniform(size=(self.batch_size))
             # optimize network
