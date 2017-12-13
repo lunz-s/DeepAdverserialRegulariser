@@ -25,4 +25,4 @@ if 0:
 
 # iterative training
 if 1:
-    denoiser.train(500, 20)
+    denoiser.train(1000, 20)
