@@ -365,9 +365,9 @@ class denoiser(Data_pip):
         self.writer.add_summary(summary, step)
 
     def generate_training_images(self, batch_size, amount_steps, mu = mu_default):
-        true_im = np.zeros(shape=(batch_size, 128,128,1))
-        output_im = np.zeros(shape=(batch_size, 128, 128, 1))
-        output_cor = np.zeros(shape=(batch_size, 128, 128, 1))
+        true_im = np.zeros(shape=(batch_size, self.image_size[0],self.image_size[1], 3))
+        output_im = np.zeros(shape=(batch_size, self.image_size[0], self.image_size[1], 3))
+        output_cor = np.zeros(shape=(batch_size, self.image_size[0], self.image_size[1], 3))
 
         #create remaining samples
         for j in range(batch_size):
