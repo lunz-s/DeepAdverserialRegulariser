@@ -27,4 +27,4 @@ if 0:
 # iterative training
 if 1:
     for k in range(5):
-        denoiser.train(200, 20)
+        denoiser.train(200, 7)
