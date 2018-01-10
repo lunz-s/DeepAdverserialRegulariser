@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import odl
 
 
 
@@ -124,6 +125,7 @@ class Data_pip(object):
         self.eval_list = self.find('*.jpg', './BSDS/images/val')
         self.eval_amount = len(self.eval_list)
         print('Evaluation Pictures found: ' + str(self.eval_amount))
+
 
 class denoiser(Data_pip):
     model_name = 'default'
@@ -287,22 +289,22 @@ class denoiser(Data_pip):
         print(data_error)
 
     # visualization methode
-    def visualize(self, true, fbp, recon, global_step, step, mu):
+    def visualize(self, true, noisy, recon, global_step, step, mu):
         quality = np.average(np.sqrt(np.sum(np.square(true - recon), axis=(1, 2, 3))))
         print('Quality of reconstructed image: ' + str(quality))
         self.create_single_folder('Saves/Pictures/' + self.model_name + '/' +str(global_step))
         plt.figure()
         plt.subplot(131)
-        plt.imshow(true[-1, ...])
+        plt.imshow(self.cut_image(true[-1, ...]))
         plt.axis('off')
         plt.title('Original')
         plt.subplot(132)
-        plt.imshow(fbp[-1,...])
+        plt.imshow(self.cut_image(noisy[-1,...]))
         plt.axis('off')
         plt.title('Corrupted')
         plt.suptitle('L2 :' + str(quality))
         plt.subplot(133)
-        plt.imshow(recon[-1,...])
+        plt.imshow(self.cut_image(recon[-1,...]))
         plt.title('Reconstruction')
         plt.axis('off')
         plt.savefig('Saves/Pictures/' + self.model_name + '/' +str(global_step) +'/mu-' + str(mu)+
@@ -431,6 +433,35 @@ class denoiser(Data_pip):
             self.sess.run(self.optimizer,
                           feed_dict={self.gen_im: gen, self.true_im: true, self.random_uint: epsilon})
         self.save()
+
+    def tv_reconsruction(self, y, param = 0.001):
+        # the operators
+        space = odl.uniform_discr([-64, -64], [64, 64], [128, 128],
+                                  dtype='float32')
+        gradients = odl.Gradient(space, method='forward')
+        operator = odl.IdentityOperator(space)
+        broad_op = odl.BroadcastOperator(operator, gradients)
+        # define empty functional to fit the chambolle_pock framework
+        g = odl.solvers.ZeroFunctional(broad_op.domain)
+
+        # the norms
+        l1_norm = param * odl.solvers.L1Norm(gradients.range)
+        l2_norm_squared = odl.solvers.L2NormSquared(operator.range).translated(y)
+        functional = odl.solvers.SeparableSum(l2_norm_squared, l1_norm)
+
+        # Find parameters
+        op_norm = 1.1 * odl.power_method_opnorm(broad_op)
+        tau = 10.0 / op_norm
+        sigma = 0.1 / op_norm
+        niter = 500
+
+        # find starting point
+        x = y
+
+        # Run the optimization algoritm
+        #odl.solvers.chambolle_pock_solver(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
+        odl.solvers.pdhg(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
+        return x
 
 class Denoiser1(denoiser):
     model_name = 'Denoiser1'
