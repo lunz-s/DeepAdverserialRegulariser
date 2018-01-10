@@ -340,7 +340,6 @@ class denoiser(Data_pip):
             guess = self.update_pic(1, step_s, cor, guess, mu)
         writer.close()
 
-
     # evaluates and prints the network performance
     def evaluate_Network(self, mu):
         true, cor = self.generate_images(64)
