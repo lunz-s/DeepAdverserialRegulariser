@@ -3,14 +3,14 @@ import postprocessing as pp
 import numpy as np
 
 
-postpro = pp.postDenoising()
+postpro = pp.postDenoising()#
+# train postprocessing
+if 1:
+    for k in range(5):
+        postpro.train(500)
 
 def adversarial():
     denoiser = ar.Denoiser1()
-    # train postprocessing
-    if 1:
-        for k in range(5):
-            postpro.train(500)
 
     # testing sequence to check methods
     if 0:
