@@ -20,7 +20,8 @@ if 1:
 
 if 0:
     recon = ar.Recon_LUNA()
-    recon.find_good_lambda()
+    for k in range(3):
+        recon.train(500, 125, starting_point='Mini')
 
 
 

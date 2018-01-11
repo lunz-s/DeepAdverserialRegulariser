@@ -6,7 +6,7 @@ import numpy as np
 postpro = pp.postDenoising()#
 # train postprocessing
 if 1:
-    for k in range(5):
+    for k in range(50):
         postpro.train(500)
 
 def adversarial():

@@ -132,6 +132,7 @@ class data_preprocessing(object):
             y[i, ..., 0] = noisy_data
         return y, x_true, fbp
 
+
     # generates one random ellipse
     def random_ellipse(self, interior=False):
         if interior:
@@ -177,6 +178,46 @@ class data_preprocessing(object):
         pic = pic/ np.amax(pic)
         return pic
 
+    def tv_reconstruction(self, y, param=0.0013):
+        # the operators
+        gradients = odl.Gradient(self.space, method='forward')
+        broad_op = odl.BroadcastOperator(self.operator, gradients)
+        # define empty functional to fit the chambolle_pock framework
+        g = odl.solvers.ZeroFunctional(broad_op.domain)
+
+        # the norms
+        l1_norm = param * odl.solvers.L1Norm(gradients.range)
+        l2_norm_squared = odl.solvers.L2NormSquared(self.operator.range).translated(y)
+        functional = odl.solvers.SeparableSum(l2_norm_squared, l1_norm)
+
+        # Find parameters
+        op_norm = 1.1 * odl.power_method_opnorm(broad_op)
+        tau = 10.0 / op_norm
+        sigma = 0.1 / op_norm
+        niter = 500
+
+        # find starting point
+        x = self.fbp(y)
+
+        # Run the optimization algoritm
+        # odl.solvers.chambolle_pock_solver(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
+        odl.solvers.pdhg(x, functional, g, broad_op, tau=tau, sigma=sigma, niter=niter)
+        return x
+
+    def find_TV_lambda(self, lmd):
+        amount_test_images = 1
+        y, x_true, fbp = self.generate_data(amount_test_images)
+        for l in lmd:
+            error = np.zeros([amount_test_images])
+            or_error = np.zeros([amount_test_images])
+            for k in range(amount_test_images):
+                recon = self.tv_reconstruction(y[k, ..., 0], l)
+                error[k] = np.sum(np.square(recon - x_true[k, ..., 0]))
+                or_error[k] = np.sum(np.square(fbp[k, ..., 0] - x_true[k, ..., 0]))
+            total_e = np.mean(np.sqrt(error))
+            total_o = np.mean(np.sqrt(or_error))
+            print('Lambda: ' + str(l) + ', MSE: ' + str(total_e) + ', OriginalError: ' + str(total_o))
+
 
 class ct_recon(data_preprocessing):
     model_name = 'default'
@@ -208,31 +249,6 @@ class ct_recon(data_preprocessing):
         else:
             print('No save found')
 
-    def tv_reconstruction(self, y, param = 0.001):
-        # the operators
-        gradients = odl.Gradient(self.space, method='forward')
-        broad_op = odl.BroadcastOperator(self.operator, gradients)
-        # define empty functional to fit the chambolle_pock framework
-        g = odl.solvers.ZeroFunctional(broad_op.domain)
-
-        # the norms
-        l1_norm = param * odl.solvers.L1Norm(gradients.range)
-        l2_norm_squared = odl.solvers.L2NormSquared(self.operator.range).translated(y)
-        functional = odl.solvers.SeparableSum(l2_norm_squared, l1_norm)
-
-        # Find parameters
-        op_norm = 1.1 * odl.power_method_opnorm(broad_op)
-        tau = 10.0 / op_norm
-        sigma = 0.1 / op_norm
-        niter = 500
-
-        # find starting point
-        x = self.fbp(y)
-
-        # Run the optimization algoritm
-        #odl.solvers.chambolle_pock_solver(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
-        odl.solvers.pdhg(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
-        return x
 
     def __init__(self):
         super(ct_recon, self).__init__()
