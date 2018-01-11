@@ -7,8 +7,12 @@ import numpy as np
 import random
 import odl
 import odl.contrib.tensorflow
+import scipy.ndimage
+import fnmatch
+import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import dicom as dc
 from scipy.misc import imresize
 import platform
@@ -185,7 +189,7 @@ class postDenoising(UNet):
     @staticmethod
     def visualize_single_pic(pic, number):
         plt.figure()
-        plt.imshow(Data_pip.cut_image(pic))
+        plt.imshow(postDenoising.cut_image(pic))
         plt.axis('off')
         if not os.path.exists('Saves/Test/'):
             try:

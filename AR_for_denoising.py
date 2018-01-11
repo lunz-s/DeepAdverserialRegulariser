@@ -266,7 +266,7 @@ class denoiser(Data_pip):
         # load existing saves
         self.load()
 
-    # Method to estimate a good value of the regularisation paramete.
+    # Method to estimate a good value of the regularisation parameter.
     # This is done via estimation of 2 ||K^t (Kx-y)||_2 where x is the ground truth
     def find_good_lambda(self, sample = 256):
         ### for consistency, compute optimal lambda with graph as well
@@ -277,7 +277,6 @@ class denoiser(Data_pip):
                                                  self.mu: 0})
         print(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1,2,3))))
         print(np.mean(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1,2,3)))))
-
 
     # Method to determine the L2 noise level ||Kx-y|| where x is the ground truth
     def find_noise_level(self, sample= 256 ):
@@ -415,7 +414,6 @@ class denoiser(Data_pip):
             self.sess.run(self.optimizer,
                           feed_dict={self.gen_im: cor, self.true_im: true, self.random_uint: epsilon})
         self.save()
-
 
     # iterative training methode, using actual output distribtion instead of initial guess distribution
     def train(self, steps, amount_steps, mu = mu_default):
