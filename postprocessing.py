@@ -133,3 +133,95 @@ class UNet(postprocesser):
         return output
 
 
+class postDenoising(UNet):
+    model_name = 'Denoising_UNet'
+    def __init__(self):
+        self.train_list = self.find('*.jpg', './BSDS/images/train')
+        self.train_amount = len(self.train_list)
+        print('Training Pictures found: ' + str(self.train_amount))
+        self.eval_list = self.find('*.jpg', './BSDS/images/val')
+        self.eval_amount = len(self.eval_list)
+        print('Evaluation Pictures found: ' + str(self.eval_amount))
+
+        # call mother class init
+        super(postDenoising, self).__init__()
+
+    # creates list of training data
+    @staticmethod
+    def find(pattern, path):
+        result = []
+        for root, dirs, files in os.walk(path):
+            for name in files:
+                if fnmatch.fnmatch(name, pattern):
+                    result.append(os.path.join(root, name).replace("\\", "/"))
+        return result
+
+    # methode to create a single folder
+    def create_single_folder(self, folder):
+        if not os.path.exists(folder):
+            try:
+                os.makedirs(folder)
+            except OSError:
+                pass
+
+    # methode to draw raw picture samples
+    def load_data(self, training_data=True):
+        if training_data:
+            rand = random.randint(0, self.train_amount - 1)
+            pic = mpimg.imread(self.train_list[rand])
+        else:
+            rand = random.randint(0, self.eval_amount - 1)
+            pic = scipy.ndimage.imread(self.eval_list[rand])
+        return pic/255.0
+
+    # methode to cut image to [0,1] value range
+    @staticmethod
+    def cut_image(pic):
+        pic = np.maximum(pic, 0.0)
+        pic = np.minimum(pic, 1.0)
+        return pic
+
+    # visualize a single image
+    @staticmethod
+    def visualize_single_pic(pic, number):
+        plt.figure()
+        plt.imshow(Data_pip.cut_image(pic))
+        plt.axis('off')
+        if not os.path.exists('Saves/Test/'):
+            try:
+                os.makedirs('Saves/Test/')
+            except OSError:
+                pass
+        plt.savefig('Saves/Test/' + str(number) + '.jpg')
+
+    # Draw random edgepoint
+    def edgepoint(self, x_size, y_size):
+        x_vary = x_size - self.image_size[0]
+        x_coor = random.randint(0, x_vary)
+        y_vary = y_size - self.image_size[1]
+        y_coor = random.randint(0, y_vary)
+        upper_left = [x_coor, y_coor]
+        lower_right = [x_coor + self.image_size[0], y_coor + self.image_size[1]]
+        return upper_left, lower_right
+
+    # methode to cut a image_size area out of the training images
+    def load_exemple(self, training_data= True):
+        pic = self.load_data(training_data=training_data)
+        size = pic.shape
+        ul, lr = self.edgepoint(size[0], size[1])
+        image = pic[ul[0]:lr[0], ul[1]:lr[1],:]
+        return image
+
+    # methode to create training or evaluation batches
+    def generate_images(self, batch_size, training_data=True):
+        true = np.empty(shape=[batch_size, self.image_size[0], self.image_size[1], 3])
+        cor = np.empty(shape=[batch_size, self.image_size[0], self.image_size[1], 3])
+
+        for i in range(batch_size):
+            image = self.load_exemple(training_data=training_data)
+            # generate noise to put on picture
+            noise = np.random.normal(0, 0.03, (self.image_size[0], self.image_size[1],3))
+            image_cor = image + noise
+            true[i,...] = image
+            cor[i,...] = image_cor
+        return true, cor

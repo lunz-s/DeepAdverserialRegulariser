@@ -13,8 +13,9 @@ if 0:
     denoiser.train(2, 30)
 
 # pretraining
-if 0:
-    denoiser.pretrain_Wasser_ini(2000)
+if 1:
+    for k in range(5):
+        denoiser.pretrain_Wasser_ini(500)
 
 # try out different regularisation parameters
 if 0:
@@ -25,6 +26,6 @@ if 0:
     denoiser.create_optimized_images(64, mu=60)
 
 # iterative training
-if 1:
+if 0:
     for k in range(5):
         denoiser.train(200, 7)

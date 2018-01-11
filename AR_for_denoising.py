@@ -110,8 +110,8 @@ class Data_pip(object):
         for i in range(batch_size):
             image = self.load_exemple(training_data=training_data)
             # generate noise to put on picture
-            noise = np.random.normal(0, 0.1 ,(self.image_size[0], self.image_size[1],3))
-            image_cor  = image + noise
+            noise = np.random.normal(0, 0.03, (self.image_size[0], self.image_size[1],3))
+            image_cor = image + noise
             true[i,...] = image
             cor[i,...] = image_cor
         return true, cor
