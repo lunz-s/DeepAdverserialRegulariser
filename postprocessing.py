@@ -41,7 +41,7 @@ class postprocesser(object):
                 print(key + ' created')
 
     # to be overwritten in subclass
-    def get_training_data(self):
+    def generate_images(self, batch_size, training_data=True):
         return [],[]
 
     # to be overwritten in subclass
@@ -62,7 +62,7 @@ class postprocesser(object):
         self.out = self.network(self.x)
         # compute loss
         data_mismatch = tf.square(self.out - self.y)
-        self.loss = tf.reduce_mean(tf.reduce_sum(data_mismatch, axis=(1, 2, 3)))
+        self.loss = tf.reduce_mean(tf.sqrt(tf.reduce_sum(data_mismatch, axis=(1, 2, 3))))
         # optimizer
         # optimizer for Wasserstein network
         self.global_step = tf.Variable(0, name='global_step', trainable=False)
@@ -104,11 +104,15 @@ class postprocesser(object):
 
     def train(self, steps):
         for k in range(steps):
-            x, y = self.get_training_data()
+            x, y = self.generate_images(self.batch_size)
             self.sess.run(self.optimizer, feed_dict={self.x : x,
                                                     self.y : y})
             if k%50 == 0:
+                iteration, loss = self.sess.run([self.global_step, self.loss], feed_dict={self.x : x,
+                                                    self.y : y})
+                print('Iteration: ' + str(iteration) + ', MSE: ' +str(loss))
                 self.log(x,y)
+        self.save()
 
 class UNet(postprocesser):
     model_name = 'UNet'
@@ -139,6 +143,7 @@ class UNet(postprocesser):
 
 class postDenoising(UNet):
     model_name = 'Denoising_UNet'
+    noise_level = 0.03
     def __init__(self):
         self.train_list = self.find('*.jpg', './BSDS/images/train')
         self.train_amount = len(self.train_list)
@@ -224,7 +229,7 @@ class postDenoising(UNet):
         for i in range(batch_size):
             image = self.load_exemple(training_data=training_data)
             # generate noise to put on picture
-            noise = np.random.normal(0, 0.03, (self.image_size[0], self.image_size[1],3))
+            noise = np.random.normal(0, self.noise_level, (self.image_size[0], self.image_size[1],3))
             image_cor = image + noise
             true[i,...] = image
             cor[i,...] = image_cor

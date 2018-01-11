@@ -1,7 +1,14 @@
 import AR_for_denoising as ar
+import postprocessing as pp
 import numpy as np
 
 denoiser = ar.Denoiser1()
+postpro = pp.postDenoising()
+
+# train postprocessing
+if 1:
+    for k in range(5):
+        postpro.train(500)
 
 # testing sequence to check methods
 if 0:
@@ -16,7 +23,7 @@ if 0:
         denoiser.pretrain_Wasser_ini(500)
 
 # try out different regularisation parameters
-if 1:
+if 0:
     denoiser.find_noise_level()
     denoiser.find_good_lambda()
     denoiser.create_optimized_images(64, mu = 10)

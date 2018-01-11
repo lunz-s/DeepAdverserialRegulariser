@@ -19,6 +19,8 @@ def lrelu(x):
 class Data_pip(object):
     model_name = 'default'
     image_size = (128,128)
+    noise_level = 0.03
+    tv_lmb = 0.012
     # setup methods
 
     # creates list of training data
@@ -110,7 +112,7 @@ class Data_pip(object):
         for i in range(batch_size):
             image = self.load_exemple(training_data=training_data)
             # generate noise to put on picture
-            noise = np.random.normal(0, 0.03, (self.image_size[0], self.image_size[1],3))
+            noise = np.random.normal(0, self.noise_level, (self.image_size[0], self.image_size[1],3))
             image_cor = image + noise
             true[i,...] = image
             cor[i,...] = image_cor
@@ -126,6 +128,50 @@ class Data_pip(object):
         self.eval_amount = len(self.eval_list)
         print('Evaluation Pictures found: ' + str(self.eval_amount))
 
+    def tv_reconsruction(self, y, param=tv_lmb):
+        # the operators
+        space = odl.uniform_discr([-64, -64], [64, 64], [128, 128],
+                                  dtype='float32')
+        gradients = odl.Gradient(space, method='forward')
+        operator = odl.IdentityOperator(space)
+        broad_op = odl.BroadcastOperator(operator, gradients)
+        # define empty functional to fit the chambolle_pock framework
+        g = odl.solvers.ZeroFunctional(broad_op.domain)
+
+        # the norms
+        l1_norm = param * odl.solvers.L1Norm(gradients.range)
+        l2_norm_squared = odl.solvers.L2NormSquared(operator.range).translated(y)
+        functional = odl.solvers.SeparableSum(l2_norm_squared, l1_norm)
+
+        # Find parameters
+        op_norm = 1.1 * odl.power_method_opnorm(broad_op)
+        tau = 10.0 / op_norm
+        sigma = 0.1 / op_norm
+        niter = 80
+
+        # find starting point
+        x = space.element(y)
+
+        # Run the optimization algoritm
+        # odl.solvers.chambolle_pock_solver(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
+        odl.solvers.pdhg(x, functional, g, broad_op, tau=tau, sigma=sigma, niter=niter)
+        return x
+
+    def find_TV_lambda(self, lmd):
+        amount_test_images = 256
+        true, cor = self.generate_images(amount_test_images)
+        for l in lmd:
+            error = np.zeros([amount_test_images, 3])
+            or_error = np.zeros([amount_test_images, 3])
+            for k in range(amount_test_images):
+                for j in range(3):
+                    recon = self.tv_reconsruction(cor[k, ..., j], l)
+                    error[k, j] = np.sum(np.square(recon - true[k, ..., j]))
+                    or_error[k, j] = np.sum(np.square(cor[k, ..., j] - true[k, ..., j]))
+            total_e = np.mean(np.sqrt(np.sum(error, axis=1)))
+            total_o = np.mean(np.sqrt(np.sum(or_error, axis=1)))
+            print('Lambda: ' + str(l) + ', MSE: ' + str(total_e) + ', OriginalError: ' + str(total_o))
+
 
 class denoiser(Data_pip):
     model_name = 'default'
@@ -139,6 +185,10 @@ class denoiser(Data_pip):
     learning_rate = 0.0003
     # step size for picture optimization
     step_size = 0.1
+    # noise level
+    noise_level = 0.03
+    # tv_lambda
+    tv_lmb = 0.012
 
     def get_weights(self):
         return []
@@ -431,34 +481,7 @@ class denoiser(Data_pip):
                           feed_dict={self.gen_im: gen, self.true_im: true, self.random_uint: epsilon})
         self.save()
 
-    def tv_reconsruction(self, y, param = 0.001):
-        # the operators
-        space = odl.uniform_discr([-64, -64], [64, 64], [128, 128],
-                                  dtype='float32')
-        gradients = odl.Gradient(space, method='forward')
-        operator = odl.IdentityOperator(space)
-        broad_op = odl.BroadcastOperator(operator, gradients)
-        # define empty functional to fit the chambolle_pock framework
-        g = odl.solvers.ZeroFunctional(broad_op.domain)
 
-        # the norms
-        l1_norm = param * odl.solvers.L1Norm(gradients.range)
-        l2_norm_squared = odl.solvers.L2NormSquared(operator.range).translated(y)
-        functional = odl.solvers.SeparableSum(l2_norm_squared, l1_norm)
-
-        # Find parameters
-        op_norm = 1.1 * odl.power_method_opnorm(broad_op)
-        tau = 10.0 / op_norm
-        sigma = 0.1 / op_norm
-        niter = 500
-
-        # find starting point
-        x = y
-
-        # Run the optimization algoritm
-        #odl.solvers.chambolle_pock_solver(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
-        odl.solvers.pdhg(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
-        return x
 
 class Denoiser1(denoiser):
     model_name = 'Denoiser1'
