@@ -424,7 +424,7 @@ class ct_recon(data_preprocessing):
         step = self.sess.run(self.global_step)
         writer = tf.summary.FileWriter('Saves/Logs/' + self.model_name + '/Picture_Opt/Iteration_' +
                                        str(step) + '/' + str(mu) + '/')
-        tv = self.tv_reconsruction(y[-1, ..., 0])
+        tv = self.tv_reconstruction(y[-1, ..., 0])
         for k in range(steps):
             summary = self.sess.run(self.merged_pic,
                                       feed_dict={self.reconstruction: guess,

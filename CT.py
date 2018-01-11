@@ -5,7 +5,7 @@ if 1:
     recon = ar.Recon1()
     # recon.pretrain_Wasser_FBP(500)
     # recon.pretrain_Wasser_DataMinimizer(500)
-    recon.find_good_lambda()
+    # recon.find_good_lambda()
     # recon.find_noise_level()
     # recon.create_optimized_images(1, mu=2.5, steps=30, starting_point='Mini')
     #recon.create_optimized_images(64, mu=2, step_s=0.1, steps=200, starting_point='Mini')
