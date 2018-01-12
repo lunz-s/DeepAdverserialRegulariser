@@ -475,7 +475,7 @@ class denoiser(Data_pip):
             if k % 20 == 0:
                 self.evaluate_Network(mu)
             if k % 100 == 0:
-                self.create_optimized_images(512)
+                self.create_optimized_images(128, steps = amount_steps)
             true, cor, gen = self.generate_training_images(self.batch_size, amount_steps=amount_steps,
                                                            mu = mu)
             # generate random distribution for rays

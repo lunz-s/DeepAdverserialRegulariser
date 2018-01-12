@@ -14,7 +14,7 @@ if 0:
             recon.train(500, 250, starting_point='Mini')
 
 
-    if 1:
+    if 0:
         starting_point = 'Mini'
         recon.create_optimized_images(512, mu=2, step_s=0.1, steps=250, starting_point=starting_point)
 
