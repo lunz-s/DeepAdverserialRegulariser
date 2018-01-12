@@ -172,6 +172,15 @@ class Data_pip(object):
             total_o = np.mean(np.sqrt(np.sum(or_error, axis=1)))
             print('Lambda: ' + str(l) + ', MSE: ' + str(total_e) + ', OriginalError: ' + str(total_o))
 
+    def evaluate_TV(self, y):
+        size = y.shape
+        tv = np.zeros(size)
+        for k in range(size[0]):
+            for j in range(3):
+                tv[k,...,j] = self.tv_reconsruction(y[k, ..., j], self.tv_lmb)
+        return tv
+
+
 
 class denoiser(Data_pip):
     model_name = 'default'
@@ -485,6 +494,8 @@ class denoiser(Data_pip):
                           feed_dict={self.gen_im: gen, self.true_im: true, self.random_uint: epsilon})
         self.save()
 
+    def evaluate_AR(self, y):
+        return self.update_pic(10, self.step_size, y, y, mu=self.mu_default)
 
 
 class Denoiser1(denoiser):

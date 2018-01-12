@@ -159,6 +159,9 @@ class postprocesser(object):
                     'iteration-' + str(global_step) + '.png')
         plt.close()
 
+    def evaluate_pp(self, true, y):
+        return self.sess.run(self.out, feed_dict={self.y : y, self.x: true})
+
 
 
 class UNet(postprocesser):
