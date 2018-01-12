@@ -16,12 +16,13 @@ def compare_methods(amount_test_data):
         print('Methode: ' + methode + ', MSE: ' + str(error))
 
 
-compare_methods(256)
+# compare_methods(256)
 
 # train postprocessing
-if 0:
+if 1:
     postpro = pp.postDenoising()  #
-    postpro.train(200)
+    for k in range(5):
+        postpro.train(300)
     postpro.end()
 
 if 0:

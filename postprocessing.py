@@ -71,12 +71,12 @@ class postprocesser(object):
         # start a tensorflow session
         self.sess = tf.InteractiveSession()
         # set placeholder for input and correct output
-        self.x = tf.placeholder(shape=[None, self.image_size[0], self.image_size[1], colour], dtype=tf.float32)
+        self.true = tf.placeholder(shape=[None, self.image_size[0], self.image_size[1], colour], dtype=tf.float32)
         self.y = tf.placeholder(shape=[None, self.image_size[0], self.image_size[1], colour], dtype=tf.float32)
         # network output
-        self.out = self.network(self.x)
+        self.out = self.network(self.y)
         # compute loss
-        data_mismatch = tf.square(self.out - self.y)
+        data_mismatch = tf.square(self.out - self.true)
         self.loss = tf.reduce_mean(tf.sqrt(tf.reduce_sum(data_mismatch, axis=(1, 2, 3))))
         # optimizer
         # optimizer for Wasserstein network
@@ -124,14 +124,14 @@ class postprocesser(object):
     def train(self, steps):
         for k in range(steps):
             x, y = self.generate_images(self.batch_size)
-            self.sess.run(self.optimizer, feed_dict={self.x : x,
+            self.sess.run(self.optimizer, feed_dict={self.true : x,
                                                     self.y : y})
             if k%50 == 0:
-                iteration, loss = self.sess.run([self.global_step, self.loss], feed_dict={self.x : x,
+                iteration, loss = self.sess.run([self.global_step, self.loss], feed_dict={self.true : x,
                                                     self.y : y})
                 print('Iteration: ' + str(iteration) + ', MSE: ' +str(loss))
                 self.log(x,y)
-                output = self.sess.run(self.out, feed_dict={self.x : x,
+                output = self.sess.run(self.out, feed_dict={self.true : x,
                                                     self.y : y})
                 self.visualize(x, y, output, iteration)
         self.save()
@@ -160,7 +160,7 @@ class postprocesser(object):
         plt.close()
 
     def evaluate_pp(self, true, y):
-        return self.sess.run(self.out, feed_dict={self.y : y, self.x: true})
+        return self.sess.run(self.out, feed_dict={self.y : y, self.true: true})
 
 
 
