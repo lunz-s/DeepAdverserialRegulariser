@@ -187,7 +187,7 @@ class denoiser(Data_pip):
     # The batch size
     batch_size = 64
     # relation between L2 error and regulariser
-    mu_default = 50
+    mu_default = 13
     # weight on gradient norm regulariser for wasserstein network
     lmb = 20
     # learning rate for Adams
