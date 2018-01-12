@@ -1,7 +1,7 @@
 import AR_for_CT as ar
 import numpy as np
 
-if 1:
+if 0:
     recon = ar.Recon1()
     # recon.pretrain_Wasser_FBP(500)
     # recon.pretrain_Wasser_DataMinimizer(500)
@@ -18,9 +18,9 @@ if 1:
         starting_point = 'Mini'
         recon.create_optimized_images(512, mu=2, step_s=0.1, steps=250, starting_point=starting_point)
 
-if 0:
+if 1:
     recon = ar.Recon_LUNA()
-    for k in range(3):
+    for k in range(4):
         recon.train(500, 125, starting_point='Mini')
 
 
