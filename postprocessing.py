@@ -117,7 +117,7 @@ class postprocesser(object):
 
     def log(self, x,y):
         summary, step = self.sess.run([self.merged, self.global_step],
-                                      feed_dict={self.x : x,
+                                      feed_dict={self.true : x,
                                                  self.y : y})
         self.writer.add_summary(summary, step)
 
