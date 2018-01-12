@@ -207,6 +207,10 @@ class denoiser(Data_pip):
         else:
             print('No save found')
 
+    def end(self):
+        tf.reset_default_graph()
+        self.sess.close()
+
     def __init__(self):
         super(denoiser, self).__init__()
 

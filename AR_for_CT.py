@@ -235,6 +235,10 @@ class ct_recon(data_preprocessing):
     def get_weights(self):
         return []
 
+    def end(self):
+        tf.reset_default_graph()
+        self.sess.close()
+
     def wasserstein_network(self, weights, input_pic):
         return input_pic
 

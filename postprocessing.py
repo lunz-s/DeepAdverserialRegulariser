@@ -40,9 +40,24 @@ class postprocesser(object):
                     pass
                 print(key + ' created')
 
+    # methode to cut image to [0,1] value range
+    @staticmethod
+    def cut_image(pic):
+        pic = np.maximum(pic, 0.0)
+        pic = np.minimum(pic, 1.0)
+        return pic
+
+    # methode to create a single folder
+    def create_single_folder(self, folder):
+        if not os.path.exists(folder):
+            try:
+                os.makedirs(folder)
+            except OSError:
+                pass
+
     # to be overwritten in subclass
     def generate_images(self, batch_size, training_data=True):
-        return [],[]
+        return np.zeros(1),np.zeros(1)
 
     # to be overwritten in subclass
     def network(self, input):
@@ -96,6 +111,10 @@ class postprocesser(object):
         else:
             print('No save found')
 
+    def end(self):
+        tf.reset_default_graph()
+        self.sess.close()
+
     def log(self, x,y):
         summary, step = self.sess.run([self.merged, self.global_step],
                                       feed_dict={self.x : x,
@@ -112,7 +131,35 @@ class postprocesser(object):
                                                     self.y : y})
                 print('Iteration: ' + str(iteration) + ', MSE: ' +str(loss))
                 self.log(x,y)
+                output = self.sess.run(self.out, feed_dict={self.x : x,
+                                                    self.y : y})
+                self.visualize(x, y, output, iteration)
         self.save()
+
+    # visualization methode
+    def visualize(self, true, noisy, recon, global_step):
+        quality = np.average(np.sqrt(np.sum(np.square(true - recon), axis=(1, 2, 3))))
+        print('Quality of reconstructed image: ' + str(quality))
+        self.create_single_folder('Saves/Pictures/' + self.model_name + '/' +str(global_step))
+        plt.figure()
+        plt.subplot(131)
+        plt.imshow(self.cut_image(true[-1, ...]))
+        plt.axis('off')
+        plt.title('Original')
+        plt.subplot(132)
+        plt.imshow(self.cut_image(noisy[-1,...]))
+        plt.axis('off')
+        plt.title('Corrupted')
+        plt.suptitle('L2 :' + str(quality))
+        plt.subplot(133)
+        plt.imshow(self.cut_image(recon[-1,...]))
+        plt.title('Reconstruction')
+        plt.axis('off')
+        plt.savefig('Saves/Pictures/' + self.model_name + '/' +
+                    'iteration-' + str(global_step) + '.png')
+        plt.close()
+
+
 
 class UNet(postprocesser):
     model_name = 'UNet'
@@ -165,13 +212,6 @@ class postDenoising(UNet):
                     result.append(os.path.join(root, name).replace("\\", "/"))
         return result
 
-    # methode to create a single folder
-    def create_single_folder(self, folder):
-        if not os.path.exists(folder):
-            try:
-                os.makedirs(folder)
-            except OSError:
-                pass
 
     # methode to draw raw picture samples
     def load_data(self, training_data=True):
@@ -183,12 +223,6 @@ class postDenoising(UNet):
             pic = scipy.ndimage.imread(self.eval_list[rand])
         return pic/255.0
 
-    # methode to cut image to [0,1] value range
-    @staticmethod
-    def cut_image(pic):
-        pic = np.maximum(pic, 0.0)
-        pic = np.minimum(pic, 1.0)
-        return pic
 
     # visualize a single image
     @staticmethod

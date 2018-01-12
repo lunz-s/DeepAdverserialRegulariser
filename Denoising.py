@@ -3,11 +3,12 @@ import postprocessing as pp
 import numpy as np
 
 
-postpro = pp.postDenoising()#
+
 # train postprocessing
 if 1:
-    for k in range(50):
-        postpro.train(500)
+    postpro = pp.postDenoising()  #
+
+    postpro.end()
 
 def adversarial():
     denoiser = ar.Denoiser1()
