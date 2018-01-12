@@ -103,7 +103,7 @@ class data_preprocessing(object):
         self.create_folders()
 
     # returns simulated measurement, original pic and fbp
-    def generate_data(self, batch_size, validation=False, type = 'ellipses'):
+    def generate_data(self, batch_size, validation=False, type = source):
         """Generate a set of random data."""
         n_generate = 1 if (validation and type=='ellipses') else batch_size
 
