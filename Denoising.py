@@ -7,7 +7,7 @@ import numpy as np
 # train postprocessing
 if 1:
     postpro = pp.postDenoising()  #
-
+    postpro.train(200)
     postpro.end()
 
 def adversarial():
