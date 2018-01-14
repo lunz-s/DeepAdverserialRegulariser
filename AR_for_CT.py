@@ -154,9 +154,9 @@ class data_preprocessing(object):
 
 
     def reshape_pic(self, pic):
-        pic = imresize(pic, [128, 128])
         pic = pic - np.amin(pic)
         pic = pic/ np.amax(pic)
+        pic = imresize(pic, [128, 128])
         return pic
 
     def get_random_pic(self, validation = False):

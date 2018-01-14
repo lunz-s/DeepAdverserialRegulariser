@@ -162,8 +162,6 @@ class postprocesser(object):
     def evaluate_pp(self, true, y):
         return self.sess.run(self.out, feed_dict={self.y : y, self.true: true})
 
-
-
 class UNet(postprocesser):
     model_name = 'UNet'
     def network(self, input):
@@ -189,7 +187,6 @@ class UNet(postprocesser):
         output = tf.layers.conv2d(inputs=concat2, filters=self.colour, kernel_size=[5, 5],
                                   padding="same", activation=tf.nn.relu)
         return output
-
 
 class postDenoising(UNet):
     model_name = 'Denoising_UNet'
@@ -275,3 +272,167 @@ class postDenoising(UNet):
 class postDenoising2(postDenoising):
     model_name = 'Denoising_UNet2'
     noise_level = 0.1
+
+class postCT(UNet):
+    model_name = 'CT_UNet'
+    source = 'ellipses'
+
+    # visualization methode
+    def visualize(self, true, noisy, recon, global_step):
+        quality = np.average(np.sqrt(np.sum(np.square(true - recon), axis=(1, 2, 3))))
+        print('Quality of reconstructed image: ' + str(quality))
+        self.create_single_folder('Saves/Pictures/' + self.model_name + '/' +str(global_step))
+        plt.figure()
+        plt.subplot(131)
+        plt.imshow(self.cut_image(true[-1, ...,0]))
+        plt.axis('off')
+        plt.title('Original')
+        plt.subplot(132)
+        plt.imshow(self.cut_image(noisy[-1,...,0]))
+        plt.axis('off')
+        plt.title('Corrupted')
+        plt.suptitle('L2 :' + str(quality))
+        plt.subplot(133)
+        plt.imshow(self.cut_image(recon[-1,...,0]))
+        plt.title('Reconstruction')
+        plt.axis('off')
+        plt.savefig('Saves/Pictures/' + self.model_name + '/' +
+                    'iteration-' + str(global_step) + '.png')
+        plt.close()
+
+    @staticmethod
+    def to_uint(pic):
+        pic = pic * 255
+        pic = np.maximum(pic, 0)
+        pic = np.minimum(pic, 255)
+        pic = np.floor(pic)
+        return pic.astype(np.uint8)
+
+    # creates list of training data
+    @staticmethod
+    def find(pattern, path):
+        result = []
+        for root, dirs, files in os.walk(path):
+            for name in files:
+                if fnmatch.fnmatch(name, pattern):
+                    result.append(os.path.join(root, name).replace("\\", "/"))
+        return result
+
+    def __init__(self):
+        super(postCT, self).__init__(colour=1)
+        if self.source == 'LUNA':
+            name = platform.node()
+            Train_Path = ''
+            Eval_Path = ''
+            if name == 'LAPTOP-E6AJ1CPF':
+                Train_Path = './LUNA/Train_Data'
+                Eval_Path = './LUNA/Eval_Data'
+            elif name == 'motel':
+                Train_Path = '/local/scratch/public/sl767/LUNA/Training_Data'
+                Eval_Path = '/local/scratch/public/sl767/LUNA/Evaluation_Data'
+            # List the existing training data
+            self.training_list = self.find('*.dcm', Train_Path)
+            self.training_list_length = len(self.training_list)
+            print('Training Data found: ' + str(self.training_list_length))
+            self.eval_list = self.find('*.dcm', Eval_Path)
+            self.eval_list_length = len(self.eval_list)
+            print('Evaluation Data found: ' + str(self.eval_list_length))
+
+        # Create ODL data structures
+        size = 128
+        self.space = odl.uniform_discr([-64, -64], [64, 64], [size, size],
+                                       dtype='float32')
+
+        geometry = odl.tomo.parallel_beam_geometry(self.space, num_angles=30)
+        op = odl.tomo.RayTransform(self.space, geometry)
+
+        # Ensure operator has fixed operator norm for scale invariance
+        opnorm = odl.power_method_opnorm(op)
+        self.operator = (1 / opnorm) * op
+        self.adjoint = (1 / opnorm) * op.adjoint
+        self.fbp = (opnorm) * odl.tomo.fbp_op(op)
+
+        # Create tensorflow layer from odl operator
+        self.ray_transform = odl.contrib.tensorflow.as_tensorflow_layer(self.operator,
+                                                                        'RayTransform')
+
+        # self.ray_transform_adjoint = odl.contrib.tensorflow.as_tensorflow_layer(self.operator.adjoint,
+        #                                                               'RayTransformAdjoint')
+
+        # create needed folders
+        self.create_folders()
+
+    # returns simulated measurement, original pic and fbp
+    def generate_images(self, batch_size, validation=False):
+        """Generate a set of random data."""
+        n_generate = 1 if (validation and self.source == 'ellipses') else batch_size
+
+        y = np.empty((n_generate, self.operator.range.shape[0], self.operator.range.shape[1], 1), dtype='float32')
+        x_true = np.empty((n_generate, self.space.shape[0], self.space.shape[1], 1), dtype='float32')
+        fbp = np.empty((n_generate, self.space.shape[0], self.space.shape[1], 1), dtype='float32')
+
+        for i in range(n_generate):
+            if validation:
+                if self.source == 'ellipses':
+                    phantom = odl.phantom.shepp_logan(self.space, True)
+                elif self.source == 'LUNA':
+                    path = self.get_random_path(validation=True)
+                    phantom = self.space.element(self.get_random_pic(validation=True))
+            else:
+                if self.source == 'LUNA':
+                    phantom = self.space.element(self.get_random_pic(validation=False))
+                else:
+                    phantom = self.random_phantom(self.space)
+            data = self.operator(phantom)
+            noisy_data = data + odl.phantom.white_noise(self.operator.range) * np.mean(np.abs(data)) * 0.05
+
+            fbp[i, ..., 0] = self.fbp(noisy_data)
+            x_true[i, ..., 0] = phantom
+            y[i, ..., 0] = noisy_data
+        return x_true, fbp
+
+    # generates one random ellipse
+    def random_ellipse(self, interior=False):
+        if interior:
+            x_0 = np.random.rand() - 0.5
+            y_0 = np.random.rand() - 0.5
+        else:
+            x_0 = 2 * np.random.rand() - 1.0
+            y_0 = 2 * np.random.rand() - 1.0
+
+        return ((np.random.rand() - 0.5) * np.random.exponential(0.4),
+                np.random.exponential() * 0.2, np.random.exponential() * 0.2,
+                x_0, y_0,
+                np.random.rand() * 2 * np.pi)
+
+    # generates odl space object with ellipses
+    def random_phantom(self, spc, n_ellipse=50, interior=False):
+        n = np.random.poisson(n_ellipse)
+        ellipses = [self.random_ellipse(interior=interior) for _ in range(n)]
+        return odl.phantom.ellipsoid_phantom(spc, ellipses)
+
+    def reshape_pic(self, pic):
+        pic = imresize(pic, [128, 128])
+        pic = pic - np.amin(pic)
+        pic = pic / np.amax(pic)
+        return pic
+
+    def get_random_pic(self, validation=False):
+        k = -10000
+        pic = np.zeros((128, 128))
+        while k < 0:
+            path = self.get_random_path(validation=validation)
+            dc_file = dc.read_file(path)
+            pic = dc_file.pixel_array
+            if pic.shape == (512, 512):
+                pic = self.reshape_pic(pic)
+                k = 1
+        return pic
+
+    # methodes for obtaining the medical data
+    def get_random_path(self, validation=False):
+        if not validation:
+            path = self.training_list[random.randint(0, self.training_list_length - 1)]
+        else:
+            path = self.eval_list[random.randint(0, self.eval_list_length - 1)]
+        return path
