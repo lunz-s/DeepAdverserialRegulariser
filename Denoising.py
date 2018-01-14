@@ -3,20 +3,20 @@ import postprocessing as pp
 import numpy as np
 
 def compare_methods(amount_test_data):
-    denoiser = ar.Denoiser1()
+    denoiser = ar.Denoiser2()
     true, cor = denoiser.generate_images(amount_test_data, training_data=False)
     results = {}
     results['Adversarial Regulariser'] = denoiser.evaluate_AR(cor)
     results['TV'] = denoiser.evaluate_TV(cor)
     denoiser.end()
-    post = pp.postDenoising()
+    post = pp.postDenoising2()
     results['Post-Processing'] = post.evaluate_pp(true, cor)
     for methode, res in results.items():
         error = np.mean(np.sqrt(np.sum(np.square(true - res), axis=(1,2,3))))
         print('Methode: ' + methode + ', MSE: ' + str(error))
 
 
-# compare_methods(256)
+compare_methods(256)
 
 # train postprocessing
 if 0:
@@ -25,7 +25,7 @@ if 0:
         postpro.train(300)
     postpro.end()
 
-if 1:
+if 0:
     denoiser = ar.Denoiser2()
 
     # testing sequence to check methods
