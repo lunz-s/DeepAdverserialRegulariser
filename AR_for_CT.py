@@ -116,11 +116,11 @@ class data_preprocessing(object):
                 if self.source=='ellipses':
                     phantom = odl.phantom.shepp_logan(self.space, True)
                 elif self.source == 'LUNA':
-                    path = self.get_random_path(validation=True)
+                    path = self.get_valid_path(validation=True)
                     phantom = self.space.element(self.get_pic(path))
             else:
                 if self.source == 'LUNA':
-                    path = self.get_random_path(validation=False)
+                    path = self.get_valid_path(validation=False)
                     phantom = self.space.element(self.get_pic(path))
                 else:
                     phantom = self.random_phantom(self.space)
@@ -152,6 +152,25 @@ class data_preprocessing(object):
         n = np.random.poisson(n_ellipse)
         ellipses = [self.random_ellipse(interior=interior) for _ in range(n)]
         return odl.phantom.ellipsoid_phantom(spc, ellipses)
+
+    # check if path is valid
+    def is_valid_path(self, path):
+        valid = True
+        f = ElementTree.parse(path).getroot()
+        session = f.findall('{http://www.nih.gov}readingSession')
+        if not session:
+            valid = False
+        return valid
+
+    # get valid path
+    def get_valid_path(self, validation = False):
+        k = -1000
+        path = ''
+        while k < 0:
+            path = self.get_random_path(validation=validation)
+            if self.is_valid_path(path):
+                k = 1
+        return path
 
     # methodes for obtaining the medical data
     def get_random_path(self, validation =False):
