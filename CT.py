@@ -2,6 +2,14 @@ import AR_for_CT as ar
 import postprocessing as pp
 import numpy as np
 
+
+if 1:
+    data = ar.data_preprocessing()
+    lmb = []
+    for k in range(10):
+        lmb.append(3 ** (k - 12))
+    data.find_TV_lambda(lmb)
+
 if 0:
     recon = ar.Recon1()
     # recon.pretrain_Wasser_FBP(500)
@@ -19,12 +27,8 @@ if 0:
         starting_point = 'Mini'
         recon.create_optimized_images(512, mu=2, step_s=0.1, steps=250, starting_point=starting_point)
 
-if 1:
-    rec = ar.Recon1()
-    rec.find_good_lambda()
-    rec.end()
+if 0:
     recon = ar.Recon_LUNA()
-    recon.find_good_lambda()
     for k in range(4):
         recon.train(500, 125, starting_point='Mini')
 

@@ -15,7 +15,7 @@ import platform
 
 class data_preprocessing(object):
     model_name = 'none'
-    source = 'LUNA'
+    source = 'ellipses'
 
     @staticmethod
     def to_uint(pic):
@@ -208,15 +208,15 @@ class data_preprocessing(object):
         return x
 
     def find_TV_lambda(self, lmd):
-        amount_test_images = 1
-        y, x_true, fbp = self.generate_data(amount_test_images)
+        amount_test_images = 32
+        y, true, cor = self.generate_data(amount_test_images)
         for l in lmd:
-            error = np.zeros([amount_test_images])
-            or_error = np.zeros([amount_test_images])
+            error = np.zeros(amount_test_images)
+            or_error = np.zeros(amount_test_images)
             for k in range(amount_test_images):
                 recon = self.tv_reconstruction(y[k, ..., 0], l)
-                error[k] = np.sum(np.square(recon - x_true[k, ..., 0]))
-                or_error[k] = np.sum(np.square(fbp[k, ..., 0] - x_true[k, ..., 0]))
+                error[k] = np.sum(np.square(recon - true[k, ..., 0]))
+                or_error[k] = np.sum(np.square(cor[k, ..., 0] - true[k, ..., 0]))
             total_e = np.mean(np.sqrt(error))
             total_o = np.mean(np.sqrt(or_error))
             print('Lambda: ' + str(l) + ', MSE: ' + str(total_e) + ', OriginalError: ' + str(total_o))
