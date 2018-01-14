@@ -157,6 +157,7 @@ class data_preprocessing(object):
         pic = pic - np.amin(pic)
         pic = pic/ np.amax(pic)
         pic = imresize(pic, [128, 128])
+        pic = pic / np.amax(pic)
         return pic
 
     def get_random_pic(self, validation = False):
