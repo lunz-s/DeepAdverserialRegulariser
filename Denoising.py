@@ -19,7 +19,7 @@ def compare_methods(amount_test_data):
 # compare_methods(256)
 
 # train postprocessing
-if 1:
+if 0:
     postpro = pp.postDenoising2()  #
     for k in range(5):
         postpro.train(300)
@@ -36,17 +36,17 @@ if 1:
         denoiser.train(2, 30)
 
     # pretraining
-    if 1:
+    if 0:
         for k in range(5):
             denoiser.pretrain_Wasser_ini(500)
 
     # try out different regularisation parameters
-    if 0:
+    if 1:
         denoiser.find_noise_level()
         denoiser.find_good_lambda()
-        denoiser.create_optimized_images(64, mu = 10)
-        denoiser.create_optimized_images(64, mu=16)
-        denoiser.create_optimized_images(64, mu=20)
+        denoiser.create_optimized_images(64, mu = 20)
+        denoiser.create_optimized_images(64, mu=40)
+        denoiser.create_optimized_images(64, mu=60)
 
     # iterative training
     if 0:
