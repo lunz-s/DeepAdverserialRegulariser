@@ -20,6 +20,9 @@ if 0:
         recon.create_optimized_images(512, mu=2, step_s=0.1, steps=250, starting_point=starting_point)
 
 if 1:
+    rec = ar.Recon1()
+    rec.find_good_lambda()
+    rec.end()
     recon = ar.Recon_LUNA()
     recon.find_good_lambda()
     for k in range(4):
