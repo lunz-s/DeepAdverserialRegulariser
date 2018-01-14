@@ -116,7 +116,6 @@ class data_preprocessing(object):
                 if self.source=='ellipses':
                     phantom = odl.phantom.shepp_logan(self.space, True)
                 elif self.source == 'LUNA':
-                    path = self.get_random_path(validation=True)
                     phantom = self.space.element(self.get_random_pic(validation=True))
             else:
                 if self.source == 'LUNA':
@@ -158,6 +157,7 @@ class data_preprocessing(object):
         pic = pic/ np.amax(pic)
         pic = imresize(pic, [128, 128])
         pic = pic / np.amax(pic)
+        pic = pic - np.average(pic)
         return pic
 
     def get_random_pic(self, validation = False):
