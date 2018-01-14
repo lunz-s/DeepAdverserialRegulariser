@@ -15,7 +15,7 @@ import platform
 
 class data_preprocessing(object):
     model_name = 'none'
-    source = 'ellipses'
+    source = 'LUNA'
 
     @staticmethod
     def to_uint(pic):
@@ -75,7 +75,7 @@ class data_preprocessing(object):
             self.training_list_length = len(self.training_list)
             print('Training Data found: ' + str(self.training_list_length))
             self.eval_list = self.find('*.dcm', Eval_Path)
-            self.eval_list_length = len(self.training_list)
+            self.eval_list_length = len(self.eval_list)
             print('Evaluation Data found: ' + str(self.eval_list_length))
 
         # Create ODL data structures
@@ -116,12 +116,11 @@ class data_preprocessing(object):
                 if self.source=='ellipses':
                     phantom = odl.phantom.shepp_logan(self.space, True)
                 elif self.source == 'LUNA':
-                    path = self.get_valid_path(validation=True)
-                    phantom = self.space.element(self.get_pic(path))
+                    path = self.get_random_path(validation=True)
+                    phantom = self.space.element(self.get_random_pic(validation=True))
             else:
                 if self.source == 'LUNA':
-                    path = self.get_valid_path(validation=False)
-                    phantom = self.space.element(self.get_pic(path))
+                    phantom = self.space.element(self.get_random_pic(validation=False))
                 else:
                     phantom = self.random_phantom(self.space)
             data = self.operator(phantom)
@@ -153,24 +152,24 @@ class data_preprocessing(object):
         ellipses = [self.random_ellipse(interior=interior) for _ in range(n)]
         return odl.phantom.ellipsoid_phantom(spc, ellipses)
 
-    # check if path is valid
-    def is_valid_path(self, path):
-        valid = True
-        f = ElementTree.parse(path).getroot()
-        session = f.findall('{http://www.nih.gov}readingSession')
-        if not session:
-            valid = False
-        return valid
 
-    # get valid path
-    def get_valid_path(self, validation = False):
-        k = -1000
-        path = ''
+    def reshape_pic(self, pic):
+        pic = imresize(pic, [128, 128])
+        pic = pic - np.amin(pic)
+        pic = pic/ np.amax(pic)
+        return pic
+
+    def get_random_pic(self, validation = False):
+        k = -10000
+        pic = np.zeros((128,128))
         while k < 0:
             path = self.get_random_path(validation=validation)
-            if self.is_valid_path(path):
+            dc_file = dc.read_file(path)
+            pic = dc_file.pixel_array
+            if pic.shape == (512,512):
+                pic = self.reshape_pic(pic)
                 k = 1
-        return path
+        return pic
 
     # methodes for obtaining the medical data
     def get_random_path(self, validation =False):
@@ -180,22 +179,6 @@ class data_preprocessing(object):
             path = self.eval_list[random.randint(0, self.eval_list_length - 1)]
         return path
 
-    # checks if the xml file is a valid source (has readingSessions instead of CXRreadingSessions)
-    def valid_xml(self, xml_path):
-        valid = True
-        f = ElementTree.parse(xml_path).getroot()
-        session = f.findall('{http://www.nih.gov}readingSession')
-        if not session:
-            valid = False
-        return valid
-
-    def get_pic(self, path):
-        dc_file = dc.read_file(path)
-        pic = dc_file.pixel_array
-        pic = imresize(pic, [128, 128])
-        pic = pic - np.amin(pic)
-        pic = pic/ np.amax(pic)
-        return pic
 
     def tv_reconstruction(self, y, param=0.0013):
         # the operators
