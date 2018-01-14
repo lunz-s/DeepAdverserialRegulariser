@@ -15,10 +15,11 @@ def compare_methods(amount_test_data):
         error = np.mean(np.sqrt(np.sum(np.square(true - res), axis=(1,2,3))))
         print('Methode: ' + methode + ', MSE: ' + str(error))
 
+def visual_comparison():
+    pass
+compare_methods(64)
 
-# compare_methods(256)
-
-if 1:
+if 0:
     denoiser = ar.Denoiser2()
     lmb = []
     for k in range(10):
