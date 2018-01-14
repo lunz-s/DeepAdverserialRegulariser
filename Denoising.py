@@ -16,17 +16,17 @@ def compare_methods(amount_test_data):
         print('Methode: ' + methode + ', MSE: ' + str(error))
 
 
-compare_methods(256)
+# compare_methods(256)
 
 # train postprocessing
-if 0:
-    postpro = pp.postDenoising()  #
+if 1:
+    postpro = pp.postDenoising2()  #
     for k in range(5):
         postpro.train(300)
     postpro.end()
 
-if 0:
-    denoiser = ar.Denoiser1()
+if 1:
+    denoiser = ar.Denoiser2()
 
     # testing sequence to check methods
     if 0:
@@ -36,12 +36,12 @@ if 0:
         denoiser.train(2, 30)
 
     # pretraining
-    if 0:
+    if 1:
         for k in range(5):
             denoiser.pretrain_Wasser_ini(500)
 
     # try out different regularisation parameters
-    if 1:
+    if 0:
         denoiser.find_noise_level()
         denoiser.find_good_lambda()
         denoiser.create_optimized_images(64, mu = 10)

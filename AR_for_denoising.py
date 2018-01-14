@@ -555,3 +555,11 @@ class Denoiser1(denoiser):
         output = tf.matmul(p2resh, weights[8]) + weights[9]
         return output
 
+class Denoiser2(Denoiser1):
+    model_name = 'Denoiser2'
+    # noise level
+    noise_level = 0.1
+    # relation between L2 error and regulariser
+    mu_default = 40
+    # tv_lambda
+    tv_lmb = 0.012

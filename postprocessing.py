@@ -271,3 +271,7 @@ class postDenoising(UNet):
             true[i,...] = image
             cor[i,...] = image_cor
         return true, cor
+
+class postDenoising2(postDenoising):
+    model_name = 'Denoising_UNet2'
+    noise_level = 0.1
