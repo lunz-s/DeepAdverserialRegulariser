@@ -103,9 +103,9 @@ class data_preprocessing(object):
         self.create_folders()
 
     # returns simulated measurement, original pic and fbp
-    def generate_data(self, batch_size, validation=False, type = source):
+    def generate_data(self, batch_size, validation=False):
         """Generate a set of random data."""
-        n_generate = 1 if (validation and type=='ellipses') else batch_size
+        n_generate = 1 if (validation and self.source=='ellipses') else batch_size
 
         y = np.empty((n_generate, self.operator.range.shape[0], self.operator.range.shape[1], 1), dtype='float32')
         x_true = np.empty((n_generate, self.space.shape[0], self.space.shape[1], 1), dtype='float32')
@@ -113,13 +113,13 @@ class data_preprocessing(object):
 
         for i in range(n_generate):
             if validation:
-                if type=='ellipses':
+                if self.source=='ellipses':
                     phantom = odl.phantom.shepp_logan(self.space, True)
-                elif type == 'LUNA':
+                elif self.source == 'LUNA':
                     path = self.get_random_path(validation=True)
                     phantom = self.space.element(self.get_pic(path))
             else:
-                if type == 'LUNA':
+                if self.source == 'LUNA':
                     path = self.get_random_path(validation=False)
                     phantom = self.space.element(self.get_pic(path))
                 else:
