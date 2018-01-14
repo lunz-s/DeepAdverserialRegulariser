@@ -16,7 +16,14 @@ def compare_methods(amount_test_data):
         print('Methode: ' + methode + ', MSE: ' + str(error))
 
 
-compare_methods(256)
+# compare_methods(256)
+
+if 1:
+    denoiser = ar.Denoiser2()
+    lmb = []
+    for k in range(10):
+        lmb.append(3**(k-10))
+    denoiser.find_TV_lambda(lmb)
 
 # train postprocessing
 if 0:

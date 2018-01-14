@@ -147,7 +147,7 @@ class Data_pip(object):
         op_norm = 1.1 * odl.power_method_opnorm(broad_op)
         tau = 10.0 / op_norm
         sigma = 0.1 / op_norm
-        niter = 80
+        niter =200
 
         # find starting point
         x = space.element(y)
