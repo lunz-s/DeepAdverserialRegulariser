@@ -34,8 +34,8 @@ if 0:
 
 if 1:
     post = pp.postCT()
-    for k in range(5):
-        post.train(300)
+    for k in range(50):
+        post.train(500)
 
 
 
