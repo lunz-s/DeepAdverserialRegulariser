@@ -282,8 +282,10 @@ class postCT(UNet):
     # visualization methode
     def visualize(self, true, noisy, recon, global_step):
         quality = np.average(np.sqrt(np.sum(np.square(true - recon), axis=(1, 2, 3))))
-        quality_start = np.average(np.sqrt(np.sum(np.square(true - noisy), axis=(1, 2, 3))))
-        print('Quality of reconstructed image: ' + str(quality) + ', fbp: ' + str(quality_start))
+        start_qu = np.average(np.sqrt(np.sum(np.square(true - noisy), axis=(1, 2, 3))))
+        qu = np.sqrt(np.sum(np.square(true[-1,...,0] - recon[-1,...,0])))
+        st_qu = np.sqrt(np.sum(np.square(true[-1, ..., 0] - noisy[-1, ..., 0])))
+        print('Quality of reconstructed image: ' + str(quality) + ', fbp: ' + str(start_qu))
         self.create_single_folder('Saves/Pictures/' + self.model_name + '/' +str(global_step))
         plt.figure()
         plt.subplot(131)
@@ -293,11 +295,10 @@ class postCT(UNet):
         plt.subplot(132)
         plt.imshow(self.cut_image(noisy[-1,...,0]))
         plt.axis('off')
-        plt.title('Corrupted')
-        plt.suptitle('L2 :' + str(quality))
+        plt.title('Corrupted: ' + str(st_qu))
         plt.subplot(133)
         plt.imshow(self.cut_image(recon[-1,...,0]))
-        plt.title('Reconstruction')
+        plt.title('Adv. Reg.: ' + str(qu))
         plt.axis('off')
         plt.savefig('Saves/Pictures/' + self.model_name + '/' +
                     'iteration-' + str(global_step) + '.png')
