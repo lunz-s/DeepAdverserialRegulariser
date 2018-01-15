@@ -281,7 +281,8 @@ class postCT(UNet):
     # visualization methode
     def visualize(self, true, noisy, recon, global_step):
         quality = np.average(np.sqrt(np.sum(np.square(true - recon), axis=(1, 2, 3))))
-        print('Quality of reconstructed image: ' + str(quality))
+        quality_start = np.average(np.sqrt(np.sum(np.square(true - noisy), axis=(1, 2, 3))))
+        print('Quality of reconstructed image: ' + str(quality) + ', fbp: ' + str(quality_start))
         self.create_single_folder('Saves/Pictures/' + self.model_name + '/' +str(global_step))
         plt.figure()
         plt.subplot(131)
