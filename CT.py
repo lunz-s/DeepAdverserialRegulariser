@@ -3,7 +3,7 @@ import postprocessing as pp
 import numpy as np
 
 
-if 0:
+if 1:
     data = ar.data_preprocessing()
     lmb = []
     for k in range(10):
@@ -32,7 +32,7 @@ if 0:
     for k in range(4):
         recon.train(500, 125, starting_point='Mini')
 
-if 1:
+if 0:
     post = pp.postCT()
     for k in range(5):
         post.train(300)
