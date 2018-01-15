@@ -6,6 +6,12 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+
+def cut_image(pic):
+    pic = np.maximum(pic, 0.0)
+    pic = np.minimum(pic, 1.0)
+    return pic
+
 def compare_methods(amount_test_data):
     denoiser = ar.Denoiser2()
     true, cor = denoiser.generate_images(amount_test_data, training_data=False)
@@ -30,23 +36,23 @@ def visual_comparison(k):
     post.end()
     plt.figure()
     plt.subplot(2,3,1)
-    plt.imshow(true[0,...])
+    plt.imshow(cut_image(true[0,...]))
     plt.axis('off')
     plt.title('Original')
     plt.subplot(2,3,2)
-    plt.imshow(cor[0,...])
+    plt.imshow(cut_image(cor[0,...]))
     plt.axis('off')
     plt.title('Noisy')
     plt.subplot(2,3,4)
-    plt.imshow(tv[0,...])
+    plt.imshow(cut_image(tv[0,...]))
     plt.axis('off')
     plt.title('TV')
     plt.subplot(2,3,5)
-    plt.imshow(postP[0,...])
+    plt.imshow(cut_image(postP[0,...]))
     plt.axis('off')
     plt.title('PostProc.')
-    plt.subplot(2,3,1)
-    plt.imshow(advR[0,...])
+    plt.subplot(2,3,6)
+    plt.imshow(cut_image(advR[0,...]))
     plt.axis('off')
     plt.title('Adv. Reg.')
     plt.savefig('Saves/Evaluations/' + str(k) + '.png')
