@@ -52,10 +52,11 @@ def visual_comparison(k):
     plt.savefig('Saves/Evaluations/' + str(k) + '.png')
     plt.close()
 
-
+for k in range(10):
+    visual_comparison(k)
 # compare_methods(64)
 
-if 1:
+if 0:
     denoiser = ar.Denoiser2()
     lmb = []
     for k in range(10):
