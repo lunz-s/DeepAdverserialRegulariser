@@ -139,7 +139,8 @@ class postprocesser(object):
     # visualization methode
     def visualize(self, true, noisy, recon, global_step):
         quality = np.average(np.sqrt(np.sum(np.square(true - recon), axis=(1, 2, 3))))
-        print('Quality of reconstructed image: ' + str(quality))
+        start_qu = np.average(np.sqrt(np.sum(np.square(true - noisy), axis=(1, 2, 3))))
+        print('Quality of reconstructed image: ' + str(quality) + ', fbp: ' + str(start_qu))
         self.create_single_folder('Saves/Pictures/' + self.model_name + '/' +str(global_step))
         plt.figure()
         plt.subplot(131)
