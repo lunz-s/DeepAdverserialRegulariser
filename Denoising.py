@@ -19,7 +19,7 @@ def compare_methods(amount_test_data):
         error = np.mean(np.sqrt(np.sum(np.square(true - res), axis=(1,2,3))))
         print('Methode: ' + methode + ', MSE: ' + str(error))
 
-def visual_comparison():
+def visual_comparison(k):
     denoiser = ar.Denoiser2()
     true, cor = denoiser.generate_images(1, training_data=False)
     advR = denoiser.evaluate_AR(cor)
@@ -41,10 +41,16 @@ def visual_comparison():
     plt.imshow(tv[0,...])
     plt.axis('off')
     plt.title('TV')
-    plt.subplot(2,3,1)
-    plt.imshow(true[0,...])
+    plt.subplot(2,3,5)
+    plt.imshow(postP[0,...])
     plt.axis('off')
-    plt.title('Original')
+    plt.title('PostProc.')
+    plt.subplot(2,3,1)
+    plt.imshow(advR[0,...])
+    plt.axis('off')
+    plt.title('Adv. Reg.')
+    plt.savefig('Saves/Evaluations/' + str(k) + '.png')
+    plt.close()
 
 
 # compare_methods(64)

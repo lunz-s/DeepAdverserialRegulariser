@@ -562,4 +562,4 @@ class Denoiser2(Denoiser1):
     # relation between L2 error and regulariser
     mu_default = 44
     # tv_lambda
-    tv_lmb = 0.036
+    tv_lmb = 0.12
