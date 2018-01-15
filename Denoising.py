@@ -1,6 +1,10 @@
 import AR_for_denoising as ar
 import postprocessing as pp
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 def compare_methods(amount_test_data):
     denoiser = ar.Denoiser2()
@@ -16,10 +20,36 @@ def compare_methods(amount_test_data):
         print('Methode: ' + methode + ', MSE: ' + str(error))
 
 def visual_comparison():
-    pass
-compare_methods(64)
+    denoiser = ar.Denoiser2()
+    true, cor = denoiser.generate_images(1, training_data=False)
+    advR = denoiser.evaluate_AR(cor)
+    tv = denoiser.evaluate_TV(cor)
+    denoiser.end()
+    post = pp.postDenoising2()
+    postP = post.evaluate_pp(true, cor)
+    post.end()
+    plt.figure()
+    plt.subplot(2,3,1)
+    plt.imshow(true[0,...])
+    plt.axis('off')
+    plt.title('Original')
+    plt.subplot(2,3,2)
+    plt.imshow(cor[0,...])
+    plt.axis('off')
+    plt.title('Noisy')
+    plt.subplot(2,3,4)
+    plt.imshow(tv[0,...])
+    plt.axis('off')
+    plt.title('TV')
+    plt.subplot(2,3,1)
+    plt.imshow(true[0,...])
+    plt.axis('off')
+    plt.title('Original')
 
-if 0:
+
+# compare_methods(64)
+
+if 1:
     denoiser = ar.Denoiser2()
     lmb = []
     for k in range(10):
