@@ -193,26 +193,25 @@ class single_stack(object):
                                                                 axis=(1, 2, 3))))
 
             # logging tools
+            logging = []
+
             with tf.name_scope('Network_Optimization'):
-                tf.summary.scalar('Wasserstein_Loss', self.wasserstein_loss)
-                tf.summary.scalar('Wasserstein_Loss_grad', self.g1)
-                tf.summary.scalar('Regulariser_Wasser', self.regulariser_was)
-                tf.summary.scalar('Regulariser_Wasser_grad', self.g2)
-                tf.summary.scalar('Overall_Net_Loss', self.loss_was)
+                logging.append(tf.summary.scalar('Wasserstein_Loss', self.wasserstein_loss))
+                logging.append(tf.summary.scalar('Wasserstein_Loss_grad', self.g1))
+                logging.append(tf.summary.scalar('Regulariser_Wasser', self.regulariser_was))
+                logging.append(tf.summary.scalar('Regulariser_Wasser_grad', self.g2))
+                logging.append(tf.summary.scalar('Overall_Net_Loss', self.loss_was))
             with tf.name_scope('Picture_Optimization'):
-                data_loss = tf.summary.scalar('Data_Loss', self.data_error)
-                data_loss_grad = tf.summary.scalar('Data_Loss_grad', self.g4)
-                wasser_loss = tf.summary.scalar('Wasserstein_Loss', self.was_output)
-                wasser_loss_grad = tf.summary.scalar('Wasserstein_Loss_grad', self.g3)
+                logging.append(tf.summary.scalar('Data_Loss', self.data_error))
+                logging.append(tf.summary.scalar('Data_Loss_grad', self.g4))
+                logging.append(tf.summary.scalar('Wasserstein_Loss', self.was_output))
+                logging.append(tf.summary.scalar('Wasserstein_Loss_grad', self.g3))
             with tf.name_scope('Model_L2_strength'):
-                quality_assesment = tf.summary.scalar('L2', self.quality)
+                logging.append(tf.summary.scalar('L2', self.quality))
 
             # set up the logger
-            self.merged = tf.summary.merge_all()
+            self.merged = tf.summary.merge(logging)
             self.writer = tf.summary.FileWriter(self.logging_path, self.sess.graph)
-            # set up the logger for image optimization
-            self.merged_pic = tf.summary.merge(
-                [data_loss, data_loss_grad, wasser_loss, wasser_loss_grad, quality_assesment])
 
         # set up variables saver
         self.saver = tf.train.Saver(self.weights)
