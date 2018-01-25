@@ -249,7 +249,7 @@ class single_stack(object):
         return guess
 
     # evaluates and prints the network performance
-    def evaluate_Network(self, true, cor):
+    def evaluate_Network(self, true, cor, guess):
         # generate random distribution for rays
         epsilon = np.random.uniform(size=(self.batch_size))
         step, Was_g, reg_g, Was, reg = self.sess.run([self.global_step, self.g1, self.g2,
@@ -260,7 +260,7 @@ class single_stack(object):
               ', Was grad: ' + str(Was_g) + ', Reg grad: ' + str(reg_g))
 
         # tensorflow logging
-        guess = self.update_pic(15, self.step_size, cor, cor, self.mu_default)
+        guess = self.update_pic(15, self.step_size, cor, guess, self.mu_default)
         summary, step = self.sess.run([self.merged, self.global_step],
                                       feed_dict={self.gen_im: cor,
                                                  self.true_im: true,
@@ -271,9 +271,8 @@ class single_stack(object):
                                                  self.mu: self.mu_default})
         self.writer.add_summary(summary, step)
 
-    def picture_quality(self, true, cor):
-        print('Starting quality: {}'.format(ut.l2_norm(true-cor)))
-        guess = np.copy(cor)
+    def picture_quality(self, true, cor, guess):
+        print('Starting quality: {}'.format(ut.l2_norm(true-guess)))
         guess = self.net_output(guess, cor)
         print('End quality: {}'.format(ut.l2_norm(true - guess)))
 
@@ -351,16 +350,16 @@ class stacked_denoiser(ar.Data_pip):
     def generate_training_data(self, stack_number, training_data = True):
         true, cor = self.generate_images(64, training_data=training_data)
         guess = self.optimize_until(cor, stack_number)
-        return true, guess
+        return true, cor, guess
 
     # trains k-th layer
     def train_layer(self, stack_number, iterations):
         for k in range(iterations):
-            true, guess = self.generate_training_data(stack_number)
+            true, cor, guess = self.generate_training_data(stack_number)
             self.stacks[stack_number].train(true, guess)
             if k%25 == 0:
-                true, guess = self.generate_training_data(stack_number, training_data=False)
-                self.stacks[stack_number].evaluate_Network(true, guess)
-                self.stacks[stack_number].picture_quality(true, guess)
+                true, cor, guess = self.generate_training_data(stack_number, training_data=False)
+                self.stacks[stack_number].evaluate_Network(true, cor, guess)
+                self.stacks[stack_number].picture_quality(true, cor, guess)
         self.stacks[stack_number].save()
 
