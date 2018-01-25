@@ -215,7 +215,7 @@ class single_stack(object):
                 [data_loss, data_loss_grad, wasser_loss, wasser_loss_grad, quality_assesment])
 
         # set up variables saver
-        self.saver = tf.train.Saver(self.weights)
+        self.saver = tf.train.Saver(self.weights.append(self.global_step))
 
     # visualization methode
     def visualize(self, true, noisy, recon, global_step, step, mu):
