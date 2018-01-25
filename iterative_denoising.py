@@ -85,7 +85,7 @@ class single_stack(object):
     # method to load latest save
     def load(self):
         if os.listdir(self.path):
-            self.saver.restore(self.sess, self.path)
+            self.saver.restore(self.sess, tf.train.latest_checkpoint(self.path))
             print('Restored: ' + str(self.stack))
         else:
             print('No save found: ' + str(self.stack))
@@ -278,7 +278,6 @@ class single_stack(object):
         guess = self.net_output(guess, cor)
         print('End quality: {}'.format(ut.l2_norm(true - guess)))
 
-
     # train network
     def train(self, true, cor):
         # generate random distribution for rays
@@ -290,9 +289,6 @@ class single_stack(object):
     # update input
     def net_output(self, guess, cor):
         return self.update_pic(10, self.step_size, guess, cor, self.mu_default)
-
-
-
 
 class stacked_denoiser(ar.Data_pip):
     model_name = 'Stacked_Denoiser'
