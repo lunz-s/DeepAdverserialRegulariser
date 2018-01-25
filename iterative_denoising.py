@@ -288,6 +288,13 @@ class single_stack(object):
     def net_output(self, guess, cor):
         return self.update_pic(10, self.step_size, guess, cor, self.mu_default)
 
+    # track optimization in detail
+    def track_optimization(self, true, cor, guess, mu):
+        print('Track Optimization: mu=' + str(mu))
+        for k in range(15):
+            print('Quality Iteration{}: {}'.format(k,ut.l2_norm(true - guess)))
+            guess = self.update_pic(1, self.step_size, guess, cor, mu)
+
 class stacked_denoiser(ar.Data_pip):
     model_name = 'Stacked_Denoiser'
     # The batch size
@@ -362,4 +369,9 @@ class stacked_denoiser(ar.Data_pip):
                 self.stacks[stack_number].evaluate_Network(true, cor, guess)
                 self.stacks[stack_number].picture_quality(true, cor, guess)
         self.stacks[stack_number].save()
+
+    # track k-th layer optimization
+    def track_layer(self, stack_number, mu):
+        true, cor, guess = self.generate_training_data(stack_number)
+        self.stacks[stack_number].track_optimization(true, cor, guess, mu)
 
