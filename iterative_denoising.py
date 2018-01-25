@@ -306,6 +306,8 @@ class stacked_denoiser(ar.Data_pip):
     learning_rate = 0.0003
     # step size for picture optimization
     step_size = 0.1
+    # noise level
+    noise_level = 0.1
 
     # returns the used network architecture class. Can be overwritten in subclasses to change architecture
     def get_net(self):
