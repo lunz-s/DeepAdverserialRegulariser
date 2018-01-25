@@ -1,3 +1,5 @@
+import AR_for_denoising as ar
+import util as ut
 import math
 import os
 import random
@@ -9,8 +11,6 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import AR_for_denoising as ar
-import utilities as ut
 
 
 class network(object):
@@ -98,7 +98,7 @@ class single_stack(object):
 
         # hyperparameters for Networks. Provided by generating class
         self.batch_size = batch_size
-        self.mu = mu
+        self.mu_default = mu
         self.lmb = lmb
         self.learning_rate = learning_rate
         self.step_size = step_size
@@ -107,8 +107,14 @@ class single_stack(object):
         self.model_name = model_name
         self.stack = stack
         self.path = 'Saves/Data/{}/{}/'.format(self.model_name, self.stack)
+        self.logging_path = 'Saves/Logs/{}/{}/'.format(self.model_name, self.stack)
         # The Network class object that provides the network methods
         self.network = network
+
+        # create the folders needed for saving and logging
+        ut.create_single_folder(self.logging_path)
+        ut.create_single_folder(self.path)
+
 
         ### the Network
         # ensure that generated variables are saved in different namespace, given by current stack
@@ -203,8 +209,7 @@ class single_stack(object):
 
             # set up the logger
             self.merged = tf.summary.merge_all()
-            self.writer = tf.summary.FileWriter('Saves/Logs/' + self.model_name + '/' + self.stack +'/Network_Training/',
-                                                self.sess.graph)
+            self.writer = tf.summary.FileWriter(self.logging_path, self.sess.graph)
             # set up the logger for image optimization
             self.merged_pic = tf.summary.merge(
                 [data_loss, data_loss_grad, wasser_loss, wasser_loss_grad, quality_assesment])
@@ -256,7 +261,7 @@ class single_stack(object):
               ', Was grad: ' + str(Was_g) + ', Reg grad: ' + str(reg_g))
 
         # tensorflow logging
-        guess = self.update_pic(30, self.step_size, cor, cor, self.mu)
+        guess = self.update_pic(15, self.step_size, cor, cor, self.mu_default)
         summary, step = self.sess.run([self.merged, self.global_step],
                                       feed_dict={self.gen_im: cor,
                                                  self.true_im: true,
@@ -264,8 +269,15 @@ class single_stack(object):
                                                  self.reconstruction: guess,
                                                  self.noisy_image: cor,
                                                  self.ground_truth: true,
-                                                 self.mu: self.mu})
+                                                 self.mu: self.mu_default})
         self.writer.add_summary(summary, step)
+
+    def picture_quality(self, true, cor):
+        print('Starting quality: {}'.format(ut.l2_norm(true-cor)))
+        guess = np.copy(cor)
+        guess = self.net_output(guess, cor)
+        print('End quality: {}'.format(ut.l2_norm(true - guess)))
+
 
     # train network
     def train(self, true, cor):
@@ -277,7 +289,7 @@ class single_stack(object):
 
     # update input
     def net_output(self, guess, cor):
-        return self.update_pic(7, self.step_size, guess, cor, self.mu)
+        return self.update_pic(10, self.step_size, guess, cor, self.mu_default)
 
 
 
@@ -339,8 +351,8 @@ class stacked_denoiser(ar.Data_pip):
         return guess
 
     # generates optimized images using the first 'stack_number' stacked denoisers.
-    def generate_training_data(self, stack_number):
-        true, cor = self.generate_images(64)
+    def generate_training_data(self, stack_number, training_data = True):
+        true, cor = self.generate_images(64, training_data=training_data)
         guess = self.optimize_until(cor, stack_number)
         return true, guess
 
@@ -349,6 +361,9 @@ class stacked_denoiser(ar.Data_pip):
         for k in range(iterations):
             true, guess = self.generate_training_data(stack_number)
             self.stacks[stack_number].train(true, guess)
-            if k%20 == 0:
+            if k%25 == 0:
+                true, guess = self.generate_training_data(stack_number, training_data=False)
                 self.stacks[stack_number].evaluate_Network(true, guess)
+                self.stacks[stack_number].picture_quality(true, guess)
+        self.stacks[stack_number].save()
 

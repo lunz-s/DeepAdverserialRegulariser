@@ -1,3 +1,4 @@
-import iterative_denoising as id
+from iterative_denoising import stacked_denoiser
 
-sd = id.stacked_denoiser(5)
+sd = stacked_denoiser(2)
+sd.train_layer(0, 500)

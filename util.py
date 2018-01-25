@@ -33,3 +33,7 @@ def create_single_folder(folder):
 
 def lrelu(x):
     return (tf.nn.relu(x) - 0.1*tf.nn.relu(-x))
+
+# l2 norm for a tensor in typical (batch, x, y, channel) format
+def l2_norm(tensor):
+    return np.mean(np.sqrt(np.sum(np.square(tensor), axis=(1,2,3))))

@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import odl
 
-
-
 def lrelu(x):
     return (tf.nn.relu(x) - 0.1*tf.nn.relu(-x))
 
