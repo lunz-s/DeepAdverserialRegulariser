@@ -375,3 +375,8 @@ class stacked_denoiser(ar.Data_pip):
         true, cor, guess = self.generate_training_data(stack_number)
         self.stacks[stack_number].track_optimization(true, cor, guess, mu)
 
+    # independent layer - solves minimization problem with new data term!
+    def independant_layer(self, stack_number, mu):
+        true, cor, guess = self.generate_training_data(stack_number)
+        self.stacks[stack_number].track_optimization(true, guess, guess, mu)
+
