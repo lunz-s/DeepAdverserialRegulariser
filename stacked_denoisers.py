@@ -12,4 +12,7 @@ if 0:
 
 if 1:
     sd = bregmann_denoiser(2, lmb=[25, 25])
-
+    sd.train_layer(0, 100)
+    sd.independant_layer(1, 10)
+    sd.independant_layer(1, 20)
+    sd.independant_layer(1,30)
