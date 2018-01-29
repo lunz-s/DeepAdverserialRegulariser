@@ -380,6 +380,11 @@ class stacked_denoiser(ar.Data_pip):
         true, cor, guess = self.generate_training_data(stack_number)
         self.stacks[stack_number].track_optimization(true, guess, guess, mu)
 
+    # methode to clear tensorflow graph for further models
+    def end(self):
+        tf.reset_default_graph()
+        self.sess.close()
+
 class bregmann_denoiser(stacked_denoiser):
     model_name = 'BregmannIteration'
 

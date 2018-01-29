@@ -9,10 +9,12 @@ if 0:
     sd.independant_layer(1, 3)
     sd.independant_layer(1, 5)
     sd.independant_layer(1, 10)
+    sd.end()
 
 if 1:
-    sd = bregmann_denoiser(2, lmb=[25, 25])
-    sd.train_layer(0, 100)
+    sd = bregmann_denoiser(2, lmb=[15, 15])
+    sd.train_layer(1, 500)
     sd.independant_layer(1, 10)
     sd.independant_layer(1, 20)
     sd.independant_layer(1,30)
+    sd.end()
