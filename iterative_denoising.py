@@ -315,7 +315,7 @@ class stacked_denoiser(ar.Data_pip):
         return convnet1()
 
     # sets up and loads the stacked denoiser architecture
-    def __init__(self, amount_stacks):
+    def __init__(self, amount_stacks, lmb):
         # save stack number
         self.amount_stacks = amount_stacks
 
@@ -332,7 +332,7 @@ class stacked_denoiser(ar.Data_pip):
         self.sess = tf.InteractiveSession()
         for k in range(amount_stacks):
             stack_name = 'Stack_' + str(k)
-            current_stack = single_stack(net, self.sess, self.image_size, self.batch_size, self.mu, self.lmb,
+            current_stack = single_stack(net, self.sess, self.image_size, self.batch_size, self.mu, lmb[k],
                                          self.learning_rate, self.step_size, self.model_name, stack_name)
             self.stacks.append(current_stack)
 
@@ -380,3 +380,26 @@ class stacked_denoiser(ar.Data_pip):
         true, cor, guess = self.generate_training_data(stack_number)
         self.stacks[stack_number].track_optimization(true, guess, guess, mu)
 
+class bregmann_denoiser(stacked_denoiser):
+    model_name = 'BregmannIteration'
+
+    # rewritten to use new data term
+    def optimize_until(self, cor, finishing):
+        if finishing > self.amount_stacks:
+            finishing = self.amount_stacks
+        guess = np.copy(cor)
+        if finishing>0:
+            for k in range(finishing):
+                guess = self.stacks[k].net_output(guess, guess)
+        return guess
+
+    # trains k-th layer
+    def train_layer(self, stack_number, iterations):
+        for k in range(iterations):
+            true, _, guess = self.generate_training_data(stack_number)
+            self.stacks[stack_number].train(true, guess)
+            if k%25 == 0:
+                true, cor, guess = self.generate_training_data(stack_number, training_data=False)
+                self.stacks[stack_number].evaluate_Network(true, guess, guess)
+                self.stacks[stack_number].picture_quality(true, guess, guess)
+        self.stacks[stack_number].save()
