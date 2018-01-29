@@ -315,7 +315,7 @@ class stacked_denoiser(ar.Data_pip):
         return convnet1()
 
     # sets up and loads the stacked denoiser architecture
-    def __init__(self, amount_stacks, lmb):
+    def __init__(self, amount_stacks, mu):
         # save stack number
         self.amount_stacks = amount_stacks
 
@@ -332,7 +332,7 @@ class stacked_denoiser(ar.Data_pip):
         self.sess = tf.InteractiveSession()
         for k in range(amount_stacks):
             stack_name = 'Stack_' + str(k)
-            current_stack = single_stack(net, self.sess, self.image_size, self.batch_size, self.mu, lmb[k],
+            current_stack = single_stack(net, self.sess, self.image_size, self.batch_size, mu[k], self.lmb,
                                          self.learning_rate, self.step_size, self.model_name, stack_name)
             self.stacks.append(current_stack)
 
