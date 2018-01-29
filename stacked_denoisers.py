@@ -4,7 +4,7 @@ from iterative_denoising import bregmann_denoiser
 
 if 1:
     sd = stacked_denoiser(2, mu=[44,5])
-    sd.train_layer(1, 50)
+    sd.train_layer(0, 50)
     sd.end()
 
 if 0:
