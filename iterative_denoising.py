@@ -299,14 +299,14 @@ class stacked_denoiser(ar.Data_pip):
     model_name = 'Stacked_Denoiser'
     # The batch size
     batch_size = 64
-    # relation between L2 error and regulariser
+    # relation between data error and regulariser
     mu = 44
     # weight on gradient norm regulariser for wasserstein network
     lmb = 20
     # learning rate for Adams
     learning_rate = 0.0003
     # step size for picture optimization
-    step_size = 0.1
+    step_size = 0.05
     # noise level
     noise_level = 0.1
 
