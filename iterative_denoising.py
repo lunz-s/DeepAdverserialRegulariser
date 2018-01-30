@@ -404,6 +404,7 @@ class bregmann_denoiser(stacked_denoiser):
             self.stacks[stack_number].train(true, guess)
             if k%25 == 0:
                 true, cor, guess = self.generate_training_data(stack_number, training_data=False)
-                self.stacks[stack_number].evaluate_Network(true, guess, guess)
-                self.stacks[stack_number].picture_quality(true, guess, guess)
+                cor = np.copy(guess)
+                self.stacks[stack_number].evaluate_Network(true, cor = cor, guess=guess)
+                self.stacks[stack_number].picture_quality(true, cor=cor, guess= guess)
         self.stacks[stack_number].save()
