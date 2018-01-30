@@ -6,6 +6,7 @@ if 1:
     sd = stacked_denoiser(2, mu=[44,5])
     sd.train_layer(0, 10)
     sd.independant_layer(0, 44)
+    sd.track_layer(0, 44)
     sd.independant_layer(1, 44)
     sd.end()
 
