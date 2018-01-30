@@ -376,7 +376,8 @@ class stacked_denoiser(ar.Data_pip):
     # independent layer - solves minimization problem with new data term!
     def independant_layer(self, stack_number, mu):
         true, cor, guess = self.generate_training_data(stack_number)
-        self.stacks[stack_number].track_optimization(true, guess, guess, mu)
+        cor = np.copy(guess)
+        self.stacks[stack_number].track_optimization(true=true, cor=cor, guess=guess, mu=mu)
 
     # methode to clear tensorflow graph for further models
     def end(self):
