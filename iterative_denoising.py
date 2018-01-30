@@ -286,14 +286,14 @@ class single_stack(object):
 
     # update input
     def net_output(self, guess, cor):
-        return self.update_pic(10, self.step_size, guess, cor, self.mu_default)
+        return self.update_pic(10, self.step_size, cor=cor, guess=guess, mu=self.mu_default)
 
     # track optimization in detail
     def track_optimization(self, true, cor, guess, mu):
         print('Track Optimization: mu=' + str(mu))
         for k in range(15):
             print('Quality Iteration{}: {}'.format(k,ut.l2_norm(true - guess)))
-            guess = self.update_pic(1, self.step_size, guess, cor, mu)
+            guess = self.update_pic(1, self.step_size, cor, guess, mu)
 
 class stacked_denoiser(ar.Data_pip):
     model_name = 'Stacked_Denoiser'
