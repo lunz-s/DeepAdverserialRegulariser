@@ -286,7 +286,7 @@ class single_stack(object):
 
     # update input
     def net_output(self, guess, cor):
-        return self.update_pic(10, self.step_size, cor=cor, guess=guess, mu=self.mu_default)
+        return self.update_pic(15, self.step_size, cor=cor, guess=guess, mu=self.mu_default)
 
     # track optimization in detail
     def track_optimization(self, true, cor, guess, mu):
