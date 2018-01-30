@@ -27,12 +27,12 @@ if 0:
         starting_point = 'Mini'
         recon.create_optimized_images(512, mu=2, step_s=0.1, steps=250, starting_point=starting_point)
 
-if 0:
+if 1:
     recon = ar.Recon_LUNA()
     for k in range(4):
         recon.train(500, 125, starting_point='Mini')
 
-if 1:
+if 0:
     post = pp.postCT()
     for k in range(50):
         post.train(500)
