@@ -4,9 +4,9 @@ from iterative_denoising import bregmann_denoiser
 
 if 1:
     sd = stacked_denoiser(2, mu=[44,5])
-    sd.independant_layer(0, 15)
-    sd.independant_layer(0, 25)
-    sd.independant_layer(0, 40)
+    sd.independant_layer(1, 10)
+    sd.independant_layer(1, 15)
+    sd.independant_layer(1, 25)
     sd.end()
 
 if 0:
