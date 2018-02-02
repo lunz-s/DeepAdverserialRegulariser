@@ -11,6 +11,6 @@ if 0:
     sd.end()
 
 if 1:
-    sd = bregmann_denoiser(3, mu=[25, 25, 25])
+    sd = bregmann_denoiser(3, mu=[25, 25, 10])
     sd.train_layer(2, 500)
     sd.end()

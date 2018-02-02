@@ -180,6 +180,7 @@ class Data_pip(object):
 
 
 
+
 class denoiser(Data_pip):
     model_name = 'default'
     # The batch size
@@ -494,7 +495,6 @@ class denoiser(Data_pip):
 
     def evaluate_AR(self, y):
         return self.update_pic(10, self.step_size, y, y, mu=self.mu_default)
-
 
 class Denoiser1(denoiser):
     model_name = 'Denoiser1'
