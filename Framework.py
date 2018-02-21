@@ -286,8 +286,10 @@ class adversarial_regulariser(generic_framework):
 
 
     # visualization of Picture optimization
-    def evaluate_image_optimization(self, batch_size = batch_size, steps=total_steps, step_s=step_size,
+    def evaluate_image_optimization(self, batch_size = batch_size, steps=None, step_s=step_size,
                                 mu=mu_default, starting_point='Mini'):
+        if steps == None:
+            steps = self.total_steps
         y, x_true, fbp = self.generate_training_data(batch_size)
         guess = np.copy(fbp)
         if starting_point == 'Mini':
@@ -310,7 +312,9 @@ class adversarial_regulariser(generic_framework):
 
 
     # evaluates and prints the network performance
-    def evaluate_Network(self, mu = mu_default, amount_steps = total_steps, starting_point='Mini'):
+    def evaluate_Network(self, mu = mu_default, amount_steps = None, starting_point='Mini'):
+        if amount_steps == None:
+            amount_steps = self.total_steps
         y, true, fbp = self.generate_training_data(batch_size=self.batch_size)
         if starting_point == 'Mini':
             fbp = self.unreg_mini(y, fbp)
@@ -341,7 +345,10 @@ class adversarial_regulariser(generic_framework):
         print('Iteration posterior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg))
 
     # method to generate new training images using posterior distribution of the algorithm itself
-    def generate_optimized_images(self, batch_size = batch_size, amount_steps = total_steps, mu=mu_default, starting_point='FBP'):
+    def generate_optimized_images(self, batch_size = batch_size,
+                                  amount_steps = None, mu=mu_default, starting_point='FBP'):
+        if amount_steps == None:
+            amount_steps = self.total_steps
         true_im = np.zeros(shape=(batch_size, 128, 128, 1))
         output_im = np.zeros(shape=(batch_size, 128, 128, 1))
         output_fbp = np.zeros(shape=(batch_size, 128, 128, 1))
@@ -393,7 +400,9 @@ class adversarial_regulariser(generic_framework):
         self.save(self.global_step)
 
     # recursive training methode, using actual output distribtion instead of initial guess distribution
-    def train(self, steps, amount_steps = total_steps, starting_point = 'Mini', mu=mu_default):
+    def train(self, steps, amount_steps = None, starting_point = 'Mini', mu=mu_default):
+        if amount_steps == None:
+            amount_steps = self.total_steps
         for k in range(steps):
             if k % 20 == 0:
                 self.evaluate_Network(mu, starting_point=starting_point)
