@@ -36,7 +36,7 @@ class binary_classifier(object):
         finishing_size = int(self.size[0]* self.size[1]/(32*32))
         dimensionality = finishing_size * finishing_size * 128
         reshaped = tf.reshape(pool6, [-1, dimensionality])
-        print('reshape dimension: ' + dimensionality)
+        print('reshape dimension: ' + str(dimensionality))
 
         # dense layer for classification
         dense = tf.layers.dense(inputs = reshaped, units = 256, activation=tf.nn.relu, reuse=self.reuse, name='dense1')
