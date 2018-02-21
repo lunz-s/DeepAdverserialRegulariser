@@ -29,13 +29,11 @@ class binary_classifier(object):
         # image size is now size/16
         conv6 = tf.layers.conv2d(inputs=pool5, filters=128, kernel_size=[5, 5], padding="same",
                                  activation=tf.nn.relu, reuse=self.reuse, name='conv6')
-        pool6 = tf.layers.max_pooling2d(inputs=conv6, pool_size=[2, 2], strides=2)
-        # image size is now size/32
 
         # reshape for classification - assumes image size is multiple of 32
-        finishing_size = int(self.size[0]* self.size[1]/(32*32))
+        finishing_size = int(self.size[0]* self.size[1]/(16*16))
         dimensionality = finishing_size * 128
-        reshaped = tf.reshape(pool6, [-1, dimensionality])
+        reshaped = tf.reshape(conv6, [-1, dimensionality])
 
         # dense layer for classification
         dense = tf.layers.dense(inputs = reshaped, units = 256, activation=tf.nn.relu, reuse=self.reuse, name='dense1')

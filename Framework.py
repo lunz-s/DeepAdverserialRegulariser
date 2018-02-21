@@ -95,29 +95,29 @@ class generic_framework(object):
                 print(key + ' created')
 
     # visualizes the quality of the current method
-    def visualize(self, true, recon, guess, name):
-        quality = np.average(np.sqrt(np.sum(np.square(true - recon), axis=(1, 2, 3))))
+    def visualize(self, true, fbp, guess, name):
+        quality = np.average(np.sqrt(np.sum(np.square(true - guess), axis=(1, 2, 3))))
         print('Quality of reconstructed image: ' + str(quality))
         if self.colors == 1:
             t = true[-1,...,0]
             g = guess[-1, ...,0]
-            r = recon[-1, ...,0]
+            p = fbp[-1, ...,0]
         else:
             t = true[-1,...]
             g = guess[-1, ...]
-            r = recon[-1, ...]
+            p = fbp[-1, ...]
         plt.figure()
         plt.subplot(131)
         plt.imshow(ut.cut_image(t))
         plt.axis('off')
         plt.title('Original')
         plt.subplot(132)
-        plt.imshow(ut.cut_image(g))
+        plt.imshow(ut.cut_image(p))
         plt.axis('off')
-        plt.title('Corrupted')
+        plt.title('PseudoInverse')
         plt.suptitle('L2 :' + str(quality))
         plt.subplot(133)
-        plt.imshow(ut.cut_image(r))
+        plt.imshow(ut.cut_image(g))
         plt.title('Reconstruction')
         plt.axis('off')
         plt.savefig(self.path + name + '.png')
@@ -282,7 +282,7 @@ class adversarial_regulariser(generic_framework):
 
 
     # visualization of Picture optimization
-    def create_optimized_images(self, batch_size = batch_size, steps=total_steps, step_s=step_size,
+    def evaluate_image_optimization(self, batch_size = batch_size, steps=total_steps, step_s=step_size,
                                 mu=mu_default, starting_point='Mini'):
         y, x_true, fbp = self.generate_training_data(batch_size)
         guess = np.copy(fbp)
@@ -362,7 +362,7 @@ class adversarial_regulariser(generic_framework):
             if k % 20 == 0:
                 self.evaluate_Network(mu = mu, starting_point='FBP')
             if k % 100 == 0:
-                self.create_optimized_images(starting_point='FBP')
+                self.evaluate_image_optimization(starting_point='FBP')
             y, x_true, fbp = self.generate_training_data(self.batch_size)
             # generate random distribution for rays
             epsilon = np.random.uniform(size=(self.batch_size))
@@ -377,7 +377,7 @@ class adversarial_regulariser(generic_framework):
             if k % 20 == 0:
                 self.evaluate_Network(mu, starting_point='Mini')
             if k % 100 == 0:
-                self.create_optimized_images(64, starting_point='Mini')
+                self.evaluate_image_optimization(64, starting_point='Mini')
             y, x_true, fbp = self.generate_training_data(self.batch_size)
             # optimize the fbp to fit the data term
             mini = self.unreg_mini(y, fbp)
@@ -394,7 +394,7 @@ class adversarial_regulariser(generic_framework):
             if k % 20 == 0:
                 self.evaluate_Network(mu, starting_point=starting_point)
             if k % 200 == 0:
-                self.create_optimized_images(batch_size=self.batch_size, steps=amount_steps, starting_point=starting_point)
+                self.evaluate_image_optimization(batch_size=self.batch_size, steps=amount_steps, starting_point=starting_point)
             true, fbp, gen = self.generate_optimized_images(self.batch_size, amount_steps=amount_steps,
                                                            mu=mu, starting_point=starting_point)
             # generate random distribution for rays
