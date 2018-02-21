@@ -45,7 +45,9 @@ class generic_framework(object):
         self.data_pip = self.get_Data_pip()
         self.colors = self.data_pip.colors
         self.image_size = self.data_pip.image_size
+        print(self.image_size)
         self.network = self.get_network(self.image_size, self.colors)
+        print(self.network.size)
         self.model = self.get_model(self.image_size)
         self.path = 'Saves/{}/{}/{}/{}/'.format(self.model.name, self.data_pip.name, self.model_name, self.experiment_name)
         self.image_space = self.model.get_image_size()
@@ -239,7 +241,7 @@ class adversarial_regulariser(generic_framework):
         self.pic_grad = tf.gradients(self.full_error * batch_s, self.reconstruction)
 
         # Measure quality of reconstruction
-        self.ground_truth = tf.placeholder(shape=[None, 128, 128, 1], dtype=tf.float32)
+        self.ground_truth = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], 1], dtype=tf.float32)
         self.quality = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(self.ground_truth - self.reconstruction),
                                                             axis=(1, 2, 3))))
 
@@ -306,7 +308,7 @@ class adversarial_regulariser(generic_framework):
 
 
     # evaluates and prints the network performance
-    def evaluate_Network(self, mu = mu_default, amount_steps = total_steps, starting_point='FBP'):
+    def evaluate_Network(self, mu = mu_default, amount_steps = total_steps, starting_point='Mini'):
         y, true, fbp = self.generate_training_data(batch_size=self.batch_size)
         if starting_point == 'Mini':
             fbp = self.unreg_mini(y, fbp)
@@ -360,9 +362,9 @@ class adversarial_regulariser(generic_framework):
     def pretrain_Wasser_FBP(self, steps, mu=mu_default):
         for k in range(steps):
             if k % 20 == 0:
-                self.evaluate_Network(mu = mu)
+                self.evaluate_Network(mu = mu, starting_point='FBP')
             if k % 100 == 0:
-                self.create_optimized_images()
+                self.create_optimized_images(starting_point='FBP')
             y, x_true, fbp = self.generate_training_data(self.batch_size)
             # generate random distribution for rays
             epsilon = np.random.uniform(size=(self.batch_size))
