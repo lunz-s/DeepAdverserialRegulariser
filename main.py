@@ -13,7 +13,7 @@ from Framework import total_variation
 ### CT experiments
 
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
-if 0:
+if 1:
     class exp1(adversarial_regulariser):
         experiment_name = 'Noise_0.01_StandardNet'
         noise_level = 0.01
@@ -23,20 +23,18 @@ if 0:
         total_steps = 30
 
     adv_reg = exp1()
-    adv_reg.pretrain_Wasser_FBP(10)
-    adv_reg.pretrain_Wasser_DataMinimizer(10)
-    adv_reg.train(10)
+    adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.end()
 
 # Experiment 2.0 post-processing with noise level 0.01, standard UNet, LUNA data set
-if 0:
+if 1:
     class exp2(postprocessing):
         experiment_name = 'Noise_0.01_SmallUNet'
         noise_level = 0.01
         learning_rate = 0.001
 
     pp = exp2()
-    pp.train(10)
+    pp.train(500)
     pp.end()
 
 # Experiment 3.0 iterative scheme with noise level 0.01, fully convolutional ne, LUNA data set
@@ -46,5 +44,5 @@ if 1:
         noise_level = 0.01
 
     it = exp3()
-    it.train(10)
+    it.train(500)
     it.end()

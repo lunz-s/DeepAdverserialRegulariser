@@ -80,7 +80,6 @@ class UNet(object):
         return output
 
     def net(self, input):
-        print(self.used)
         output = self.raw_net(input, reuse=self.used)
         if self.parameter_sharing:
             self.used = True
