@@ -23,7 +23,6 @@ if 1:
         total_steps = 30
 
     adv_reg = exp1()
-    adv_reg.find_good_lambda()
     adv_reg.pretrain_Wasser_FBP(10)
     adv_reg.pretrain_Wasser_DataMinimizer(10)
     adv_reg.train(10)

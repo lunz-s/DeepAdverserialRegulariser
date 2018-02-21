@@ -45,9 +45,7 @@ class generic_framework(object):
         self.data_pip = self.get_Data_pip()
         self.colors = self.data_pip.colors
         self.image_size = self.data_pip.image_size
-        print(self.image_size)
         self.network = self.get_network(self.image_size, self.colors)
-        print(self.network.size)
         self.model = self.get_model(self.image_size)
         self.path = 'Saves/{}/{}/{}/{}/'.format(self.model.name, self.data_pip.name, self.model_name, self.experiment_name)
         self.image_space = self.model.get_image_size()
