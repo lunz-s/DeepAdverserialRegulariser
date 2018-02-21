@@ -109,12 +109,16 @@ class LUNA(data_pip):
         k = -10000
         pic = np.zeros((128,128))
         while k < 0:
-            path = self.get_random_path(training_data=training_data)
-            dc_file = dc.read_file(path)
-            pic = dc_file.pixel_array
-            if pic.shape == (512,512):
-                pic = self.reshape_pic(pic)
-                k = 1
+            try:
+                path = self.get_random_path(training_data=training_data)
+                dc_file = dc.read_file(path)
+                pic = dc_file.pixel_array
+                if pic.shape == (512,512):
+                    pic = self.reshape_pic(pic)
+                    k = 1
+            except UnboundLocalError:
+                k = - 10000
+                print('UnboundLocalError caught')
         output = np.zeros((128,128,1))
         output[...,0] = pic
         return output
