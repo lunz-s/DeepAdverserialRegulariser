@@ -160,7 +160,7 @@ class adversarial_regulariser(generic_framework):
     # step size for picture optimization
     step_size = 0.1
     # the amount of steps of gradient descent taken on loss functional
-    total_steps = 30
+    total_steps_default = 30
 
     def get_network(self, size, colors):
         return binary_classifier(size=size, colors=colors)
@@ -171,10 +171,14 @@ class adversarial_regulariser(generic_framework):
     def get_model(self, size):
         return ct(size=size)
 
+    def set_total_steps(self, steps):
+        self.total_steps = steps
+
     # sets up the network architecture
     def __init__(self):
         # call superclass init
         super(adversarial_regulariser, self).__init__()
+        self.total_steps = self.total_steps_default
 
         ### Training the regulariser
 
@@ -278,7 +282,7 @@ class adversarial_regulariser(generic_framework):
 
     # unregularised minimization - finds minimizer of data term
     def unreg_mini(self, y, fbp):
-        return self.update_pic(20, 0.1, y, fbp, 0)
+        return self.update_pic(15, 0.1, y, fbp, 0)
 
 
     # visualization of Picture optimization
@@ -486,7 +490,7 @@ class postprocessing(generic_framework):
                 self.log(x_true,fbp)
                 output = self.sess.run(self.out, feed_dict={self.true : x_true,
                                                     self.y : fbp})
-                self.visualize(x_true, output, fbp, 'Iteration_{}'.format(iteration))
+                self.visualize(x_true, fbp, output, 'Iteration_{}'.format(iteration))
         self.save(self.global_step)
 
     def evaluate(self):
@@ -573,7 +577,7 @@ class iterative_scheme(generic_framework):
                 output = self.sess.run(self.out, feed_dict={self.true : x_true,
                                                     self.y : y,
                                                     self.guess : fbp})
-                self.visualize(x_true, output, fbp, 'Iteration_{}'.format(iteration))
+                self.visualize(x_true, fbp, output, 'Iteration_{}'.format(iteration))
         self.save(self.global_step)
 
 # TV reconstruction

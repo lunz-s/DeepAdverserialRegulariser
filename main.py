@@ -23,6 +23,9 @@ if 1:
         total_steps = 30
 
     adv_reg = exp1()
+    adv_reg.evaluate_image_optimization(step_s=0.1, starting_point='FBP')
+    adv_reg.evaluate_image_optimization(step_s=0.15, starting_point='FBP')
+    adv_reg.evaluate_image_optimization(step_s=0.2, starting_point='FBP')
     adv_reg.pretrain_Wasser_FBP(10)
     adv_reg.pretrain_Wasser_DataMinimizer(10)
     adv_reg.train(10)
