@@ -13,12 +13,12 @@ from Framework import total_variation
 ### CT experiments
 
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
-if 1:
+if 0:
     class exp1(adversarial_regulariser):
         experiment_name = 'Noise_0.01_StandardNet'
         noise_level = 0.01
         mu_default = 1.5
-        learning_rate = 0.0003
+        learning_rate = 0.0005
         step_size = 0.1
         total_steps = 30
 
@@ -27,7 +27,7 @@ if 1:
     adv_reg.end()
 
 # Experiment 2.0 post-processing with noise level 0.01, standard UNet, LUNA data set
-if 1:
+if 0:
     class exp2(postprocessing):
         experiment_name = 'Noise_0.01_SmallUNet'
         noise_level = 0.01
@@ -42,6 +42,7 @@ if 1:
     class exp3(iterative_scheme):
         experiment_name = 'Noise_0.01_'
         noise_level = 0.01
+        learning_rate = 0.001
 
     it = exp3()
     it.train(500)

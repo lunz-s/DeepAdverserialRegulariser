@@ -510,10 +510,10 @@ class iterative_scheme(generic_framework):
     model_name = 'Learned_gradient_descent'
 
     # hyperparameters
-    iterations = 5
+    iterations = 3
     learning_rate = 0.001
     # The batch size
-    batch_size = 64
+    batch_size = 32
 
     def get_network(self, size, colors):
         return fully_convolutional(size=size, colors=colors)
@@ -534,18 +534,16 @@ class iterative_scheme(generic_framework):
         # network output - iterative scheme
         x = self.guess
         for i in range(self.iterations):
-            # calculate the gradient of the data error
-            with tf.name_scope('Data_gradient'):
-                measurement = self.model.tensorflow_operator(x)
-                g_x = self.model.tensorflow_adjoint_operator(self.y - measurement)
-                tf.summary.scalar('Data_gradient_Norm', tf.norm(g_x))
-                # network input
-                net_input = tf.concat([x, g_x], axis=3)
+            measurement = self.model.tensorflow_operator(x)
+            g_x = self.model.tensorflow_adjoint_operator(self.y - measurement)
+            tf.summary.scalar('Data_gradient_Norm', tf.norm(g_x))
+            # network input
+            net_input = tf.concat([x, g_x], axis=3)
 
-                # use the network model defined in
-                x_update = self.network.net(net_input)
-                tf.summary.scalar('x_update', tf.norm(x_update))
-                x = x + x_update
+            # use the network model defined in
+            x_update = self.network.net(net_input)
+            tf.summary.scalar('x_update', tf.norm(x_update))
+            x = x + x_update
         self.out = x
 
         # compute loss
