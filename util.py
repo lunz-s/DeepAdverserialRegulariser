@@ -6,7 +6,6 @@ from xml.etree import ElementTree
 import numpy as np
 import random
 import odl
-import odl.contrib.tensorflow
 import scipy.ndimage
 import fnmatch
 import matplotlib
