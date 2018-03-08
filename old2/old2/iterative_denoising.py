@@ -1,16 +1,14 @@
-import AR_for_denoising as ar
-import util as ut
-import math
 import os
-import random
+
+import matplotlib
 import numpy as np
 import tensorflow as tf
-import scipy.ndimage
-import fnmatch
-import matplotlib
+
+import util as ut
+from old2.old2 import AR_for_denoising as ar
+
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 
 
 class network(object):

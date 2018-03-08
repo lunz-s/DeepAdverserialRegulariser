@@ -1,6 +1,5 @@
-from iterative_denoising import stacked_denoiser
-from iterative_denoising import bregmann_denoiser
-
+from old2.old2.iterative_denoising import bregmann_denoiser
+from old2.old2.iterative_denoising import stacked_denoiser
 
 if 0:
     sd = stacked_denoiser(2, mu=[44,5])

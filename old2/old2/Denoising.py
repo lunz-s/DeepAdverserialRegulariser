@@ -1,10 +1,11 @@
-import AR_for_denoising as ar
-import postprocessing as pp
-import numpy as np
 import matplotlib
+import numpy as np
+from Saves.old2 import AR_for_denoising as ar
+
+from old2.old2 import postprocessing as pp
+
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 
 
 def cut_image(pic):

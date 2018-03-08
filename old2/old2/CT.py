@@ -1,7 +1,6 @@
-import AR_for_CT as ar
-import postprocessing as pp
-import numpy as np
+from Saves.old2 import AR_for_CT as ar
 
+from old2.old2 import postprocessing as pp
 
 if 0:
     data = ar.data_preprocessing()
