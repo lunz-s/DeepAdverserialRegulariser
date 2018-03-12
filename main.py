@@ -11,9 +11,11 @@ from Framework import iterative_scheme
 from Framework import total_variation
 
 ### CT experiments
+number = input("Please enter number of experiment you want to run: ")
 
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
-if 0:
+if number == 1:
+    print('Run AR algorithm, low noise, standard architecture')
     class exp1(adversarial_regulariser):
         experiment_name = 'Noise_0.01_StandardNet'
         noise_level = 0.01
@@ -27,7 +29,8 @@ if 0:
     adv_reg.end()
 
 # Experiment 2.0 post-processing with noise level 0.01, standard UNet, LUNA data set
-if 0:
+if number==2:
+    print('Run Postprocessing, low noise, standard UNet')
     class exp2(postprocessing):
         experiment_name = 'Noise_0.01_SmallUNet'
         noise_level = 0.01
@@ -38,7 +41,8 @@ if 0:
     pp.end()
 
 # Experiment 3.0 iterative scheme with noise level 0.01, fully convolutional ne, LUNA data set
-if 1:
+if number == 3:
+    print('Run iterative scheme, low noise, standard convNet')
     class exp3(iterative_scheme):
         experiment_name = 'Noise_0.01_'
         noise_level = 0.01
