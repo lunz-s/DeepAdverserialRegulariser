@@ -536,14 +536,16 @@ class iterative_scheme(generic_framework):
         for i in range(self.iterations):
             measurement = self.model.tensorflow_operator(x)
             g_x = self.model.tensorflow_adjoint_operator(self.y - measurement)
-            tf.summary.scalar('Data_gradient_Norm', tf.norm(g_x))
+            tf.summary.scalar('Data_gradient', g_x[0:1,...])
+            tf.summary.image('Data_gradient_Norm', tf.norm(g_x))
             # network input
             net_input = tf.concat([x, g_x], axis=3)
 
             # use the network model defined in
             x_update = self.network.net(net_input)
             tf.summary.scalar('x_update', tf.norm(x_update))
-            x = x + x_update
+            x = x - x_update
+            tf.summary.image('Current_Guess', x[0:1,...])
         self.out = x
 
         # compute loss
@@ -574,17 +576,16 @@ class iterative_scheme(generic_framework):
             self.sess.run(self.optimizer, feed_dict={self.true : x_true,
                                                     self.y : y,
                                                     self.guess : fbp})
-            if k%50 == 0:
-                iteration, loss = self.sess.run([self.global_step, self.loss], feed_dict={self.true : x_true,
-                                                    self.y : y,
-                                                    self.guess : fbp})
+            if k%10 == 0:
+                summary, iteration, loss, output = self.sess.run([self.merged, self.global_step, self.loss, self.out],
+                                                         feed_dict={self.true : x_true,
+                                                                    self.y : y,
+                                                                    self.guess : fbp})
                 print('Iteration: ' + str(iteration) + ', MSE: ' +str(loss))
 
-                # logging has to be adopted
-                output = self.sess.run(self.out, feed_dict={self.true : x_true,
-                                                    self.y : y,
-                                                    self.guess : fbp})
+                self.writer.add_summary(summary, iteration)
                 self.visualize(x_true, fbp, output, 'Iteration_{}'.format(iteration))
+
         self.save(self.global_step)
 
 # TV reconstruction

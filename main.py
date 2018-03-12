@@ -42,7 +42,7 @@ if 1:
     class exp3(iterative_scheme):
         experiment_name = 'Noise_0.01_'
         noise_level = 0.01
-        learning_rate = 0.001
+        learning_rate = 0.0003
 
     it = exp3()
     it.train(500)

@@ -102,7 +102,7 @@ class fully_convolutional(UNet):
                                  padding="same", name='conv4',reuse=reuse, activation=tf.nn.relu)
         # 128
         conv5 = tf.layers.conv2d(inputs=conv4, filters=32, kernel_size=[5, 5],
-                                 padding="same", name='conv5', reuse=reuse, activation=tf.nn.tanh)
+                                 padding="same", name='conv5', reuse=reuse, activation=tf.nn.relu)
         output = tf.layers.conv2d(inputs=conv5, filters=self.colors, kernel_size=[5, 5],
                                   padding="same", name='conv6', reuse=reuse)
         return output
