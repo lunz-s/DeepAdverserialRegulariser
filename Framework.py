@@ -581,7 +581,8 @@ class iterative_scheme(generic_framework):
                                                          feed_dict={self.true : x_true,
                                                                     self.y : y,
                                                                     self.guess : fbp})
-                print('Iteration: ' + str(iteration) + ', MSE: ' +str(loss))
+                print('Iteration: ' + str(iteration) + ', MSE: ' +str(loss) + ', Original Error: '
+                      + str(ut.l2_norm(x_true - fbp)))
 
                 self.writer.add_summary(summary, iteration)
                 self.visualize(x_true, fbp, output, 'Iteration_{}'.format(iteration))
