@@ -536,8 +536,8 @@ class iterative_scheme(generic_framework):
         for i in range(self.iterations):
             measurement = self.model.tensorflow_operator(x)
             g_x = self.model.tensorflow_adjoint_operator(self.y - measurement)
-            tf.summary.scalar('Data_gradient', g_x[0:1,...])
-            tf.summary.image('Data_gradient_Norm', tf.norm(g_x))
+            tf.summary.image('Data_gradient', g_x, max_outputs=1)
+            tf.summary.scalar('Data_gradient_Norm', tf.norm(g_x))
             # network input
             net_input = tf.concat([x, g_x], axis=3)
 
@@ -545,7 +545,7 @@ class iterative_scheme(generic_framework):
             x_update = self.network.net(net_input)
             tf.summary.scalar('x_update', tf.norm(x_update))
             x = x - x_update
-            tf.summary.image('Current_Guess', x[0:1,...])
+            tf.summary.image('Current_Guess', x, max_outputs=1)
         self.out = x
 
         # compute loss
