@@ -25,12 +25,13 @@ if number == 0:
         learning_rate = 0.0005
         step_size = 0.1
         total_steps_default = 30
+    ur = unreg_exp()
 
     while repeat == 1:
         ss = input('Please insert desired steps size: ')
-        amount_s = input('Please insert amount of steps: ')
-        unreg_exp.evaluate_image_optimization(batch_size=64, mu=0, step_s=ss,
-                                              amount_s = amount_s, starting_point='FBP')
+        a_s = input('Please insert amount of steps: ')
+        ur.evaluate_image_optimization(batch_size=64, mu=0, step_s=ss,
+                                              steps = a_s, starting_point='FBP')
         repeat = input('Repeat experiment?')
 
 
