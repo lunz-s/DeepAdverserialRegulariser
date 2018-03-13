@@ -13,6 +13,27 @@ from Framework import total_variation
 ### CT experiments
 number = input("Please enter number of experiment you want to run: ")
 
+# Experiments 0.0: Step size checks for solving variational problem later
+if number == 0:
+    print('Start unregularised optimisation experiments.')
+    repeat = 1
+    nl = input('Please insert desired noise level: ')
+    class unreg_exp(adversarial_regulariser):
+        experiment_name = 'Unregularised_mini'
+        noise_level = nl
+        mu_default = 1.5
+        learning_rate = 0.0005
+        step_size = 0.1
+        total_steps_default = 30
+
+    while repeat == 1:
+        ss = input('Please insert desired steps size: ')
+        amount_s = input('Please insert amount of steps: ')
+        unreg_exp.evaluate_image_optimization(batch_size=64, mu=0, step_s=ss,
+                                              amount_s = amount_s, starting_point='FBP')
+        repeat = input('Repeat experiment?')
+
+
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
 if number == 1:
     print('Run AR algorithm, low noise, standard architecture')
