@@ -22,10 +22,12 @@ if number == 1:
         mu_default = 1.5
         learning_rate = 0.0005
         step_size = 0.1
-        total_steps = 30
+        total_steps_default = 30
 
     adv_reg = exp1()
-    adv_reg.pretrain_Wasser_DataMinimizer(500)
+    adv_reg.evaluate_image_optimization(mu=0, starting_point='FBP')
+    #adv_reg.pretrain_Wasser_DataMinimizer(500)
+    adv_reg.train(500)
     adv_reg.end()
 
 # Experiment 2.0 post-processing with noise level 0.01, standard UNet, LUNA data set
@@ -40,12 +42,52 @@ if number==2:
     pp.train(500)
     pp.end()
 
-# Experiment 3.0 iterative scheme with noise level 0.01, fully convolutional ne, LUNA data set
+# Experiment 3.0 iterative scheme with noise level 0.01, fully convolutional nn, LUNA data set
 if number == 3:
     print('Run iterative scheme, low noise, standard convNet')
     class exp3(iterative_scheme):
         experiment_name = 'Noise_0.01_'
         noise_level = 0.01
+        learning_rate = 0.0003
+
+    it = exp3()
+    it.train(500)
+    it.end()
+
+# Experiment 4.0: AR with noise level 0.1, standard classifier network, LUNA data set
+if number == 4:
+    print('Run AR algorithm, high noise, standard architecture')
+    class exp1(adversarial_regulariser):
+        experiment_name = 'Noise_0.1_StandardNet'
+        noise_level = 0.1
+        mu_default = 1.5
+        learning_rate = 0.0005
+        step_size = 0.1
+        total_steps_default = 30
+
+    adv_reg = exp1()
+    adv_reg.find_good_lambda()
+    adv_reg.pretrain_Wasser_DataMinimizer(500)
+    adv_reg.end()
+
+# Experiment 5.0 post-processing with noise level 0.1, standard UNet, LUNA data set
+if number==5:
+    print('Run Postprocessing, high noise, standard UNet')
+    class exp2(postprocessing):
+        experiment_name = 'Noise_0.1_SmallUNet'
+        noise_level = 0.1
+        learning_rate = 0.001
+
+    pp = exp2()
+    pp.train(500)
+    pp.end()
+
+# Experiment 6.0 iterative scheme with noise level 0.1, fully convolutional nn, LUNA data set
+if number == 6:
+    print('Run iterative scheme, high noise, standard convNet')
+    class exp3(iterative_scheme):
+        experiment_name = 'Noise_0.1_'
+        noise_level = 0.1
         learning_rate = 0.0003
 
     it = exp3()

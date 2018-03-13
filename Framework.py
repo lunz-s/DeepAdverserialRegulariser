@@ -282,7 +282,7 @@ class adversarial_regulariser(generic_framework):
 
     # unregularised minimization - finds minimizer of data term
     def unreg_mini(self, y, fbp):
-        return self.update_pic(15, 0.1, y, fbp, 0)
+        return self.update_pic(20, 0.1, y, fbp, 0)
 
 
     # visualization of Picture optimization
