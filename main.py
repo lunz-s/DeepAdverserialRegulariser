@@ -30,7 +30,7 @@ if number == 0:
     while repeat == 1:
         ss = input('Please insert desired steps size: ')
         a_s = input('Please insert amount of steps: ')
-        ur.evaluate_image_optimization(batch_size=64, mu=0, step_s=ss,
+        ur.evaluate_image_optimization(batch_size=16, mu=0, step_s=ss,
                                               steps = a_s, starting_point='FBP')
         repeat = input('Repeat experiment?')
 
@@ -43,12 +43,14 @@ if number == 1:
         noise_level = 0.01
         mu_default = 1.5
         learning_rate = 0.0005
-        step_size = 0.1
-        total_steps_default = 30
+        step_size = 0.8
+        total_steps_default = 20
+
+        def unreg_mini(self, y, fbp):
+            return self.update_pic(15, 1, y, fbp, 0)
 
     adv_reg = exp1()
-    adv_reg.evaluate_image_optimization(mu=0, starting_point='FBP')
-    #adv_reg.pretrain_Wasser_DataMinimizer(500)
+    adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.train(500)
     adv_reg.end()
 
@@ -84,7 +86,7 @@ if number == 4:
         noise_level = 0.1
         mu_default = 1.5
         learning_rate = 0.0005
-        step_size = 0.1
+        step_size = 0.8
         total_steps_default = 30
 
     adv_reg = exp1()
