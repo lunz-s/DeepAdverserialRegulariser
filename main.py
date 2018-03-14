@@ -51,8 +51,10 @@ if number == 1:
 
     adv_reg = exp1()
     # adv_reg.find_good_lambda()
-    for k in range(2):
-        adv_reg.pretrain_Wasser_DataMinimizer(500)
+    #for k in range(2):
+     #   adv_reg.pretrain_Wasser_DataMinimizer(500)
+    adv_reg.evaluate_image_optimization(steps=100)
+
     #adv_reg.train(500)
     adv_reg.end()
 
