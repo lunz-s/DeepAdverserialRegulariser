@@ -55,6 +55,19 @@ if number == 1:
     adv_reg.train(500)
     adv_reg.end()
 
+# Experiment to check good regularization level mu
+if number == 1.1:
+    class find_mu(adversarial_regulariser):
+        experiment_name = 'Check_Reg_Level'
+        noise_level = 0.01
+        mu_default = 2
+        learning_rate = 0.0005
+        step_size = 1
+        total_steps_default = 50
+
+    adv_reg = find_mu()
+    adv_reg.find_good_lambda()
+
 # Experiment 2.0 post-processing with noise level 0.01, standard UNet, LUNA data set
 if number==2:
     print('Run Postprocessing, low noise, standard UNet')
