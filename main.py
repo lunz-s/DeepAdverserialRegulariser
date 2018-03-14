@@ -39,20 +39,21 @@ if number == 0:
 if number == 1:
     print('Run AR algorithm, low noise, standard architecture')
     class exp1(adversarial_regulariser):
-        experiment_name = 'Noise_0.01_StandardNet'
+        experiment_name = 'LowNoiseExp1'
         noise_level = 0.01
-        mu_default = .5
+        mu_default = .3
         learning_rate = 0.0005
-        step_size = 0.7
+        step_size = 0.8
         total_steps_default = 50
 
         def unreg_mini(self, y, fbp):
             return self.update_pic(15, 1, y, fbp, 0)
 
     adv_reg = exp1()
-    adv_reg.find_good_lambda()
-    #adv_reg.pretrain_Wasser_DataMinimizer(500)
-    adv_reg.train(500)
+    # adv_reg.find_good_lambda()
+    for k in range(2):
+        adv_reg.pretrain_Wasser_DataMinimizer(500)
+    #adv_reg.train(500)
     adv_reg.end()
 
 # Experiment to check good regularization level mu

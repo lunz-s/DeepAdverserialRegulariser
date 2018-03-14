@@ -295,7 +295,7 @@ class adversarial_regulariser(generic_framework):
         if starting_point == 'Mini':
             guess = self.unreg_mini(y, fbp)
         g_step = self.sess.run(self.global_step)
-        writer = tf.summary.FileWriter(self.path + 'Picture_Opt/Iteration_' +
+        writer = tf.summary.FileWriter(self.path + '/Logs/Picture_Opt/Iteration_' +
                                        str(g_step) + '/' + str(mu) + '/')
         for k in range(steps):
             summary = self.sess.run(self.merged_pic,
@@ -306,7 +306,7 @@ class adversarial_regulariser(generic_framework):
             writer.add_summary(summary, k)
             if (k % 5 == 0):
                 ut.create_single_folder(self.path + 'Global_Step:_{}/'.format(g_step))
-                self.visualize(x_true, fbp, guess, 'Global_Step:_{}/Opt._Step:{}'.format(g_step, k))
+                self.visualize(x_true, fbp, guess, 'Images/Global_Step:_{}/Opt._Step:{}'.format(g_step, k))
             guess = self.update_pic(1, step_s, y, guess, mu)
         writer.close()
 
