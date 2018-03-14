@@ -41,9 +41,9 @@ if number == 1:
     class exp1(adversarial_regulariser):
         experiment_name = 'Noise_0.01_StandardNet'
         noise_level = 0.01
-        mu_default = 2
+        mu_default = .5
         learning_rate = 0.0005
-        step_size = 1
+        step_size = 0.7
         total_steps_default = 50
 
         def unreg_mini(self, y, fbp):
@@ -62,7 +62,7 @@ if number == 1.1:
         noise_level = 0.01
         mu_default = 2
         learning_rate = 0.0005
-        step_size = 1
+        step_size = 0.7
         total_steps_default = 50
 
     adv_reg = find_mu()
