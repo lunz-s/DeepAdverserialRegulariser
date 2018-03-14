@@ -305,7 +305,7 @@ class adversarial_regulariser(generic_framework):
                                                self.mu: mu})
             writer.add_summary(summary, k)
             if (k % 5 == 0):
-                ut.create_single_folder(self.path + 'Global_Step:_{}/'.format(g_step))
+                ut.create_single_folder(self.path + 'Images/Global_Step:_{}/'.format(g_step))
                 self.visualize(x_true, fbp, guess, 'Images/Global_Step:_{}/Opt._Step:{}'.format(g_step, k))
             guess = self.update_pic(1, step_s, y, guess, mu)
         writer.close()
