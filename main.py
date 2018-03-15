@@ -35,22 +35,26 @@ if number == 0:
         repeat = input('Repeat experiment?')
 
 
+
+class exp1(adversarial_regulariser):
+    experiment_name = 'LowNoiseExp1'
+    noise_level = 0.01
+    mu_default = .4
+    learning_rate = 0.0005
+    step_size = 1
+    total_steps_default = total_steps
+
+    def unreg_mini(self, y, fbp):
+        return self.update_pic(15, 1, y, fbp, 0)
+
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
 if number == 1:
     print('Run AR algorithm, low noise, standard architecture')
     total_steps = input('Number of reconstruction steps for recursive training: ')
-    class exp1(adversarial_regulariser):
-        experiment_name = 'LowNoiseExp1'
-        noise_level = 0.01
-        mu_default = .4
-        learning_rate = 0.0005
-        step_size = 1
-        total_steps_default = total_steps
 
-        def unreg_mini(self, y, fbp):
-            return self.update_pic(15, 1, y, fbp, 0)
-
+    # create object of type experiment1
     adv_reg = exp1()
+    exp1.set_total_steps(int(total_steps))
     # adv_reg.find_good_lambda()
     for k in range(2):
         adv_reg.train(500)
@@ -71,6 +75,19 @@ if number == 1.1:
 
     adv_reg = find_mu()
     adv_reg.find_good_lambda()
+
+# Experiment to check how quickly variational problem can be solved
+if number == 1.2:
+    adv_reg = exp1()
+    repeat = 1
+    while repeat == 1:
+        ss = input('Please insert desired steps size: ')
+        a_s = input('Please insert amount of steps: ')
+        mu = input('Please insert regularisation parameter mu: ')
+        adv_reg.evaluate_image_optimization(batch_size=32, mu=mu, step_s=ss,
+                                       steps=a_s, starting_point='Mini')
+        repeat = input('Repeat experiment?')
+
 
 # Experiment 2.0 post-processing with noise level 0.01, standard UNet, LUNA data set
 if number==2:
