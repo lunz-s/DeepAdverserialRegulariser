@@ -42,7 +42,7 @@ class exp1(adversarial_regulariser):
     mu_default = .4
     learning_rate = 0.0005
     step_size = 1
-    total_steps_default = total_steps
+    total_steps_default = 30
 
     def unreg_mini(self, y, fbp):
         return self.update_pic(15, 1, y, fbp, 0)
