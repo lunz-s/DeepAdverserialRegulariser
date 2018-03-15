@@ -286,10 +286,18 @@ class adversarial_regulariser(generic_framework):
 
 
     # visualization of Picture optimization
-    def evaluate_image_optimization(self, batch_size = batch_size, steps=None, step_s=step_size,
-                                mu=mu_default, starting_point='Mini'):
+    def evaluate_image_optimization(self, batch_size = None, steps=None, step_s=None,
+                                mu=None, starting_point=None):
+        if batch_size == None:
+            batch_size = self.batch_size
         if steps == None:
-            steps = self.total_steps
+            steps= self.total_steps
+        if step_s == None:
+            step_s = self.step_size
+        if mu == None:
+            mu = self.mu_default
+        if starting_point ==None:
+            starting_point = 'Mini'
         print('Mu: {}, AmountSteps: {}, Step_size: {}, '
               'batch_size: {}, starting_point: {}'.format(mu,steps, step_s, batch_size, starting_point))
         y, x_true, fbp = self.generate_training_data(batch_size)
@@ -314,9 +322,13 @@ class adversarial_regulariser(generic_framework):
 
 
     # evaluates and prints the network performance
-    def evaluate_Network(self, mu = mu_default, amount_steps = None, starting_point='Mini'):
+    def evaluate_Network(self, mu = None, amount_steps = None, starting_point=None):
         if amount_steps == None:
             amount_steps = self.total_steps
+        if mu == None:
+            mu = self.mu_default
+        if starting_point ==None:
+            starting_point = 'Mini'
         y, true, fbp = self.generate_training_data(batch_size=self.batch_size)
         if starting_point == 'Mini':
             fbp = self.unreg_mini(y, fbp)
@@ -347,10 +359,17 @@ class adversarial_regulariser(generic_framework):
         print('Iteration posterior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg))
 
     # method to generate new training images using posterior distribution of the algorithm itself
-    def generate_optimized_images(self, batch_size = batch_size,
-                                  amount_steps = None, mu=mu_default, starting_point='FBP'):
+    def generate_optimized_images(self, batch_size = None,
+                                  amount_steps = None, mu=None, starting_point=None):
         if amount_steps == None:
             amount_steps = self.total_steps
+        if batch_size == None:
+            batch_size = self.batch_size
+        if mu == None:
+            mu = self.mu_default
+        if starting_point ==None:
+            starting_point = 'Mini'
+
         true_im = np.zeros(shape=(batch_size, 128, 128, 1))
         output_im = np.zeros(shape=(batch_size, 128, 128, 1))
         output_fbp = np.zeros(shape=(batch_size, 128, 128, 1))
@@ -370,7 +389,9 @@ class adversarial_regulariser(generic_framework):
         return true_im, output_fbp, output_im
 
     # optimize network on initial guess input only, with initial guess being fbp
-    def pretrain_Wasser_FBP(self, steps, mu=mu_default):
+    def pretrain_Wasser_FBP(self, steps, mu=None):
+        if mu == None:
+            mu = self.mu_default
         for k in range(steps):
             if k % 20 == 0:
                 self.evaluate_Network(mu = mu, starting_point='FBP')
@@ -385,7 +406,9 @@ class adversarial_regulariser(generic_framework):
         self.save(self.global_step)
 
     # optimize network on initial guess input only, with initial guess being minimizer of ||Kx - y||
-    def pretrain_Wasser_DataMinimizer(self, steps, mu=mu_default):
+    def pretrain_Wasser_DataMinimizer(self, steps, mu=None):
+        if mu == None:
+            mu = self.mu_default
         for k in range(steps):
             if k % 20 == 0:
                 self.evaluate_Network(mu, starting_point='Mini')
@@ -402,9 +425,13 @@ class adversarial_regulariser(generic_framework):
         self.save(self.global_step)
 
     # recursive training methode, using actual output distribtion instead of initial guess distribution
-    def train(self, steps, amount_steps = None, starting_point = 'Mini', mu=mu_default):
+    def train(self, steps, amount_steps = None, starting_point = None, mu=None):
         if amount_steps == None:
             amount_steps = self.total_steps
+        if mu == None:
+            mu = self.mu_default
+        if starting_point == None:
+            starting_point = 'Mini'
         for k in range(steps):
             if k % 20 == 0:
                 self.evaluate_Network(mu, starting_point=starting_point)
