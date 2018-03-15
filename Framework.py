@@ -158,7 +158,7 @@ class adversarial_regulariser(generic_framework):
     # learning rate for Adams
     learning_rate = 0.0002
     # step size for picture optimization
-    step_size = 0.1
+    step_size = 1
     # the amount of steps of gradient descent taken on loss functional
     total_steps_default = 30
 
@@ -290,6 +290,8 @@ class adversarial_regulariser(generic_framework):
                                 mu=mu_default, starting_point='Mini'):
         if steps == None:
             steps = self.total_steps
+        print('Mu: {}, AmountSteps: {}, Step_size: {}, '
+              'batch_size: {}, starting_point: {}'.format(mu,steps, step_s, batch_size, starting_point))
         y, x_true, fbp = self.generate_training_data(batch_size)
         guess = np.copy(fbp)
         if starting_point == 'Mini':
@@ -407,7 +409,8 @@ class adversarial_regulariser(generic_framework):
             if k % 20 == 0:
                 self.evaluate_Network(mu, starting_point=starting_point)
             if k % 200 == 0:
-                self.evaluate_image_optimization(batch_size=self.batch_size, steps=amount_steps, starting_point=starting_point)
+                self.evaluate_image_optimization(batch_size=self.batch_size, steps=amount_steps,
+                                                 starting_point=starting_point, step_s=self.step_size)
             true, fbp, gen = self.generate_optimized_images(self.batch_size, amount_steps=amount_steps,
                                                            mu=mu, starting_point=starting_point)
             # generate random distribution for rays
