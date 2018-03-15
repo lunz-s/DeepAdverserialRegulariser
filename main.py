@@ -42,9 +42,9 @@ if number == 1:
     class exp1(adversarial_regulariser):
         experiment_name = 'LowNoiseExp1'
         noise_level = 0.01
-        mu_default = .3
+        mu_default = .4
         learning_rate = 0.0005
-        step_size = 0.8
+        step_size = 1
         total_steps_default = total_steps
 
         def unreg_mini(self, y, fbp):
@@ -52,8 +52,8 @@ if number == 1:
 
     adv_reg = exp1()
     # adv_reg.find_good_lambda()
-    #for k in range(2):
-    #    adv_reg.train(500)
+    for k in range(2):
+        adv_reg.train(500)
     adv_reg.evaluate_image_optimization(steps=150)
 
     #adv_reg.train(500)
