@@ -38,22 +38,23 @@ if number == 0:
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
 if number == 1:
     print('Run AR algorithm, low noise, standard architecture')
+    total_steps = input('Number of reconstruction steps for recursive training: ')
     class exp1(adversarial_regulariser):
         experiment_name = 'LowNoiseExp1'
         noise_level = 0.01
         mu_default = .3
         learning_rate = 0.0005
         step_size = 0.8
-        total_steps_default = 50
+        total_steps_default = total_steps
 
         def unreg_mini(self, y, fbp):
             return self.update_pic(15, 1, y, fbp, 0)
 
     adv_reg = exp1()
     # adv_reg.find_good_lambda()
-    for k in range(2):
-        adv_reg.train(500)
-    #adv_reg.evaluate_image_optimization(steps=100)
+    #for k in range(2):
+    #    adv_reg.train(500)
+    adv_reg.evaluate_image_optimization(steps=150)
 
     #adv_reg.train(500)
     adv_reg.end()
