@@ -49,7 +49,7 @@ class exp1(adversarial_regulariser):
 
 class exp2(exp1):
     experiment_name = 'OverregularisedRecursiveTraining'
-    mu_default = 2
+    mu_default = 2.5
 
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
 if number == 1:
@@ -98,6 +98,7 @@ if number == 1.2:
     adv_reg.end()
 
 if number == 1.3:
+    print('Running overregularised rekursive training')
     adv_reg = exp2()
     adv_reg.set_total_steps(7)
     for k in range(2):
