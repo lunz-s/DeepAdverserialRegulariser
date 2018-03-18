@@ -82,7 +82,11 @@ if number == 1.1:
 
 # Experiment to check how quickly variational problem can be solved
 if number == 1.2:
-    adv_reg = exp1()
+    net = input('Plesae insert type of network to be used: ')
+    if net ==1:
+        adv_reg = exp1()
+    else:
+        adv_reg = exp2()
     repeat = 1
     while repeat == 1:
         ss = input('Please insert desired steps size: ')
