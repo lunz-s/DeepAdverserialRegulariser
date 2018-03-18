@@ -99,9 +99,7 @@ if number == 1.2:
 
 if number == 1.3:
     adv_reg = exp2()
-    for k in range(2):
-        adv_reg.pretrain_Wasser_DataMinimizer(500)
-    adv_reg.set_total_steps(5)
+    adv_reg.set_total_steps(7)
     for k in range(2):
         adv_reg.train(500)
 
