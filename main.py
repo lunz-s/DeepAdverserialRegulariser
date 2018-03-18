@@ -57,7 +57,7 @@ if number == 1:
 
     # create object of type experiment1
     adv_reg = exp1()
-    adv_reg.set_total_steps(40)
+    adv_reg.set_total_steps(30)
     # adv_reg.find_good_lambda()
     for k in range(2):
         adv_reg.train(500)
