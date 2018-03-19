@@ -49,7 +49,7 @@ class exp1(adversarial_regulariser):
 
 class exp2(exp1):
     experiment_name = 'OverregularisedRecursiveTraining'
-    mu_default = 2.5
+    mu_default = 3
 
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
 if number == 1:
@@ -57,11 +57,11 @@ if number == 1:
 
     # create object of type experiment1
     adv_reg = exp1()
-    adv_reg.set_total_steps(30)
+    adv_reg.set_total_steps(15)
     # adv_reg.find_good_lambda()
     for k in range(2):
         adv_reg.train(500)
-    adv_reg.evaluate_image_optimization(steps=150)
+    adv_reg.evaluate_image_optimization(steps=70)
 
     #adv_reg.train(500)
     adv_reg.end()
@@ -100,7 +100,7 @@ if number == 1.2:
 if number == 1.3:
     print('Running overregularised rekursive training')
     adv_reg = exp2()
-    adv_reg.set_total_steps(7)
+    adv_reg.set_total_steps(3)
     for k in range(2):
         adv_reg.train(500)
 
