@@ -49,7 +49,7 @@ class exp1(adversarial_regulariser):
 
 class exp2(exp1):
     experiment_name = 'OverregularisedRecursiveTraining'
-    mu_default = 3
+    mu_default = 2.5
 
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
 if number == 1:
