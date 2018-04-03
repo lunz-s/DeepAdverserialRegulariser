@@ -59,9 +59,9 @@ class generic_framework(object):
 
     # method to generate training data given the current model type
     def generate_training_data(self, batch_size, training_data = True):
-        y = np.empty((batch_size, self.measurement_space[0], self.measurement_space[1], 1), dtype='float32')
-        x_true = np.empty((batch_size, self.image_space[0], self.image_space[1], 1), dtype='float32')
-        fbp = np.empty((batch_size, self.image_space[0], self.image_space[1], 1), dtype='float32')
+        y = np.empty((batch_size, self.measurement_space[0], self.measurement_space[1], self.colors), dtype='float32')
+        x_true = np.empty((batch_size, self.image_space[0], self.image_space[1], self.colors), dtype='float32')
+        fbp = np.empty((batch_size, self.image_space[0], self.image_space[1], self.colors), dtype='float32')
 
         for i in range(batch_size):
             if training_data:
