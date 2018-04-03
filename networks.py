@@ -27,16 +27,16 @@ class multiscale_l1_classifier(object):
                                  activation=lrelu, reuse=self.reuse, name='med1')
         med2 = tf.layers.conv2d(inputs= med1, filters=16, kernel_size=[5, 5], padding="same",
                                  activation=lrelu, reuse=self.reuse, name='med2')
-        med3 = ut.dilated_conv_layer(inputs= med2, name='med3', filters=16, kernel_size=[5, 5], padding="same",
+        med3 = ut.dilated_conv_layer(inputs= med2, name='med3', filters=16, kernel_size=[5, 5], padding="SAME",
                                  activation=lrelu, reuse=self.reuse, rate=4)
         med_l1 = ut.image_l1(med3)
 
         # global scale
         glob1 = tf.layers.conv2d(inputs=input, filters=16, kernel_size=[5, 5], padding="same",
                                  activation=lrelu, reuse=self.reuse, name='glob1')
-        glob2 = ut.dilated_conv_layer(inputs= glob1, name='glob2', filters=16, kernel_size=[5, 5], padding="same",
+        glob2 = ut.dilated_conv_layer(inputs= glob1, name='glob2', filters=16, kernel_size=[5, 5], padding="SAME",
                                  activation=lrelu, reuse=self.reuse, rate = 4)
-        glob3 = ut.dilated_conv_layer(inputs= glob2, name='glob3', filters=16, kernel_size=[5, 5], padding="same",
+        glob3 = ut.dilated_conv_layer(inputs= glob2, name='glob3', filters=16, kernel_size=[5, 5], padding="SAME",
                                  activation=lrelu, reuse=self.reuse, rate=24)
         glob_l1 = ut.image_l1(glob3)
 
