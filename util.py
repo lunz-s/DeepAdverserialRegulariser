@@ -62,7 +62,7 @@ def l2_norm(tensor):
 # a dilated convolutional layer
 def dilated_conv_layer(inputs, name, filters=16, kernel_size=(5, 5), padding="same", rate = 1,
                                  activation=lrelu, reuse=False):
-    inputs_dim = tf.shape(inputs)
+    inputs_dim = inputs.get_shape().as_list()
     input_channels = inputs_dim[3]
     with tf.variable_scope(name, reuse=reuse):
         weights = tf.get_variable(name='weights', shape=[kernel_size[0], kernel_size[1], input_channels, filters],
