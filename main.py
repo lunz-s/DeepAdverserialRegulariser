@@ -6,9 +6,12 @@ from forward_models import ct
 from forward_models import denoising
 
 from Framework import adversarial_regulariser
+from Framework import positiv_adversarial_regulariser
 from Framework import postprocessing
 from Framework import iterative_scheme
 from Framework import total_variation
+
+from networks import multiscale_l1_classifier
 
 ### CT experiments
 number = input("Please enter number of experiment you want to run: ")
@@ -46,6 +49,19 @@ class exp1(adversarial_regulariser):
 
     def unreg_mini(self, y, fbp):
         return self.update_pic(15, 1, y, fbp, 0)
+
+class pos_AR(positiv_adversarial_regulariser):
+    experiment_name = 'positivAR'
+    noise_level = 0.01
+    mu_default = .3
+    learning_rate = 0.0005
+    step_size = 1
+    total_steps_default = 30
+    eps = 0.1
+
+    def unreg_mini(self, y, fbp):
+        return self.update_pic(15, 1, y, fbp, 0)
+
 
 class exp2(exp1):
     experiment_name = 'OverregularisedRecursiveTraining'
@@ -104,6 +120,12 @@ if number == 1.3:
     for k in range(2):
         adv_reg.train(500)
 
+if number == 1.4:
+    print('Running positiv AR')
+    adv_reg = pos_AR()
+    for k in range(3):
+        adv_reg.train(500)
+
 
 # Experiment 2.0 post-processing with noise level 0.01, standard UNet, LUNA data set
 if number==2:
@@ -129,42 +151,46 @@ if number == 3:
     it.train(500)
     it.end()
 
-# Experiment 4.0: AR with noise level 0.1, standard classifier network, LUNA data set
+# Denoiser with dilated l1 architecture
 if number == 4:
-    print('Run AR algorithm, high noise, standard architecture')
-    class exp1(adversarial_regulariser):
-        experiment_name = 'Noise_0.1_StandardNet'
+    print('Running denoiser with dilated l1 architecture')
+    class l1_denoiser(adversarial_regulariser):
         noise_level = 0.1
-        mu_default = 1.5
+        mu_default = .3
         learning_rate = 0.0005
-        step_size = 0.8
+        step_size = 1
         total_steps_default = 30
 
-    adv_reg = exp1()
-    adv_reg.find_good_lambda()
-    adv_reg.pretrain_Wasser_DataMinimizer(500)
-    adv_reg.end()
+        def get_network(self, size, colors):
+            return multiscale_l1_classifier(size=size, colors=colors)
 
-# Experiment 5.0 post-processing with noise level 0.1, standard UNet, LUNA data set
-if number==5:
-    print('Run Postprocessing, high noise, standard UNet')
-    class exp2(postprocessing):
-        experiment_name = 'Noise_0.1_SmallUNet'
-        noise_level = 0.1
-        learning_rate = 0.001
+        def get_Data_pip(self):
+            return BSDS()
 
-    pp = exp2()
-    pp.train(500)
-    pp.end()
+        def get_model(self, size):
+            return denoising(size=size)
 
-# Experiment 6.0 iterative scheme with noise level 0.1, fully convolutional nn, LUNA data set
-if number == 6:
-    print('Run iterative scheme, high noise, standard convNet')
-    class exp3(iterative_scheme):
-        experiment_name = 'Noise_0.1_'
-        noise_level = 0.1
-        learning_rate = 0.0003
+    adv_reg = l1_denoiser()
 
-    it = exp3()
-    it.train(500)
-    it.end()
+    ex_number = input('Number of experiment to run')
+    if ex_number == 1:
+        adv_reg.find_good_lambda()
+        adv_reg.end()
+
+    if ex_number == 2:
+        repeat = 1
+        while repeat == 1:
+            ss = input('Please insert desired steps size: ')
+            a_s = input('Please insert amount of steps: ')
+            mu = input('Please insert regularisation parameter mu: ')
+            adv_reg.evaluate_image_optimization(batch_size=32, mu=mu, step_s=ss,
+                                                steps=a_s, starting_point='Mini')
+            repeat = input('Repeat experiment?')
+        adv_reg.end()
+
+    if ex_number == 3:
+        for k in range(3):
+            adv_reg.pretrain_Wasser_DataMinimizer(300)
+
+
+

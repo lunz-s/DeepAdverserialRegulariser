@@ -161,6 +161,8 @@ class adversarial_regulariser(generic_framework):
     step_size = 1
     # the amount of steps of gradient descent taken on loss functional
     total_steps_default = 30
+    # default sampling pattern
+    default_sampling_pattern = 'uniform'
 
     def get_network(self, size, colors):
         return binary_classifier(size=size, colors=colors)
@@ -174,11 +176,18 @@ class adversarial_regulariser(generic_framework):
     def set_total_steps(self, steps):
         self.total_steps = steps
 
+    def set_sampling_pattern(self, pattern=None):
+        if pattern == None:
+            self.sampling_pattern = self.default_sampling_pattern
+        else:
+            self.sampling_pattern = pattern
+
     # sets up the network architecture
     def __init__(self):
         # call superclass init
         super(adversarial_regulariser, self).__init__()
         self.total_steps = self.total_steps_default
+        self.sampling_pattern = self.set_sampling_pattern()
 
         ### Training the regulariser
 
@@ -375,17 +384,30 @@ class adversarial_regulariser(generic_framework):
         output_fbp = np.zeros(shape=(batch_size, 128, 128, 1))
         ### speed up by only drawing randomly for batches of 8 or even 16
 
-        # create remaining samples
-        for j in range(batch_size):
-            y, x_true, fbp = self.generate_training_data(1)
-            guess = np.copy(fbp)
-            if starting_point == 'Mini':
-                guess = self.unreg_mini(y, fbp)
-            s = random.randint(0, amount_steps)
-            guess = self.update_pic(s, self.step_size, y, guess, mu)
-            true_im[j, ...] = x_true[0, ...]
-            output_fbp[j, ...] = fbp[0, ...]
-            output_im[j, ...] = guess[0, ...]
+        if self.sampling_pattern == 'uniform':
+            for j in range(batch_size):
+                y, x_true, fbp = self.generate_training_data(1)
+                guess = np.copy(fbp)
+                if starting_point == 'Mini':
+                    guess = self.unreg_mini(y, fbp)
+                s = random.randint(0, amount_steps)
+                guess = self.update_pic(s, self.step_size, y, guess, mu)
+                true_im[j, ...] = x_true[0, ...]
+                output_fbp[j, ...] = fbp[0, ...]
+                output_im[j, ...] = guess[0, ...]
+        if self.sampling_pattern == 'startend':
+            halftime = int(batch_size/2)
+            for k in range(2):
+                y, x_true, fbp = self.generate_training_data(halftime)
+                guess = np.copy(fbp)
+                if starting_point == 'Mini':
+                    guess = self.unreg_mini(y, fbp)
+                if k == 1:
+                    guess = self.update_pic(amount_steps, self.step_size, y, guess, mu)
+                true_im[k*halftime:(k+1)*halftime,...] = x_true
+                output_fbp[k * halftime:(k + 1) * halftime, ...] = fbp
+                output_im[k * halftime:(k + 1) * halftime, ...] = guess
+
         return true_im, output_fbp, output_im
 
     # optimize network on initial guess input only, with initial guess being fbp
@@ -458,6 +480,325 @@ class adversarial_regulariser(generic_framework):
                                                  self.mu: 0})
         print(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1,2,3))))
         print(np.mean(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1,2,3)))))
+
+# Framework for the adversarial regulariser network
+class positiv_adversarial_regulariser(generic_framework):
+    model_name = 'Adversarial_Regulariser'
+    # override noise level
+    noise_level = 0.01
+    # The batch size
+    batch_size = 32
+    # relation between L2 error and regulariser
+    mu_default = 1.5
+    # weight on gradient norm regulariser for wasserstein network
+    lmb = 20
+    # learning rate for Adams
+    learning_rate = 0.0002
+    # step size for picture optimization
+    step_size = 1
+    # the amount of steps of gradient descent taken on loss functional
+    total_steps_default = 30
+    # the weighting of the term enforcing average value 0
+    eps = 0.1
+
+    def get_network(self, size, colors):
+        return binary_classifier(size=size, colors=colors)
+
+    def get_Data_pip(self):
+        return LUNA()
+
+    def get_model(self, size):
+        return ct(size=size)
+
+    def set_total_steps(self, steps):
+        self.total_steps = steps
+
+    # sets up the network architecture
+    def __init__(self):
+        # call superclass init
+        super(positiv_adversarial_regulariser, self).__init__()
+        self.total_steps = self.total_steps_default
+
+        ### Training the regulariser
+
+        # placeholders for NN
+        self.gen_im = tf.placeholder(shape=[None, self.image_space[0], self.image_space[1], 1],
+                                     dtype=tf.float32)
+        self.true_im = tf.placeholder(shape=[None, self.image_space[0], self.image_space[1], 1],
+                                      dtype=tf.float32)
+        self.random_uint = tf.placeholder(shape=[None],
+                                          dtype=tf.float32)
+
+        # the network outputs
+        self.gen_was = tf.nn.abs(self.network.net(self.gen_im))
+        self.data_was = tf.nn.abs(self.network.net(self.true_im))
+
+        # Wasserstein loss
+        self.wasserstein_loss = tf.reduce_mean(self.data_was - self.gen_was)
+
+        # intermediate point
+        random_uint_exp = tf.expand_dims(tf.expand_dims(tf.expand_dims(self.random_uint, axis=1), axis=1), axis=1)
+        self.inter = tf.multiply(self.gen_im, random_uint_exp) + \
+                     tf.multiply(self.true_im, 1 - random_uint_exp)
+        self.inter_was = tf.nn.abs(self.network.net(self.inter))
+
+        # calculate derivative at intermediate point
+        self.gradient_was = tf.gradients(self.inter_was, self.inter)[0]
+
+        # take the L2 norm of that derivative
+        self.regulariser_was = tf.reduce_mean(tf.square(tf.nn.relu(tf.sqrt(
+            tf.reduce_sum(tf.square(self.gradient_was), axis=(1, 2, 3))) - 1)))
+
+        # term that ensures that network takes value 0 on data manifold
+        self.zero_enf = tf.reduce_mean(tf.reduce_sum(tf.square(self.data_was), axis=(1,2,3)))
+
+        # Overall Net Training loss
+        self.loss_was = self.wasserstein_loss + self.lmb * self.regulariser_was + self.eps * self.zero_enf
+
+        # optimizer for Wasserstein network
+        self.global_step = tf.Variable(0, name='global_step', trainable=False)
+        self.optimizer = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss_was,
+                                                                                global_step=self.global_step)
+
+        ### The reconstruction network
+        # placeholders
+        self.reconstruction = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], 1],
+                                             dtype=tf.float32)
+        self.data_term = tf.placeholder(shape=[None, self.measurement_space[0], self.measurement_space[1], 1],
+                                        dtype=tf.float32)
+        self.mu = tf.placeholder(dtype=tf.float32)
+
+        # data loss
+        self.ray = self.model.tensorflow_operator(self.reconstruction)
+        data_mismatch = tf.square(self.ray - self.data_term)
+        self.data_error = tf.reduce_mean(tf.reduce_sum(data_mismatch, axis=(1, 2, 3)))
+
+        # the loss functional
+        self.was_output = tf.reduce_mean(tf.nn.abs(self.network.net(self.reconstruction)))
+        self.full_error = self.mu * self.was_output + self.data_error
+
+        # get the batch size - all gradients have to be scaled by the batch size as they are taken over previously
+        # averaged quantities already
+        batch_s = tf.cast(tf.shape(self.reconstruction)[0], tf.float32)
+
+        # Optimization for the picture
+        self.pic_grad = tf.gradients(self.full_error * batch_s, self.reconstruction)
+
+        # Measure quality of reconstruction
+        self.ground_truth = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], 1],
+                                           dtype=tf.float32)
+        self.quality = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(self.ground_truth - self.reconstruction),
+                                                            axis=(1, 2, 3))))
+
+        # logging tools
+        with tf.name_scope('Network_Optimization'):
+            tf.summary.scalar('Wasserstein_Loss', self.wasserstein_loss)
+            tf.summary.scalar('Regulariser_Wasser', self.lmb*self.regulariser_was)
+            tf.summary.scalar('Zero_enforcer', self.eps* self.zero_enf)
+            tf.summary.scalar('Overall_Net_Loss', self.loss_was)
+        with tf.name_scope('Picture_Optimization'):
+            data_loss = tf.summary.scalar('Data_Loss', self.data_error)
+            wasser_loss = tf.summary.scalar('Wasserstein_Loss', self.was_output)
+        with tf.name_scope('Model_L2_strength'):
+            quality_assesment = tf.summary.scalar('L2', self.quality)
+
+        # set up the logger
+        self.merged = tf.summary.merge_all()
+        self.merged_pic = tf.summary.merge([data_loss, wasser_loss, quality_assesment])
+        self.writer = tf.summary.FileWriter(self.path + 'Logs/Network_Optimization/',
+                                            self.sess.graph)
+
+        # initialize Variables
+        tf.global_variables_initializer().run()
+
+        # load existing saves
+        self.load()
+
+    # uses network to update picture with
+    def update_pic(self, steps, stepsize, measurement, guess, mu):
+        for k in range(steps):
+            gradient = self.sess.run(self.pic_grad, feed_dict={self.reconstruction: guess,
+                                                               self.data_term: measurement,
+                                                               self.mu: mu})
+            guess = guess - stepsize * gradient[0]
+        return guess
+
+    # unregularised minimization - finds minimizer of data term
+    def unreg_mini(self, y, fbp):
+        return self.update_pic(20, 0.1, y, fbp, 0)
+
+    # visualization of Picture optimization
+    def evaluate_image_optimization(self, batch_size=None, steps=None, step_s=None,
+                                    mu=None, starting_point=None):
+        if batch_size == None:
+            batch_size = self.batch_size
+        if steps == None:
+            steps = self.total_steps
+        if step_s == None:
+            step_s = self.step_size
+        if mu == None:
+            mu = self.mu_default
+        if starting_point == None:
+            starting_point = 'Mini'
+        print('Mu: {}, AmountSteps: {}, Step_size: {}, '
+              'batch_size: {}, starting_point: {}'.format(mu, steps, step_s, batch_size, starting_point))
+        y, x_true, fbp = self.generate_training_data(batch_size)
+        guess = np.copy(fbp)
+        if starting_point == 'Mini':
+            guess = self.unreg_mini(y, fbp)
+        g_step = self.sess.run(self.global_step)
+        writer = tf.summary.FileWriter(self.path + '/Logs/Picture_Opt/Iteration_' +
+                                       str(g_step) + '/' + str(mu) + '/')
+        for k in range(steps):
+            summary = self.sess.run(self.merged_pic,
+                                    feed_dict={self.reconstruction: guess,
+                                               self.data_term: y,
+                                               self.ground_truth: x_true,
+                                               self.mu: mu})
+            writer.add_summary(summary, k)
+            if (k % 5 == 0):
+                ut.create_single_folder(self.path + 'Images/Global_Step:_{}/'.format(g_step))
+                self.visualize(x_true, fbp, guess, 'Images/Global_Step:_{}/Opt._Step:{}'.format(g_step, k))
+            guess = self.update_pic(1, step_s, y, guess, mu)
+        writer.close()
+
+    # evaluates and prints the network performance
+    def evaluate_Network(self, mu=None, amount_steps=None, starting_point=None):
+        if amount_steps == None:
+            amount_steps = self.total_steps
+        if mu == None:
+            mu = self.mu_default
+        if starting_point == None:
+            starting_point = 'Mini'
+        y, true, fbp = self.generate_training_data(batch_size=self.batch_size)
+        if starting_point == 'Mini':
+            fbp = self.unreg_mini(y, fbp)
+        # generate random distribution for rays
+        epsilon = np.random.uniform(size=(self.batch_size))
+        step, Was, reg = self.sess.run([self.global_step, self.wasserstein_loss, self.regulariser_was],
+                                       feed_dict={self.gen_im: fbp, self.true_im: true,
+                                                  self.random_uint: epsilon})
+        print('Iteration prior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg))
+
+        # tensorflow logging
+        guess = np.copy(fbp)
+        guess = self.update_pic(amount_steps, self.step_size, y, guess, mu)
+        summary, step = self.sess.run([self.merged, self.global_step],
+                                      feed_dict={self.gen_im: fbp,
+                                                 self.true_im: true,
+                                                 self.random_uint: epsilon,
+                                                 self.reconstruction: guess,
+                                                 self.data_term: y,
+                                                 self.ground_truth: true,
+                                                 self.mu: mu})
+        self.writer.add_summary(summary, step)
+
+        # print posterior regression data term parameters
+        step, Was, reg = self.sess.run([self.global_step, self.wasserstein_loss, self.regulariser_was],
+                                       feed_dict={self.gen_im: guess, self.true_im: true,
+                                                  self.random_uint: epsilon})
+        print('Iteration posterior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg))
+
+    # method to generate new training images using posterior distribution of the algorithm itself
+    def generate_optimized_images(self, batch_size=None,
+                                  amount_steps=None, mu=None, starting_point=None):
+        if amount_steps == None:
+            amount_steps = self.total_steps
+        if batch_size == None:
+            batch_size = self.batch_size
+        if mu == None:
+            mu = self.mu_default
+        if starting_point == None:
+            starting_point = 'Mini'
+
+        true_im = np.zeros(shape=(batch_size, 128, 128, 1))
+        output_im = np.zeros(shape=(batch_size, 128, 128, 1))
+        output_fbp = np.zeros(shape=(batch_size, 128, 128, 1))
+        ### speed up by only drawing randomly for batches of 8 or even 16
+
+        # create remaining samples
+        for j in range(batch_size):
+            y, x_true, fbp = self.generate_training_data(1)
+            guess = np.copy(fbp)
+            if starting_point == 'Mini':
+                guess = self.unreg_mini(y, fbp)
+            s = random.randint(0, amount_steps)
+            guess = self.update_pic(s, self.step_size, y, guess, mu)
+            true_im[j, ...] = x_true[0, ...]
+            output_fbp[j, ...] = fbp[0, ...]
+            output_im[j, ...] = guess[0, ...]
+        return true_im, output_fbp, output_im
+
+    # optimize network on initial guess input only, with initial guess being fbp
+    def pretrain_Wasser_FBP(self, steps, mu=None):
+        if mu == None:
+            mu = self.mu_default
+        for k in range(steps):
+            if k % 20 == 0:
+                self.evaluate_Network(mu=mu, starting_point='FBP')
+            if k % 100 == 0:
+                self.evaluate_image_optimization(starting_point='FBP')
+            y, x_true, fbp = self.generate_training_data(self.batch_size)
+            # generate random distribution for rays
+            epsilon = np.random.uniform(size=(self.batch_size))
+            # optimize network
+            self.sess.run(self.optimizer,
+                          feed_dict={self.gen_im: fbp, self.true_im: x_true, self.random_uint: epsilon})
+        self.save(self.global_step)
+
+    # optimize network on initial guess input only, with initial guess being minimizer of ||Kx - y||
+    def pretrain_Wasser_DataMinimizer(self, steps, mu=None):
+        if mu == None:
+            mu = self.mu_default
+        for k in range(steps):
+            if k % 20 == 0:
+                self.evaluate_Network(mu, starting_point='Mini')
+            if k % 100 == 0:
+                self.evaluate_image_optimization(64, starting_point='Mini')
+            y, x_true, fbp = self.generate_training_data(self.batch_size)
+            # optimize the fbp to fit the data term
+            mini = self.unreg_mini(y, fbp)
+            # generate random distribution for rays
+            epsilon = np.random.uniform(size=(self.batch_size))
+            # optimize network
+            self.sess.run(self.optimizer,
+                          feed_dict={self.gen_im: mini, self.true_im: x_true, self.random_uint: epsilon})
+        self.save(self.global_step)
+
+    # recursive training methode, using actual output distribtion instead of initial guess distribution
+    def train(self, steps, amount_steps=None, starting_point=None, mu=None):
+        if amount_steps == None:
+            amount_steps = self.total_steps
+        if mu == None:
+            mu = self.mu_default
+        if starting_point == None:
+            starting_point = 'Mini'
+        for k in range(steps):
+            if k % 20 == 0:
+                self.evaluate_Network(mu, starting_point=starting_point)
+            if k % 200 == 0:
+                self.evaluate_image_optimization(batch_size=self.batch_size, steps=amount_steps,
+                                                 starting_point=starting_point, step_s=self.step_size)
+            true, fbp, gen = self.generate_optimized_images(self.batch_size, amount_steps=amount_steps,
+                                                            mu=mu, starting_point=starting_point)
+            # generate random distribution for rays
+            epsilon = np.random.uniform(size=(self.batch_size))
+            # optimize network
+            self.sess.run(self.optimizer,
+                          feed_dict={self.gen_im: gen, self.true_im: true, self.random_uint: epsilon})
+        self.save(self.global_step)
+
+    # Method to estimate a good value of the regularisation paramete.
+    # This is done via estimation of 2 ||K^t (Kx-y)||_2 where x is the ground truth
+    def find_good_lambda(self, sample=64):
+        ### compute optimal lambda with as well
+        y, x_true, fbp = self.generate_training_data(sample)
+        gradient_truth = self.sess.run(self.pic_grad, {self.reconstruction: x_true,
+                                                       self.data_term: y,
+                                                       self.ground_truth: x_true,
+                                                       self.mu: 0})
+        print(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1, 2, 3))))
+        print(np.mean(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1, 2, 3)))))
 
 # Framework for postprocessing
 class postprocessing(generic_framework):

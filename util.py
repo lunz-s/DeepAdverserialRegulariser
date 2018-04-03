@@ -58,3 +58,23 @@ def lrelu(x):
 # l2 norm for a tensor in typical (batch, x, y, channel) format
 def l2_norm(tensor):
     return np.mean(np.sqrt(np.sum(np.square(tensor), axis=(1,2,3))))
+
+# a dilated convolutional layer
+def dilated_conv_layer(inputs, name, filters=16, kernel_size=(5, 5), padding="same", rate = 1,
+                                 activation=lrelu, reuse=False):
+    inputs_dim = tf.shape(inputs)
+    input_channels = inputs_dim[3]
+    with tf.variable_scope(name, reuse=reuse):
+        weights = tf.get_variable(name='weights', shape=[kernel_size[0], kernel_size[1], input_channels, filters],
+                            initializer=tf.contrib.layers.xavier_initializer())
+        bias = tf.get_variable(name='bias', shape=[1, 1, 1, filters],
+                            initializer=tf.zeros_initializer)
+    conv = tf.nn.atrous_conv2d(inputs, weights, rate = rate, padding=padding)
+    output = activation(tf.add(conv,bias))
+    return output
+
+# contracts an image tensor of shape [batch, size, size, channels] to its l1 values along the size dimensions
+def image_l1(inputs):
+    return tf.reduce_sum(tf.abs(inputs), axis = (1,2))
+
+
