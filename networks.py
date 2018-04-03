@@ -13,8 +13,6 @@ class multiscale_l1_classifier(object):
         self.colors = colors
 
     def net(self, input):
-        # change reuse variable for next call of network method
-        self.reuse = True
         # fine scale
         loc1 = tf.layers.conv2d(inputs=input, filters=16, kernel_size=[5, 5], padding="same",
                                  activation=lrelu, reuse=self.reuse, name='loc1')
@@ -46,6 +44,10 @@ class multiscale_l1_classifier(object):
         results = tf.concat([loc_l1, med_l1, glob_l1], axis=1)
         dense = tf.layers.dense(inputs = results, units = 256, activation=lrelu, reuse=self.reuse, name='dense1')
         output = tf.layers.dense(inputs=dense, units=1, reuse=self.reuse, name='dense2')
+
+        # change reuse variable for next call of network method
+        self.reuse = True
+
         return output
 
 
