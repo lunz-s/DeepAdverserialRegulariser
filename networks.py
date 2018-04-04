@@ -42,7 +42,7 @@ class multiscale_l1_classifier(object):
 
         # linear classifier on l1 norms
         results = tf.concat([loc_l1, med_l1, glob_l1], axis=1)
-        dense = tf.layers.dense(inputs = results, units = 256, activation=lrelu, reuse=self.reuse, name='dense1')
+        dense = tf.layers.dense(inputs = results, units = 48, activation=lrelu, reuse=self.reuse, name='dense1')
         output = tf.layers.dense(inputs=dense, units=1, reuse=self.reuse, name='dense2')
 
         # change reuse variable for next call of network method
