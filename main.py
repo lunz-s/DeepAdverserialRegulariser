@@ -154,7 +154,7 @@ if number == 4:
     print('Running denoiser with dilated l1 architecture')
     class l1_denoiser(adversarial_regulariser):
         noise_level = 0.1
-        mu_default = 20
+        mu_default = 45
         learning_rate = 0.0005
         step_size = 1
         total_steps_default = 30
