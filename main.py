@@ -188,7 +188,7 @@ if number == 4:
 
     if ex_number == 3:
         for k in range(3):
-            adv_reg.pretrain_Wasser_DataMinimizer(300)
+            adv_reg.pretrain_Wasser_FBP(300)
 
 
 

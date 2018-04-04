@@ -75,6 +75,6 @@ def dilated_conv_layer(inputs, name, filters=16, kernel_size=(5, 5), padding="sa
 
 # contracts an image tensor of shape [batch, size, size, channels] to its l1 values along the size dimensions
 def image_l1(inputs):
-    return tf.reduce_sum(tf.abs(inputs), axis = (1,2))
+    return tf.reduce_mean(tf.abs(inputs), axis = (1,2))
 
 
