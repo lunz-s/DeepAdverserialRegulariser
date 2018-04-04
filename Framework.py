@@ -252,7 +252,7 @@ class adversarial_regulariser(generic_framework):
         self.pic_grad = tf.gradients(self.full_error * batch_s, self.reconstruction)
 
         # Measure quality of reconstruction
-        self.ground_truth = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], 1], dtype=tf.float32)
+        self.ground_truth = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], self.colors], dtype=tf.float32)
         self.quality = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(self.ground_truth - self.reconstruction),
                                                             axis=(1, 2, 3))))
 
