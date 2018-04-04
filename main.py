@@ -37,8 +37,6 @@ if number == 0:
                                               steps = a_s, starting_point='FBP')
         repeat = input('Repeat experiment?')
 
-
-
 class exp1(adversarial_regulariser):
     experiment_name = 'LowNoiseExp1'
     noise_level = 0.01
@@ -156,7 +154,7 @@ if number == 4:
     print('Running denoiser with dilated l1 architecture')
     class l1_denoiser(adversarial_regulariser):
         noise_level = 0.1
-        mu_default = .3
+        mu_default = 20
         learning_rate = 0.0005
         step_size = 1
         total_steps_default = 30
