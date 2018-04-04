@@ -192,9 +192,9 @@ class adversarial_regulariser(generic_framework):
         ### Training the regulariser
 
         # placeholders for NN
-        self.gen_im = tf.placeholder(shape=[None, self.image_space[0], self.image_space[1], 1],
+        self.gen_im = tf.placeholder(shape=[None, self.image_space[0], self.image_space[1], self.colors],
                                      dtype=tf.float32)
-        self.true_im = tf.placeholder(shape=[None, self.image_space[0], self.image_space[1], 1],
+        self.true_im = tf.placeholder(shape=[None, self.image_space[0], self.image_space[1], self.colors],
                                       dtype=tf.float32)
         self.random_uint = tf.placeholder(shape=[None],
                                           dtype=tf.float32)
@@ -229,9 +229,9 @@ class adversarial_regulariser(generic_framework):
 
         ### The reconstruction network
         # placeholders
-        self.reconstruction = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], 1],
+        self.reconstruction = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], self.colors],
                                              dtype=tf.float32)
-        self.data_term = tf.placeholder(shape=[None, self.measurement_space[0], self.measurement_space[1], 1],
+        self.data_term = tf.placeholder(shape=[None, self.measurement_space[0], self.measurement_space[1], self.colors],
                                         dtype=tf.float32)
         self.mu = tf.placeholder(dtype=tf.float32)
 
