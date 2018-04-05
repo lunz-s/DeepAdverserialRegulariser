@@ -153,10 +153,13 @@ if number == 3:
 if number == 4:
     print('Running denoiser with dilated l1 architecture')
     class l1_denoiser(adversarial_regulariser):
+        # weight on gradient norm regulariser for wasserstein network
+        lmb = 50
+
         noise_level = 0.1
-        mu_default = 45
+        mu_default = 60
         learning_rate = 0.0005
-        step_size = 1
+        step_size = .05
         total_steps_default = 30
 
         def get_network(self, size, colors):
@@ -182,7 +185,7 @@ if number == 4:
             a_s = input('Please insert amount of steps: ')
             mu = input('Please insert regularisation parameter mu: ')
             adv_reg.evaluate_image_optimization(batch_size=32, mu=mu, step_s=ss,
-                                                steps=a_s, starting_point='Mini')
+                                                steps=a_s, starting_point='FBP')
             repeat = input('Repeat experiment?')
         adv_reg.end()
 
