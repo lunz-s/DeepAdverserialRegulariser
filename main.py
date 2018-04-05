@@ -158,7 +158,7 @@ if number == 4:
 
         noise_level = 0.1
         mu_default = 60
-        learning_rate = 0.0005
+        learning_rate = 0.0002
         step_size = .05
         total_steps_default = 30
 
