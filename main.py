@@ -184,7 +184,7 @@ if number == 4:
             ss = input('Please insert desired steps size: ')
             a_s = input('Please insert amount of steps: ')
             mu = input('Please insert regularisation parameter mu: ')
-            adv_reg.evaluate_image_optimization(batch_size=32, mu=mu, step_s=ss,
+            adv_reg.evaluate_image_optimization(batch_size=64, mu=mu, step_s=ss,
                                                 steps=a_s, starting_point='FBP')
             repeat = input('Repeat experiment?')
         adv_reg.end()

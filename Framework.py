@@ -149,13 +149,13 @@ class adversarial_regulariser(generic_framework):
     # override noise level
     noise_level = 0.01
     # The batch size
-    batch_size = 32
+    batch_size = 16
     # relation between L2 error and regulariser
     mu_default = 1.5
     # weight on gradient norm regulariser for wasserstein network
     lmb = 20
     # learning rate for Adams
-    learning_rate = 0.0002
+    learning_rate = 0.0001
     # step size for picture optimization
     step_size = 1
     # the amount of steps of gradient descent taken on loss functional
