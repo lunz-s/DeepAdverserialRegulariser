@@ -50,7 +50,6 @@ class multiscale_l1_classifier(object):
 
         return output
 
-
 class binary_classifier(object):
     def __init__(self, size, colors):
         self.size = size
@@ -157,3 +156,60 @@ class fully_convolutional(UNet):
         output = tf.layers.conv2d(inputs=conv5, filters=self.colors, kernel_size=[5, 5],
                                   padding="same", name='conv6', reuse=reuse)
         return output
+
+### resnet architectures
+def apply_conv(x, filters=32, kernel_size=3):
+    return tf.layers.conv2d(x, filters=filters, kernel_size=kernel_size, padding='SAME',
+                            kernel_initializer=tf.contrib.layers.variance_scaling_initializer(),
+                            activation=lrelu)
+
+def resblock(x, filters):
+    with tf.name_scope('resblock_bn'):
+        x = tf.identity(x)
+        update = apply_conv(x, filters=filters)
+        update = apply_conv(update, filters=filters)
+
+        skip = tf.layers.conv2d(x, filters=filters, kernel_size=1, padding='SAME',
+                                kernel_initializer=tf.contrib.layers.variance_scaling_initializer())
+        return skip + update
+
+def meanpool(x):
+    with tf.name_scope('meanpool'):
+        x = tf.identity(x)
+        return tf.add_n([x[:, ::2, ::2, :], x[:, 1::2, ::2, :],
+                         x[:, ::2, 1::2, :], x[:, 1::2, 1::2, :]]) / 4.
+
+class resnet_classifier(object):
+    def __init__(self, size, colors):
+        self.size = size
+        self.reuse = False
+        self.colors = colors
+
+    def net(self, input):
+        with tf.name_scope('pre_process'):
+            x = apply_conv(input, filters=64, kernel_size=3)
+
+        with tf.name_scope('x1'):
+            x = resblock(x, 64)
+
+        with tf.name_scope('x2'):
+            x = resblock(meanpool(x), filters=64)  # 1/2
+
+        with tf.name_scope('x3'):
+            x = resblock(meanpool(x), filters=128)  # 1/4
+
+        with tf.name_scope('x4'):
+            x = resblock(meanpool(x), filters=256)  # 1/8
+
+        with tf.name_scope('x5'):
+            x = resblock(meanpool(x), filters=256)  # 1/16
+
+        with tf.name_scope('post_process'):
+            flat = tf.contrib.layers.flatten(x)
+            flat = tf.layers.dense(flat, 1)
+
+        # change reuse variable for next call of network method
+        self.reuse = True
+
+        return flat
+

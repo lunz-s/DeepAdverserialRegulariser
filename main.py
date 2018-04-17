@@ -12,6 +12,7 @@ from Framework import iterative_scheme
 from Framework import total_variation
 
 from networks import multiscale_l1_classifier
+from networks import resnet_classifier
 
 ### CT experiments
 number = input("Please enter number of experiment you want to run: ")
@@ -111,6 +112,7 @@ if number == 1.2:
         repeat = input('Repeat experiment?')
     adv_reg.end()
 
+# Overregularised rekursive training
 if number == 1.3:
     print('Running overregularised rekursive training')
     adv_reg = exp2()
@@ -118,6 +120,7 @@ if number == 1.3:
     for k in range(2):
         adv_reg.train(500)
 
+#positive AR
 if number == 1.4:
     print('Running positiv AR')
     adv_reg = pos_AR()
@@ -155,6 +158,7 @@ if number == 4:
     class l1_denoiser(adversarial_regulariser):
         # weight on gradient norm regulariser for wasserstein network
         lmb = 50
+        default_sampling_pattern = 'startend'
 
         noise_level = 0.1
         mu_default = 60
@@ -192,6 +196,65 @@ if number == 4:
     if ex_number == 3:
         for k in range(3):
             adv_reg.pretrain_Wasser_FBP(300)
+
+    if ex_number == 4:
+        for k in range(3):
+            adv_reg.train(300)
+
+if number == 5:
+    print('Running denoiser with resNet')
+    class l1_denoiser(adversarial_regulariser):
+        # weight on gradient norm regulariser for wasserstein network
+        lmb = 20
+
+        experiment_name = 'resNet'
+
+        noise_level = 0.1
+        mu_default = 60
+        learning_rate = 0.0002
+        step_size = .05
+        total_steps_default = 30
+        default_sampling_pattern = 'startend'
+
+        def get_network(self, size, colors):
+            return resnet_classifier(size=size, colors=colors)
+
+        def get_Data_pip(self):
+            return BSDS()
+
+        def get_model(self, size):
+            return denoising(size=size)
+
+
+
+    adv_reg = l1_denoiser()
+
+    ex_number = input('Number of experiment to run')
+    if ex_number == 1:
+        adv_reg.find_good_lambda()
+        adv_reg.end()
+
+    if ex_number == 2:
+        repeat = 1
+        while repeat == 1:
+            ss = input('Please insert desired steps size: ')
+            a_s = input('Please insert amount of steps: ')
+            mu = input('Please insert regularisation parameter mu: ')
+            adv_reg.evaluate_image_optimization(batch_size=64, mu=mu, step_s=ss,
+                                                steps=a_s, starting_point='FBP')
+            repeat = input('Repeat experiment?')
+        adv_reg.end()
+
+    if ex_number == 3:
+        print('Pretraining')
+        for k in range(3):
+            adv_reg.pretrain_Wasser_FBP(300)
+
+    if ex_number ==4:
+        print('Iteratives Training')
+        for k in range(3):
+            adv_reg.train(300)
+
 
 
 
