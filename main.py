@@ -164,7 +164,7 @@ if number == 4:
         mu_default = 60
         learning_rate = 0.0002
         step_size = .05
-        total_steps_default = 30
+        total_steps_default = 15
 
         def get_network(self, size, colors):
             return multiscale_l1_classifier(size=size, colors=colors)
