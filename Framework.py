@@ -378,9 +378,9 @@ class adversarial_regulariser(generic_framework):
         if starting_point ==None:
             starting_point = 'Mini'
 
-        true_im = np.zeros(shape=(batch_size, 128, 128, 1))
-        output_im = np.zeros(shape=(batch_size, 128, 128, 1))
-        output_fbp = np.zeros(shape=(batch_size, 128, 128, 1))
+        true_im = np.zeros(shape=(batch_size, 128, 128, self.colors))
+        output_im = np.zeros(shape=(batch_size, 128, 128, self.colors))
+        output_fbp = np.zeros(shape=(batch_size, 128, 128, self.colors))
         ### speed up by only drawing randomly for batches of 8 or even 16
 
         if self.sampling_pattern == 'uniform':
