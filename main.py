@@ -199,7 +199,7 @@ if number == 4:
 
     if ex_number == 4:
         for k in range(3):
-            adv_reg.train(300)
+            adv_reg.train(300, starting_point='FBP')
 
 if number == 5:
     print('Running denoiser with resNet')
@@ -253,7 +253,7 @@ if number == 5:
     if ex_number ==4:
         print('Iteratives Training')
         for k in range(3):
-            adv_reg.train(300)
+            adv_reg.train(300, starting_point='FBP')
 
 
 

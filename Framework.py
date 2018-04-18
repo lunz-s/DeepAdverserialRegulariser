@@ -47,10 +47,18 @@ class generic_framework(object):
         self.image_size = self.data_pip.image_size
         self.network = self.get_network(self.image_size, self.colors)
         self.model = self.get_model(self.image_size)
-        self.path = 'Saves/{}/{}/{}/{}/'.format(self.model.name, self.data_pip.name, self.model_name, self.experiment_name)
         self.image_space = self.model.get_image_size()
         self.measurement_space = self.model.get_measurement_size()
 
+
+        # finding the correct path for saving models
+        name = platform.node()
+        path_prefix = ''
+        if name == 'LAPTOP-E6AJ1CPF':
+            path_prefix=''
+        elif name == 'motel':
+            path_prefix='/local/scratch/public/sl767/DeepAdversarialRegulariser/'
+        self.path = path_prefix+'Saves/{}/{}/{}/{}/'.format(self.model.name, self.data_pip.name, self.model_name, self.experiment_name)
         # start tensorflow sesssion
         self.sess = tf.InteractiveSession()
 
