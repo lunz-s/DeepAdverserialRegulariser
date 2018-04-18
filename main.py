@@ -159,6 +159,7 @@ if number == 4:
         # weight on gradient norm regulariser for wasserstein network
         lmb = 50
         default_sampling_pattern = 'startend'
+        experiment_name = 'l1_arch'
 
         noise_level = 0.1
         mu_default = 60
