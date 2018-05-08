@@ -95,6 +95,45 @@ class binary_classifier(object):
         # Output network results
         return output
 
+class improved_binary_classifier(object):
+    def __init__(self, size, colors):
+        self.size = size
+        self.reuse = False
+        self.colors = colors
+
+    def net(self, input):
+        # convolutional network for feature extraction
+        conv1 = tf.layers.conv2d(inputs=input, filters=16, kernel_size=[5, 5], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv1')
+        conv2 = tf.layers.conv2d(inputs=conv1, filters=32, kernel_size=[5, 5], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv2')
+        conv3 = tf.layers.conv2d(inputs=conv2, filters=32, kernel_size=[5, 5], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv3', strides=2)
+        # image size is now size/2
+        conv4 = tf.layers.conv2d(inputs=conv3, filters=64, kernel_size=[5, 5], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv4', strides=2)
+        # image size is now size/4
+        conv5 = tf.layers.conv2d(inputs=conv4, filters=64, kernel_size=[5, 5], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv5', strides=2)
+        # image size is now size/8
+        conv6 = tf.layers.conv2d(inputs=conv5, filters=128, kernel_size=[5, 5], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv6', strides=2)
+
+        # reshape for classification - assumes image size is multiple of 32
+        finishing_size = int(self.size[0]* self.size[1]/(16*16))
+        dimensionality = finishing_size * 128
+        reshaped = tf.reshape(conv6, [-1, dimensionality])
+
+        # dense layer for classification
+        dense = tf.layers.dense(inputs = reshaped, units = 256, activation=lrelu, reuse=self.reuse, name='dense1')
+        output = tf.layers.dense(inputs=dense, units=1, reuse=self.reuse, name='dense2')
+
+        # change reuse variable for next call of network method
+        self.reuse = True
+
+        # Output network results
+        return output
+
 class UNet(object):
     def __init__(self, size, colors, parameter_sharing = True):
         self.colors = colors

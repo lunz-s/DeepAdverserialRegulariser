@@ -13,6 +13,7 @@ from Framework import total_variation
 
 from networks import multiscale_l1_classifier
 from networks import resnet_classifier
+from networks import improved_binary_classifier
 
 number = input("Please enter number of experiment you want to run: ")
 
@@ -124,12 +125,15 @@ if number == 2:
 
 ### Comparison experiments: Standard architecture
 class reference(adversarial_regulariser):
-    experiment_name = 'MaxPoolNet'
+    experiment_name = 'ConvNet'
     noise_level = nl1
     mu_default = .3
     learning_rate = 0.0002
     step_size = 1
     total_steps_default = 30
+
+    def get_network(self, size, colors):
+        return improved_binary_classifier(size=size, colors=colors)
 
 
     def unreg_mini(self, y, fbp):
@@ -140,6 +144,7 @@ if number == 3:
     adv_reg = reference()
     adv_reg.set_total_steps(30)
     # adv_reg.find_good_lambda()
-    for k in range(2):
+    for k in range(5):
         adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.evaluate_image_optimization(steps=70)
+
