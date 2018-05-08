@@ -16,7 +16,7 @@ from networks import resnet_classifier
 
 number = input("Please enter number of experiment you want to run: ")
 
-nl1 = 0.1
+nl1 = 0.02
 
 # Experiments 0.0: Step size checks for solving variational problem later
 if number == 0:
@@ -55,14 +55,14 @@ class exp1(adversarial_regulariser):
 
 # Experiment 1.0: AR with noise level 0.01, standard classifier network, LUNA data set
 if number == 1:
-    print('Run AR algorithm, low noise, standard architecture')
+    print('Run AR algorithm, ResNet')
 
     # create object of type experiment1
     adv_reg = exp1()
     adv_reg.set_total_steps(30)
     # adv_reg.find_good_lambda()
     for k in range(2):
-        adv_reg.train(500)
+        adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.evaluate_image_optimization(steps=70)
 
     #adv_reg.train(500)
@@ -72,7 +72,7 @@ if number == 1:
 if number == 1.1:
     class find_mu(adversarial_regulariser):
         experiment_name = 'Check_Reg_Level'
-        noise_level = 0.01
+        noise_level = nl1
         mu_default = 2
         learning_rate = 0.0005
         step_size = 0.7
@@ -98,3 +98,26 @@ if number == 1.2:
                                        steps=a_s, starting_point='Mini')
         repeat = input('Repeat experiment?')
     adv_reg.end()
+
+class l1_exp(adversarial_regulariser):
+    experiment_name = 'dilatedL1'
+    noise_level = nl1
+    mu_default = .3
+    learning_rate = 0.0005
+    step_size = 1
+    total_steps_default = 30
+
+    def get_network(self, size, colors):
+        return multiscale_l1_classifier(size=size, colors=colors)
+
+    def unreg_mini(self, y, fbp):
+        return self.update_pic(15, 1, y, fbp, 0)
+
+if number == 2:
+    # create object of type experiment1
+    adv_reg = l1_exp()
+    adv_reg.set_total_steps(30)
+    # adv_reg.find_good_lambda()
+    for k in range(2):
+        adv_reg.pretrain_Wasser_DataMinimizer(500)
+    adv_reg.evaluate_image_optimization(steps=70)
