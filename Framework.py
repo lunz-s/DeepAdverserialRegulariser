@@ -224,8 +224,8 @@ class adversarial_regulariser(generic_framework):
         self.gradient_was = tf.gradients(self.inter_was, self.inter)[0]
 
         # take the L2 norm of that derivative
-        self.regulariser_was = tf.reduce_mean(tf.square(tf.nn.relu(tf.sqrt(
-            tf.reduce_sum(tf.square(self.gradient_was), axis=(1, 2, 3))) - 1)))
+        self.norm_gradient = tf.sqrt(tf.reduce_sum(tf.square(self.gradient_was), axis=(1, 2, 3)))
+        self.regulariser_was = tf.reduce_mean(tf.square(tf.nn.relu(self.norm_gradient - 1)))
 
         # Overall Net Training loss
         self.loss_was = self.wasserstein_loss + self.lmb * self.regulariser_was
@@ -351,10 +351,12 @@ class adversarial_regulariser(generic_framework):
             fbp = self.unreg_mini(y, fbp)
         # generate random distribution for rays
         epsilon = np.random.uniform(size=(self.batch_size))
-        step, Was, reg = self.sess.run([self.global_step, self.wasserstein_loss, self.regulariser_was],
+        step, Was, reg, norm = self.sess.run([self.global_step, self.wasserstein_loss, self.regulariser_was,
+                                        self.norm_gradient],
                                                      feed_dict={self.gen_im: fbp, self.true_im: true,
                                                                 self.random_uint: epsilon})
-        print('Iteration prior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg))
+        print('Iteration prior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg) +
+              ', Norm: ' + str(norm))
 
         # tensorflow logging
         guess = np.copy(fbp)
