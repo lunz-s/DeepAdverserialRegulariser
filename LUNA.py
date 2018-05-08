@@ -43,7 +43,7 @@ class exp1(adversarial_regulariser):
     experiment_name = 'ResNet'
     noise_level = nl1
     mu_default = .3
-    learning_rate = 0.0005
+    learning_rate = 0.0002
     step_size = 1
     total_steps_default = 30
 
@@ -127,7 +127,7 @@ class reference(adversarial_regulariser):
     experiment_name = 'MaxPoolNet'
     noise_level = nl1
     mu_default = .3
-    learning_rate = 0.0005
+    learning_rate = 0.0002
     step_size = 1
     total_steps_default = 30
 

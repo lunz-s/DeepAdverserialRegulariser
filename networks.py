@@ -170,14 +170,14 @@ def resblock(x, filters):
         update = apply_conv(update, filters=filters)
 
         skip = tf.layers.conv2d(x, filters=filters, kernel_size=1, padding='SAME',
-                                kernel_initializer=tf.contrib.layers.variance_scaling_initializer())
+                                kernel_initializer=tf.contrib.layers.xavier_initializer(uniform=True))
         return skip + update
 
 def meanpool(x):
     with tf.name_scope('meanpool'):
         x = tf.identity(x)
         return tf.add_n([x[:, ::2, ::2, :], x[:, 1::2, ::2, :],
-                         x[:, ::2, 1::2, :], x[:, 1::2, 1::2, :]]) / 4.
+                         x[:, ::2, 1::2, :], x[:, 1::2, 1::2, :]]) / 4.0
 
 class resnet_classifier(object):
     def __init__(self, size, colors):
