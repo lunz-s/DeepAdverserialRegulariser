@@ -40,7 +40,7 @@ if number == 0:
 
 class exp1(adversarial_regulariser):
     experiment_name = 'LowNoiseExp1'
-    noise_level = 0.01
+    noise_level = 0.1
     mu_default = .3
     learning_rate = 0.0005
     step_size = 1
@@ -127,7 +127,6 @@ if number == 1.4:
     for k in range(3):
         adv_reg.train(500)
 
-
 # Experiment 2.0 post-processing with noise level 0.01, standard UNet, LUNA data set
 if number==2:
     print('Run Postprocessing, low noise, standard UNet')
@@ -202,6 +201,7 @@ if number == 4:
         for k in range(3):
             adv_reg.train(300, starting_point='FBP')
 
+# Denoiser with ResNet
 if number == 5:
     print('Running denoiser with resNet')
     class l1_denoiser(adversarial_regulariser):
