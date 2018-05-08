@@ -121,3 +121,25 @@ if number == 2:
     for k in range(2):
         adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.evaluate_image_optimization(steps=70)
+
+### Comparison experiments: Standard architecture
+class reference(adversarial_regulariser):
+    experiment_name = 'MaxPoolNet'
+    noise_level = nl1
+    mu_default = .3
+    learning_rate = 0.0005
+    step_size = 1
+    total_steps_default = 30
+
+
+    def unreg_mini(self, y, fbp):
+        return self.update_pic(15, 1, y, fbp, 0)
+
+if number == 3:
+    # create object of type experiment1
+    adv_reg = reference()
+    adv_reg.set_total_steps(30)
+    # adv_reg.find_good_lambda()
+    for k in range(2):
+        adv_reg.pretrain_Wasser_DataMinimizer(500)
+    adv_reg.evaluate_image_optimization(steps=70)
