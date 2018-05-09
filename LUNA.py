@@ -151,7 +151,6 @@ if number == 3:
 if number == 3.1:
     adv_reg = reference()
     adv_reg.find_good_lambda()
-    adv_reg.end()
 
     repeat = 1
     while repeat == 1:
