@@ -128,7 +128,7 @@ class reference(adversarial_regulariser):
     experiment_name = 'ConvNet'
     noise_level = nl1
     mu_default = .7
-    learning_rate = 0.0002
+    learning_rate = 0.0001
     step_size = 1
     total_steps_default = 15
     default_sampling_pattern = 'startend'

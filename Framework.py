@@ -357,9 +357,7 @@ class adversarial_regulariser(generic_framework):
             mu = self.mu_default
         if starting_point ==None:
             starting_point = 'Mini'
-        y, true, fbp = self.generate_training_data(batch_size=self.batch_size)
-        if starting_point == 'Mini':
-            fbp = self.unreg_mini(y, fbp)
+        y, true, fbp = self.generate_optimized_images(batch_size=self.batch_size)
         # generate random distribution for rays
         epsilon = np.random.uniform(size=(self.batch_size))
         step, Was, reg, norm = self.sess.run([self.global_step, self.wasserstein_loss, self.regulariser_was,
