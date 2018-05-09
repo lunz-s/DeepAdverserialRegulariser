@@ -340,6 +340,12 @@ class adversarial_regulariser(generic_framework):
             guess = self.update_pic(1, step_s, y, guess, mu)
         writer.close()
 
+    def check_recursive_patter(self):
+        true_im, output_fbp, output_im = self.generate_optimized_images(16)
+        ut.create_single_folder(self.path + 'Images/Test_Sampling')
+        self.visualize(true_im, output_fbp, output_im, 'Images/Test_Sampling/1')
+
+
 
     # evaluates and prints the network performance
     def evaluate_Network(self, mu = None, amount_steps = None, starting_point=None):
