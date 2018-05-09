@@ -346,6 +346,7 @@ class adversarial_regulariser(generic_framework):
         self.visualize(true_im, output_fbp, output_im, 'Images/Test_Sampling/1')
         for k in range(16):
             print(np.sqrt(np.sum(np.square(output_im[k,...]-true_im[k,...]))))
+            print(np.sqrt(np.sum(np.square(output_im[k,...]))))
 
 
     # evaluates and prints the network performance
