@@ -358,8 +358,7 @@ class adversarial_regulariser(generic_framework):
                                         self.norm_gradient],
                                                      feed_dict={self.gen_im: fbp, self.true_im: true,
                                                                 self.random_uint: epsilon})
-        print('Iteration prior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg) +
-              ', Norm: ' + str(norm))
+        print('Iteration prior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg))
 
         # tensorflow logging
         guess = np.copy(fbp)

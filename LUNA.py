@@ -127,7 +127,7 @@ if number == 2:
 class reference(adversarial_regulariser):
     experiment_name = 'ConvNet'
     noise_level = nl1
-    mu_default = .5
+    mu_default = .6
     learning_rate = 0.0002
     step_size = 1
     total_steps_default = 15
@@ -164,7 +164,7 @@ if number == 3.1:
 
 if number == 3.2:
     adv_reg = reference()
-    adv_reg.set_total_steps(15)
+    adv_reg.set_total_steps(20)
     for k in range(5):
         adv_reg.train(500)
     adv_reg.evaluate_image_optimization(50)
