@@ -29,7 +29,7 @@ class generic_framework(object):
     experiment_name = 'default_experiment'
 
     # set the noise level used for experiments
-    noise_level = 0.01
+    noise_level = 0.02
 
     # methods to define the models used in framework
     def get_network(self, size, colors):
@@ -346,7 +346,6 @@ class adversarial_regulariser(generic_framework):
         self.visualize(true_im, output_fbp, output_im, 'Images/Test_Sampling/1')
 
 
-
     # evaluates and prints the network performance
     def evaluate_Network(self, mu = None, amount_steps = None, starting_point=None):
         if amount_steps == None:
@@ -421,10 +420,12 @@ class adversarial_regulariser(generic_framework):
                 if starting_point == 'Mini':
                     guess = self.unreg_mini(y, fbp)
                 if k == 1:
-                    guess = self.update_pic(amount_steps, self.step_size, y, guess, mu)
+                    result = self.update_pic(amount_steps, self.step_size, y, guess, mu)
+                else:
+                    result = guess
                 true_im[k*halftime:(k+1)*halftime,...] = x_true
                 output_fbp[k * halftime:(k + 1) * halftime, ...] = fbp
-                output_im[k * halftime:(k + 1) * halftime, ...] = guess
+                output_im[k * halftime:(k + 1) * halftime, ...] = result
 
         return true_im, output_fbp, output_im
 
