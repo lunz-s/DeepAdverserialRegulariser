@@ -127,14 +127,14 @@ if number == 2:
 class reference(adversarial_regulariser):
     experiment_name = 'ConvNet'
     noise_level = nl1
-    mu_default = .3
+    mu_default = .5
     learning_rate = 0.0002
     step_size = 1
-    total_steps_default = 30
+    total_steps_default = 15
+    default_sampling_pattern = 'startend'
 
     def get_network(self, size, colors):
         return improved_binary_classifier(size=size, colors=colors)
-
 
     def unreg_mini(self, y, fbp):
         return self.update_pic(15, 1, y, fbp, 0)
@@ -162,3 +162,9 @@ if number == 3.1:
         repeat = input('Repeat experiment?')
     adv_reg.end()
 
+if number == 3.2:
+    adv_reg = reference()
+    adv_reg.set_total_steps(15)
+    for k in range(5):
+        adv_reg.train(500)
+    adv_reg.evaluate_image_optimization(50)
