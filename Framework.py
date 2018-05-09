@@ -332,6 +332,9 @@ class adversarial_regulariser(generic_framework):
                                                self.mu: mu})
             writer.add_summary(summary, k)
             if (k % 5 == 0):
+                wass = self.sess.run(self.wasserstein_loss, feed_dict={self.gen_im: guess,
+                                                                       self.true_im: x_true})
+                print('Remaining Wasserstein Distance: ' + str(wass))
                 ut.create_single_folder(self.path + 'Images/Global_Step:_{}/'.format(g_step))
                 self.visualize(x_true, fbp, guess, 'Images/Global_Step:_{}/Opt._Step:{}'.format(g_step, k))
             guess = self.update_pic(1, step_s, y, guess, mu)
