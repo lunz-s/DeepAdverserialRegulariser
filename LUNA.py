@@ -165,6 +165,7 @@ if number == 3.1:
 if number == 3.2:
     adv_reg = reference()
     adv_reg.set_total_steps(30)
+    adv_reg.set_sampling_pattern('startend')
     adv_reg.check_recursive_patter()
     for k in range(5):
         adv_reg.train(500)
