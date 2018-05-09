@@ -148,3 +148,18 @@ if number == 3:
         adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.evaluate_image_optimization(steps=70)
 
+if number == 3.1:
+    adv_reg = reference()
+    adv_reg.find_good_lambda()
+    adv_reg.end()
+
+    repeat = 1
+    while repeat == 1:
+        ss = input('Please insert desired steps size: ')
+        a_s = input('Please insert amount of steps: ')
+        mu = input('Please insert regularisation parameter mu: ')
+        adv_reg.evaluate_image_optimization(batch_size=32, mu=mu, step_s=ss,
+                                       steps=a_s, starting_point='Mini')
+        repeat = input('Repeat experiment?')
+    adv_reg.end()
+
