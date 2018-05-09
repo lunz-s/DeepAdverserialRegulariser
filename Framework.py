@@ -357,33 +357,14 @@ class adversarial_regulariser(generic_framework):
             mu = self.mu_default
         if starting_point ==None:
             starting_point = 'Mini'
-        y, true, fbp = self.generate_optimized_images(batch_size=self.batch_size)
+        true_im, output_fbp, output_im = self.generate_optimized_images(batch_size=self.batch_size)
         # generate random distribution for rays
         epsilon = np.random.uniform(size=(self.batch_size))
         step, Was, reg, norm = self.sess.run([self.global_step, self.wasserstein_loss, self.regulariser_was,
                                         self.norm_gradient],
-                                                     feed_dict={self.gen_im: fbp, self.true_im: true,
+                                                     feed_dict={self.gen_im: output_im, self.true_im: true_im,
                                                                 self.random_uint: epsilon})
         print('Iteration prior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg))
-
-        # tensorflow logging
-        guess = np.copy(fbp)
-        guess = self.update_pic(amount_steps, self.step_size, y, guess, mu)
-        summary, step = self.sess.run([self.merged, self.global_step],
-                                      feed_dict={self.gen_im: fbp,
-                                                 self.true_im: true,
-                                                 self.random_uint: epsilon,
-                                                 self.reconstruction: guess,
-                                                 self.data_term: y,
-                                                 self.ground_truth: true,
-                                                 self.mu: mu})
-        self.writer.add_summary(summary, step)
-
-        # print posterior regression data term parameters
-        step, Was, reg = self.sess.run([self.global_step, self.wasserstein_loss, self.regulariser_was],
-                                                     feed_dict={self.gen_im: guess, self.true_im: true,
-                                                                self.random_uint: epsilon})
-        print('Iteration posterior: ' + str(step) + ', Was: ' + str(Was) + ', Reg: ' + str(reg))
 
     # method to generate new training images using posterior distribution of the algorithm itself
     def generate_optimized_images(self, batch_size = None,
