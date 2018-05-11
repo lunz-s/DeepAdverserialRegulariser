@@ -170,3 +170,11 @@ if number == 3.2:
     for k in range(5):
         adv_reg.train(500)
     adv_reg.evaluate_image_optimization(50)
+
+if number == 4.0:
+    tv = total_variation()
+    print(tv.noise_level)
+    lmb = []
+    for k in range(10):
+        lmb.append(3 ** (k - 12))
+    tv.find_TV_lambda(lmb)

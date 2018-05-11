@@ -966,7 +966,7 @@ class total_variation(generic_framework):
     model_name = 'TV'
 
     # TV hyperparameters
-    noise_level = 0.01
+    noise_level = 0.02
     def_lambda = 0.0013
 
     def __init__(self):
@@ -995,7 +995,7 @@ class total_variation(generic_framework):
         niter = 500
 
         # find starting point
-        x = self.range.element(self.model.inverse(y))
+        x = self.space.element(self.model.inverse(y))
 
         # Run the optimization algoritm
         # odl.solvers.chambolle_pock_solver(x, functional, g, broad_op, tau = tau, sigma = sigma, niter=niter)
@@ -1003,17 +1003,20 @@ class total_variation(generic_framework):
         return x
 
     def find_TV_lambda(self, lmd):
-        amount_test_images = 32
-        y, true, cor = self.generate_training_data(amount_test_images)
+        amount_test_images = 8
+        y, true, fbp = self.generate_training_data(amount_test_images)
         for l in lmd:
             error = np.zeros(amount_test_images)
             or_error = np.zeros(amount_test_images)
+            guess = np.copy(fbp)
             for k in range(amount_test_images):
                 recon = self.tv_reconstruction(y[k, ..., 0], l)
+                guess[k,...,0] = recon
                 error[k] = np.sum(np.square(recon - true[k, ..., 0]))
-                or_error[k] = np.sum(np.square(cor[k, ..., 0] - true[k, ..., 0]))
+                or_error[k] = np.sum(np.square(fbp[k, ..., 0] - true[k, ..., 0]))
             total_e = np.mean(np.sqrt(error))
             total_o = np.mean(np.sqrt(or_error))
+            self.visualize(true, fbp, guess, 'Images/Lambda_'+str(l))
             print('Lambda: ' + str(l) + ', MSE: ' + str(total_e) + ', OriginalError: ' + str(total_o))
 
 
