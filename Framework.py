@@ -9,6 +9,7 @@ import matplotlib.image as mpimg
 import platform
 import odl
 import odl.contrib.tensorflow
+from skimage.measure import compare_ssim as ssim
 
 import dicom as dc
 from scipy.misc import imresize
@@ -105,7 +106,8 @@ class generic_framework(object):
     # visualizes the quality of the current method
     def visualize(self, true, fbp, guess, name):
         quality = np.average(np.sqrt(np.sum(np.square(true - guess), axis=(1, 2, 3))))
-        print('Quality of reconstructed image: ' + str(quality))
+        print('Quality of reconstructed image: ' + str(quality) + 'SSIM: ' +
+              str(ssim(true[-1,...,0], ut.cut_image(guess[-1,...,0]))))
         if self.colors == 1:
             t = true[-1,...,0]
             g = guess[-1, ...,0]
