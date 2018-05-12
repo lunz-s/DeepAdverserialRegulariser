@@ -808,7 +808,7 @@ class postprocessing(generic_framework):
     # learning rate for Adams
     learning_rate = 0.001
     # The batch size
-    batch_size = 64
+    batch_size = 16
 
     # methods to define the models used in framework
     def get_network(self, size, colors):
@@ -1003,7 +1003,7 @@ class total_variation(generic_framework):
         return x
 
     def find_TV_lambda(self, lmd):
-        amount_test_images = 8
+        amount_test_images = 32
         y, true, fbp = self.generate_training_data(amount_test_images)
         for l in lmd:
             error = np.zeros(amount_test_images)

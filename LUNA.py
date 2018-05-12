@@ -164,8 +164,8 @@ if number == 3.1:
 
 if number == 3.2:
     adv_reg = reference()
-    adv_reg.set_total_steps(30)
-    adv_reg.set_sampling_pattern('startend')
+    adv_reg.set_total_steps(20)
+    adv_reg.set_sampling_pattern('uniform')
     adv_reg.check_recursive_patter()
     for k in range(5):
         adv_reg.train(500)
@@ -178,3 +178,8 @@ if number == 4.0:
     for k in range(10):
         lmb.append(0.001*(k+1))
     tv.find_TV_lambda(lmb)
+
+if number == 5.0:
+    recon = postprocessing()
+    for k in range(5):
+        recon.train(500)
