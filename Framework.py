@@ -811,6 +811,8 @@ class postprocessing(generic_framework):
     learning_rate = 0.001
     # The batch size
     batch_size = 16
+    # noise level
+    noise_level = 0.02
 
     # methods to define the models used in framework
     def get_network(self, size, colors):

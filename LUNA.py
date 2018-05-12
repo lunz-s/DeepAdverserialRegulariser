@@ -181,5 +181,6 @@ if number == 4.0:
 
 if number == 5.0:
     recon = postprocessing()
+    print(recon.noise_level)
     for k in range(5):
         recon.train(500)
