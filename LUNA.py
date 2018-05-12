@@ -119,7 +119,7 @@ if number == 2:
     adv_reg = l1_exp()
     adv_reg.set_total_steps(30)
     # adv_reg.find_good_lambda()
-    for k in range(2):
+    for k in range(10):
         adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.evaluate_image_optimization(steps=70)
 
