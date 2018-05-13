@@ -195,7 +195,11 @@ if number == 5.0:
 def quality(truth, measurement):
     l2 = np.average(np.square(np.sum(np.square(truth - measurement), axis = (1,2,3))))
     psnr = - 10 * np.log10(np.average(np.square(truth - measurement)))
-    ssi = ssim(truth, measurement)
+    amount_images = truth.shape[0]
+    ssi = 0
+    for k in range(amount_images):
+        ssi = ssi + ssim(truth[k,...,0], measurement[k,...,0])
+    ssi = ssi/amount_images
     return [l2, psnr, ssi]
 
 if number == 6.0:
