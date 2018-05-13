@@ -488,10 +488,13 @@ class adversarial_regulariser(generic_framework):
         print(np.mean(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1,2,3)))))
 
     def evaluate(self, y ,fbp):
+        results = []
         guess = self.unreg_mini(y, fbp)
         print('Steps: {}, Stepsize: {}, Mu: {}'.format(self.total_steps, 1, self.mu_default))
-        result = self.update_pic(steps=self.total_steps, measurement= y , guess= guess, stepsize=1, mu=self.mu_default)
-        return result
+        for k in range(self.total_steps):
+            guess = self.update_pic(steps=1, measurement= y , guess= guess, stepsize=1, mu=self.mu_default)
+            results.append(guess)
+        return results
 
 # Framework for the adversarial regulariser network
 class positiv_adversarial_regulariser(generic_framework):
@@ -1007,7 +1010,7 @@ class total_variation(generic_framework):
         op_norm = 1.1 * odl.power_method_opnorm(broad_op)
         tau = 10.0 / op_norm
         sigma = 0.1 / op_norm
-        niter = 500
+        niter = 200
 
         # find starting point
         x = self.space.element(self.model.inverse(y))
