@@ -487,6 +487,12 @@ class adversarial_regulariser(generic_framework):
         print(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1,2,3))))
         print(np.mean(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1,2,3)))))
 
+    def evaluate(self, y ,fbp):
+        guess = self.unreg_mini(y, fbp)
+        print('Steps: {}, Stepsize: {}, Mu: {}'.format(self.total_steps, 1, self.mu_default))
+        result = self.update_pic(steps=self.total_steps, measurement= y , guess= guess, stepsize=1, mu=self.mu_default)
+        return result
+
 # Framework for the adversarial regulariser network
 class positiv_adversarial_regulariser(generic_framework):
     model_name = 'Adversarial_Regulariser'
@@ -881,8 +887,10 @@ class postprocessing(generic_framework):
                 self.visualize(x_true, fbp, output, 'Iteration_{}'.format(iteration))
         self.save(self.global_step)
 
-    def evaluate(self):
-        y, x_true, fbp = self.generate_training_data(self.batch_size)
+    def evaluate(self, y, fbp):
+        output = self.sess.run(self.out, feed_dict={self.true: fbp,
+                                                    self.y: fbp})
+        return output
 
 # implementation of iterative scheme from Jonas and Ozans paper
 class iterative_scheme(generic_framework):
@@ -974,7 +982,7 @@ class total_variation(generic_framework):
 
     # TV hyperparameters
     noise_level = 0.02
-    def_lambda = 0.0013
+    def_lambda = 0.003
 
     def __init__(self):
         # call superclass init
@@ -1025,5 +1033,15 @@ class total_variation(generic_framework):
             total_o = np.mean(np.sqrt(or_error))
             self.visualize(true, fbp, guess, 'Images/Lambda_'+str(l))
             print('Lambda: ' + str(l) + ', MSE: ' + str(total_e) + ', OriginalError: ' + str(total_o))
+
+    def evaluate(self, y , fbp):
+        guess = np.copy(fbp)
+        amount_images = y.shape[0]
+        for k in range(amount_images):
+            recon = self.tv_reconstruction(y[k, ..., 0], self.def_lambda)
+            guess[k, ..., 0] = recon
+        return guess
+
+
 
 

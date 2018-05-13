@@ -2,6 +2,9 @@ from data_pips import ellipses
 from data_pips import LUNA
 from data_pips import BSDS
 
+import numpy as np
+from skimage.measure import compare_ssim as ssim
+
 from forward_models import ct
 from forward_models import denoising
 
@@ -188,3 +191,28 @@ if number == 5.0:
     print(recon.noise_level)
     for k in range(5):
         recon.train(500)
+
+def quality(truth, measurement):
+    l2 = np.average(np.square(np.sum(np.square(truth - measurement), axis = (1,2,3))))
+    psnr = - 10 * np.log10(np.average(np.square(truth - measurement)))
+    ssi = ssim(truth, measurement)
+    return [l2, psnr, ssi]
+
+if number == 6.0:
+    # compare all existing methods
+    batch_size = 128
+    ar = reference()
+    y, x_true, fbp = ar.generate_training_data(batch_size=batch_size, training_data=False)
+    ar_results = ar.evaluate(y, fbp)
+    print(quality(x_true, ar_results))
+    ar.end()
+    pp = postprocessing()
+    pp_results = pp.evaluate(y, fbp)
+    print(quality(x_true, pp_results))
+    pp.end()
+    tv = total_variation()
+    tv_results = tv.evaluate(y, fbp)
+    print(quality(x_true, tv_results))
+    tv.end()
+
+
