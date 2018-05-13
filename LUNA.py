@@ -27,6 +27,18 @@ number = input("Please enter number of experiment you want to run: ")
 
 nl1 = 0.02
 
+
+def quality(truth, recon):
+    recon = ut.cut_image(recon)
+    l2 = np.average(np.sqrt(np.sum(np.square(truth - recon), axis = (1,2,3))))
+    psnr = - 10 * np.log10(np.average(np.square(truth - recon)))
+    amount_images = truth.shape[0]
+    ssi = 0
+    for k in range(amount_images):
+        ssi = ssi + ssim(truth[k,...,0], recon[k,...,0])
+    ssi = ssi/amount_images
+    return [l2, psnr, ssi]
+
 # Experiments 0.0: Step size checks for solving variational problem later
 if number == 0:
     print('Start unregularised optimisation experiments.')
@@ -249,19 +261,52 @@ if number == 6.0:
             lmb.append(0.0002 * (k + 1))
         tv.find_TV_lambda(lmb)
 
+    if n == 4:
+        batch_size = 32
+        ar = low_noise_ar()
+        y, x_true, fbp = ar.generate_training_data(batch_size=batch_size, training_data=False)
+        ar_results = ar.evaluate(y, fbp)
+        for res in ar_results:
+            print('AR: ' + str(quality(x_true, res)))
+        ar.end()
+        pp = low_noise_pp()
+        pp_results = pp.evaluate(y, fbp)
+        print('PP: ' + str(quality(x_true, pp_results)))
+        pp.end()
+        tv = low_noise_tv()
+        tv_results = tv.evaluate(y, fbp)
+        print('TV: ' + str(quality(x_true, tv_results)))
+        tv.end()
+        print('FBP: ' + str(quality(x_true, fbp)))
+
+        for k in range(10):
+            plt.figure()
+            plt.subplot(151)
+            plt.imshow(ut.cut_image(x_true[k, ..., 0]), cmap='Greys')
+            plt.axis('off')
+            plt.title('Ground_truth')
+            plt.subplot(152)
+            plt.imshow(ut.cut_image(fbp[k, ..., 0]), cmap='Greys')
+            plt.axis('off')
+            plt.title('FBP')
+            plt.subplot(153)
+            plt.imshow(ut.cut_image(pp_results[k, ..., 0]), cmap='Greys')
+            plt.title('PostProcessing')
+            plt.axis('off')
+            plt.subplot(154)
+            plt.imshow(ut.cut_image((ar_results[20])[k, ..., 0]), cmap='Greys')
+            plt.title('Adv. Reg')
+            plt.axis('off')
+            plt.subplot(155)
+            plt.imshow(ut.cut_image(tv_results[k, ..., 0]), cmap='Greys')
+            plt.title('TV')
+            plt.axis('off')
+            path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/Computed_Tomography/LUNA/Comparison/'
+            ut.create_single_folder(path)
+            plt.savefig(path + str(k) + '.png')
+            plt.close()
 
 
-
-def quality(truth, recon):
-    recon = ut.cut_image(recon)
-    l2 = np.average(np.sqrt(np.sum(np.square(truth - recon), axis = (1,2,3))))
-    psnr = - 10 * np.log10(np.average(np.square(truth - recon)))
-    amount_images = truth.shape[0]
-    ssi = 0
-    for k in range(amount_images):
-        ssi = ssi + ssim(truth[k,...,0], recon[k,...,0])
-    ssi = ssi/amount_images
-    return [l2, psnr, ssi]
 
 if number == 10.0:
     # compare all existing methods
