@@ -103,7 +103,7 @@ if number == 1.2:
 class l1_exp(adversarial_regulariser):
     experiment_name = 'dilatedL1'
     noise_level = nl1
-    mu_default = .3
+    mu_default = .6
     learning_rate = 0.0005
     step_size = 1
     total_steps_default = 30
@@ -122,6 +122,10 @@ if number == 2:
     for k in range(10):
         adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.evaluate_image_optimization(steps=70)
+
+if number == 2.1:
+    adv_reg = l1_exp()
+    adv_reg.evaluate_image_optimization(steps=70, mu=.6)
 
 ### Comparison experiments: Standard architecture
 class reference(adversarial_regulariser):
