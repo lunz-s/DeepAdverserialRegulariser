@@ -208,8 +208,8 @@ if number == 6.0:
     ar = reference()
     y, x_true, fbp = ar.generate_training_data(batch_size=batch_size, training_data=False)
     ar_results = ar.evaluate(y, fbp)
-    for results in ar_results:
-        print('AR: ' +str(quality(x_true, ar_results)))
+    for res in ar_results:
+        print('AR: ' +str(quality(x_true, res)))
     ar.end()
     pp = postprocessing()
     pp_results = pp.evaluate(y, fbp)
