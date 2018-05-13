@@ -197,6 +197,51 @@ if number == 5.0:
     for k in range(5):
         recon.train(500)
 
+# experiments on low noise level
+if number == 6.0:
+    ### Comparison experiments: Standard architecture
+    class low_noise_ar(adversarial_regulariser):
+        experiment_name = 'LowNoise-ConvNet'
+        noise_level = 0.005
+        mu_default = .2
+        learning_rate = 0.0001
+        step_size = 1
+        total_steps_default = 25
+        default_sampling_pattern = 'startend'
+
+        def get_network(self, size, colors):
+            return improved_binary_classifier(size=size, colors=colors)
+
+        def unreg_mini(self, y, fbp):
+            return self.update_pic(15, 1, y, fbp, 0)
+
+    class low_noise_tv(total_variation):
+        experiment_name = 'LowNoise'
+        noise_level = 0.005
+
+    class low_noise_pp(postprocessing):
+        experiment_name = 'LowNoise'
+        noise_level = 0.005
+
+    n = input('exp: ')
+
+    if n == 1:
+        # create object of type experiment1
+        adv_reg = low_noise_ar()
+        adv_reg.set_total_steps(30)
+        # adv_reg.find_good_lambda()
+        for k in range(5):
+            adv_reg.pretrain_Wasser_DataMinimizer(500)
+        adv_reg.evaluate_image_optimization(steps=70)
+
+    if n ==2:
+        recon = low_noise_pp()
+        print(recon.noise_level)
+        for k in range(5):
+            recon.train(500)
+
+
+
 def quality(truth, recon):
     recon = ut.cut_image(recon)
     l2 = np.average(np.sqrt(np.sum(np.square(truth - recon), axis = (1,2,3))))
@@ -208,7 +253,7 @@ def quality(truth, recon):
     ssi = ssi/amount_images
     return [l2, psnr, ssi]
 
-if number == 6.0:
+if number == 10.0:
     # compare all existing methods
     batch_size = 32
     ar = reference()
