@@ -6,6 +6,10 @@ import numpy as np
 import util as ut
 from skimage.measure import compare_ssim as ssim
 
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+
 from forward_models import ct
 from forward_models import denoising
 
@@ -222,4 +226,28 @@ if number == 6.0:
     print('TV: ' + str(quality(x_true, tv_results)))
     tv.end()
     print('FBP: ' + str(quality(x_true, fbp)))
+
+
+    for k in range(10):
+        plt.figure()
+        plt.subplot(141)
+        plt.imshow(ut.cut_image(x_true[k,...,0]), cmap = 'Greys')
+        plt.axis('off')
+        plt.title('Ground_truth')
+        plt.subplot(142)
+        plt.imshow(ut.cut_image(fbp[k, ..., 0]), cmap='Greys')
+        plt.axis('off')
+        plt.title('FBP')
+        plt.subplot(143)
+        plt.imshow(ut.cut_image(pp_results[k, ..., 0]), cmap='Greys')
+        plt.title('PostProcessing')
+        plt.axis('off')
+        plt.subplot(144)
+        plt.imshow(ut.cut_image((ar_results[20])[k, ..., 0]), cmap='Greys')
+        plt.title('Adv. Reg')
+        plt.axis('off')
+        path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/Computed_Tomography/LUNA/Comparison'
+        ut.create_single_folder(path)
+        plt.savefig(path + str(k) + '.png')
+        plt.close()
 
