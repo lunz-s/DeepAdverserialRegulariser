@@ -301,7 +301,7 @@ if number == 6.0:
             plt.imshow(ut.cut_image(tv_results[k, ..., 0]), cmap='Greys')
             plt.title('TV')
             plt.axis('off')
-            path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/Computed_Tomography/LUNA/Comparison/'
+            path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/Computed_Tomography/LUNA/Comparison_LowNoise/'
             ut.create_single_folder(path)
             plt.savefig(path + str(k) + '.png')
             plt.close()
