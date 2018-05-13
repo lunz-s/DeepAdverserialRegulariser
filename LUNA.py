@@ -209,15 +209,15 @@ if number == 6.0:
     y, x_true, fbp = ar.generate_training_data(batch_size=batch_size, training_data=False)
     ar_results = ar.evaluate(y, fbp)
     for results in ar_results:
-        print('AR: ' +quality(x_true, ar_results))
+        print('AR: ' +str(quality(x_true, ar_results)))
     ar.end()
     pp = postprocessing()
     pp_results = pp.evaluate(y, fbp)
-    print('PP: ' + quality(x_true, pp_results))
+    print('PP: ' + str(quality(x_true, pp_results)))
     pp.end()
     tv = total_variation()
     tv_results = tv.evaluate(y, fbp)
-    print('TV: ' + quality(x_true, tv_results))
+    print('TV: ' + str(quality(x_true, tv_results)))
     tv.end()
 
 
