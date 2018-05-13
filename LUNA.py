@@ -246,7 +246,7 @@ if number == 6.0:
         print(tv.noise_level)
         lmb = []
         for k in range(10):
-            lmb.append(0.0005 * (k + 1))
+            lmb.append(0.0002 * (k + 1))
         tv.find_TV_lambda(lmb)
 
 
