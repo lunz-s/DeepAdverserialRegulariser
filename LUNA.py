@@ -206,7 +206,7 @@ def quality(truth, recon):
 
 if number == 6.0:
     # compare all existing methods
-    batch_size = 64
+    batch_size = 32
     ar = reference()
     y, x_true, fbp = ar.generate_training_data(batch_size=batch_size, training_data=False)
     ar_results = ar.evaluate(y, fbp)
@@ -221,5 +221,5 @@ if number == 6.0:
     tv_results = tv.evaluate(y, fbp)
     print('TV: ' + str(quality(x_true, tv_results)))
     tv.end()
-
+    print('FBP: ' + str(quality(x_true, fbp)))
 
