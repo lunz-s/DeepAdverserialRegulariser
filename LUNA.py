@@ -222,6 +222,7 @@ if number == 6.0:
     class low_noise_pp(postprocessing):
         experiment_name = 'LowNoise'
         noise_level = 0.005
+        def_lambda = 0.0007
 
     n = input('exp: ')
 
@@ -239,6 +240,15 @@ if number == 6.0:
         print(recon.noise_level)
         for k in range(5):
             recon.train(500)
+
+    if n == 3:
+        tv = low_noise_tv()
+        print(tv.noise_level)
+        lmb = []
+        for k in range(10):
+            lmb.append(0.0005 * (k + 1))
+        tv.find_TV_lambda(lmb)
+
 
 
 
