@@ -137,7 +137,7 @@ class reference(adversarial_regulariser):
     mu_default = .7
     learning_rate = 0.0001
     step_size = 1
-    total_steps_default = 15
+    total_steps_default = 25
     default_sampling_pattern = 'startend'
 
     def get_network(self, size, colors):
@@ -193,7 +193,7 @@ if number == 5.0:
         recon.train(500)
 
 def quality(truth, measurement):
-    l2 = np.average(np.square(np.sum(np.square(truth - measurement), axis = (1,2,3))))
+    l2 = np.average(np.sqrt(np.sum(np.square(truth - measurement), axis = (1,2,3))))
     psnr = - 10 * np.log10(np.average(np.square(truth - measurement)))
     amount_images = truth.shape[0]
     ssi = 0
@@ -204,7 +204,7 @@ def quality(truth, measurement):
 
 if number == 6.0:
     # compare all existing methods
-    batch_size = 128
+    batch_size = 16
     ar = reference()
     y, x_true, fbp = ar.generate_training_data(batch_size=batch_size, training_data=False)
     ar_results = ar.evaluate(y, fbp)
