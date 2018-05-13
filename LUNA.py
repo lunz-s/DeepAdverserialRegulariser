@@ -3,6 +3,7 @@ from data_pips import LUNA
 from data_pips import BSDS
 
 import numpy as np
+import util as ut
 from skimage.measure import compare_ssim as ssim
 
 from forward_models import ct
@@ -192,13 +193,14 @@ if number == 5.0:
     for k in range(5):
         recon.train(500)
 
-def quality(truth, measurement):
-    l2 = np.average(np.sqrt(np.sum(np.square(truth - measurement), axis = (1,2,3))))
-    psnr = - 10 * np.log10(np.average(np.square(truth - measurement)))
+def quality(truth, recon):
+    recon = ut.cut_image(recon)
+    l2 = np.average(np.sqrt(np.sum(np.square(truth - recon), axis = (1,2,3))))
+    psnr = - 10 * np.log10(np.average(np.square(truth - recon)))
     amount_images = truth.shape[0]
     ssi = 0
     for k in range(amount_images):
-        ssi = ssi + ssim(truth[k,...,0], measurement[k,...,0])
+        ssi = ssi + ssim(truth[k,...,0], recon[k,...,0])
     ssi = ssi/amount_images
     return [l2, psnr, ssi]
 
