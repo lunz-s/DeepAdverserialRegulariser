@@ -15,7 +15,7 @@ import matplotlib.image as mpimg
 import dicom as dc
 from scipy.misc import imresize
 import platform
-
+from skimage.measure import compare_ssim as ssim
 
 
 def cut_image(pic):
@@ -76,5 +76,16 @@ def dilated_conv_layer(inputs, name, filters=16, kernel_size=(5, 5), padding="sa
 # contracts an image tensor of shape [batch, size, size, channels] to its l1 values along the size dimensions
 def image_l1(inputs):
     return tf.reduce_mean(tf.abs(inputs), axis = (1,2))
+
+def quality(truth, recon):
+    recon = cut_image(recon)
+    l2 = np.average(np.sqrt(np.sum(np.square(truth - recon), axis = (1,2,3))))
+    psnr = - 10 * np.log10(np.average(np.square(truth - recon)))
+    amount_images = truth.shape[0]
+    ssi = 0
+    for k in range(amount_images):
+        ssi = ssi + ssim(truth[k,...,0], recon[k,...,0])
+    ssi = ssi/amount_images
+    return [l2, psnr, ssi]
 
 
