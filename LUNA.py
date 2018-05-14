@@ -341,7 +341,7 @@ if number == 10.0:
     tv.end()
     print('FBP: ' + str(quality(x_true, fbp)))
 
-    for j in range(5):
+    for j in range(10):
         for k in range(10):
             plt.figure()
             plt.subplot(151)
@@ -365,7 +365,7 @@ if number == 10.0:
             plt.title('TV')
             plt.axis('off')
             path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/' \
-                   'Computed_Tomography/LUNA/Comparison/Iterate' + str(17 + j) + '/'
+                   'Computed_Tomography/LUNA/Comparison/Iterate' + str(22 + j) + '/'
             ut.create_single_folder(path)
             plt.savefig(path + str(k) + '.png')
             plt.close()
