@@ -23,8 +23,6 @@ from networks import multiscale_l1_classifier
 from networks import resnet_classifier
 from networks import improved_binary_classifier
 
-number = input("Please enter number of experiment you want to run: ")
-
 nl = 0.1
 
 def quality(truth, recon):
