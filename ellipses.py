@@ -24,13 +24,13 @@ from networks import multiscale_l1_classifier
 from networks import resnet_classifier
 from networks import improved_binary_classifier
 
-nl_el = 0.02
+nl_el = 0.01
 
 ### Comparison experiments: Standard architecture
 class ar(adversarial_regulariser):
     experiment_name = 'ConvNet'
     noise_level = nl_el
-    mu_default = .2
+    mu_default = .4
     learning_rate = 0.0001
     step_size = 1
     total_steps_default = 25
@@ -49,6 +49,7 @@ class ar(adversarial_regulariser):
 class tv(total_variation):
     experiment_name = 'Standard'
     noise_level = nl_el
+    def_lambda = 0.0015
 
     def get_Data_pip(self):
         return ellipses()
