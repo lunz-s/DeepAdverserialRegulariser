@@ -56,7 +56,10 @@ class ar(adversarial_regulariser):
         return self.update_pic(0, 1, y, fbp, 0)
 
     def get_Data_pip(self):
-        return ellipses()
+        return BSDS()
+
+    def get_model(self, size):
+        return denoising(size=size)
 
 
 class tv(total_variation):
@@ -65,7 +68,10 @@ class tv(total_variation):
     def_lambda = 0.0015
 
     def get_Data_pip(self):
-        return ellipses()
+        return BSDS()
+
+    def get_model(self, size):
+        return denoising(size=size)
 
 
 class pp(postprocessing):
@@ -74,7 +80,10 @@ class pp(postprocessing):
     def_lambda = 0.0007
 
     def get_Data_pip(self):
-        return ellipses()
+        return BSDS()
+
+    def get_model(self, size):
+        return denoising(size=size)
 
 
 n = input('exp: ')
