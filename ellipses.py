@@ -32,8 +32,8 @@ class ar(adversarial_regulariser):
     noise_level = nl_el
     mu_default = .4
     learning_rate = 0.0001
-    step_size = 1
-    total_steps_default = 25
+    step_size = .3
+    total_steps_default = 200
     default_sampling_pattern = 'startend'
 
     def get_network(self, size, colors):
@@ -74,6 +74,20 @@ if n == 1:
     for k in range(5):
         adv_reg.pretrain_Wasser_DataMinimizer(500)
     adv_reg.evaluate_image_optimization(steps=70)
+
+if n == 1.1:
+    adv_reg = ar()
+    adv_reg.find_good_lambda()
+
+    repeat = 1
+    while repeat == 1:
+        ss = input('Please insert desired steps size: ')
+        a_s = input('Please insert amount of steps: ')
+        mu = input('Please insert regularisation parameter mu: ')
+        adv_reg.evaluate_image_optimization(batch_size=32, mu=mu, step_s=ss,
+                                            steps=a_s, starting_point='Mini')
+        repeat = input('Repeat experiment?')
+    adv_reg.end()
 
 if n == 2:
     recon = pp()
