@@ -217,8 +217,8 @@ if number == 6.0:
         noise_level = 0.005
         mu_default = .15
         learning_rate = 0.0001
-        step_size = 1
-        total_steps_default = 25
+        step_size = .3
+        total_steps_default = 200
         default_sampling_pattern = 'startend'
 
         def get_network(self, size, colors):
@@ -308,7 +308,7 @@ if number == 6.0:
             plt.title('PostProcessing')
             plt.axis('off')
             plt.subplot(154)
-            plt.imshow(ut.cut_image((ar_results[20])[k, ..., 0]), cmap='Greys')
+            plt.imshow(ut.cut_image((ar_results[150])[k, ..., 0]), cmap='Greys')
             plt.title('Adv. Reg')
             plt.axis('off')
             plt.subplot(155)

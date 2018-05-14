@@ -490,9 +490,9 @@ class adversarial_regulariser(generic_framework):
     def evaluate(self, y ,fbp):
         results = []
         guess = self.unreg_mini(y, fbp)
-        print('Steps: {}, Stepsize: {}, Mu: {}'.format(self.total_steps, 1, self.mu_default))
-        for k in range(self.total_steps):
-            guess = self.update_pic(steps=1, measurement= y , guess= guess, stepsize=1, mu=self.mu_default)
+        print('Steps: {}, Stepsize: {}, Mu: {}'.format(self.total_steps, self.step_size, self.mu_default))
+        for k in range(int(self.total_steps/5)):
+            guess = self.update_pic(steps=5, measurement= y , guess= guess, stepsize=self.step_size, mu=self.mu_default)
             results.append(guess)
         return results
 
