@@ -78,13 +78,13 @@ def image_l1(inputs):
     return tf.reduce_mean(tf.abs(inputs), axis = (1,2))
 
 def quality(truth, recon):
-    recon = ut.cut_image(recon)
+    recon = cut_image(recon)
     l2 = np.average(np.sqrt(np.sum(np.square(truth - recon), axis = (1,2,3))))
     psnr = - 10 * np.log10(np.average(np.square(truth - recon)))
     amount_images = truth.shape[0]
     ssi = 0
     for k in range(amount_images):
-        ssi = ssi + ssim(truth[k,...,0], ut.cut_image(recon[k,...,0]), data_range = 1)
+        ssi = ssi + ssim(truth[k,...,0], cut_image(recon[k,...,0]), data_range = 1)
     ssi = ssi/amount_images
     return [l2, psnr, ssi]
 
