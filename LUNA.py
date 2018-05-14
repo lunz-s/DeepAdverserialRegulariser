@@ -292,7 +292,7 @@ if number == 6.0:
         print('TV: ' + str(quality(x_true, tv_results)))
         tv.end()
         print('FBP: ' + str(quality(x_true, fbp)))
-        for j in range(5):
+        for j in range(10):
             for k in range(10):
                 plt.figure()
                 plt.subplot(151)
@@ -308,7 +308,7 @@ if number == 6.0:
                 plt.title('PostProcessing')
                 plt.axis('off')
                 plt.subplot(154)
-                plt.imshow(ut.cut_image((ar_results[17+j])[k, ..., 0]), cmap='Greys')
+                plt.imshow(ut.cut_image((ar_results[25+j])[k, ..., 0]), cmap='Greys')
                 plt.title('Adv. Reg')
                 plt.axis('off')
                 plt.subplot(155)
@@ -316,7 +316,7 @@ if number == 6.0:
                 plt.title('TV')
                 plt.axis('off')
                 path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/' \
-                       'Computed_Tomography/LUNA/Comparison_LowNoise/Iterate' + str(17+j) +'/'
+                       'Computed_Tomography/LUNA/Comparison_LowNoise/Iterate' + str(25+j) +'/'
                 ut.create_single_folder(path)
                 plt.savefig(path + str(k) + '.png')
                 plt.close()
