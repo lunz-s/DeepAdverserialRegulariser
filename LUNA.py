@@ -215,10 +215,10 @@ if number == 6.0:
     class low_noise_ar(adversarial_regulariser):
         experiment_name = 'LowNoise-ConvNet'
         noise_level = 0.005
-        mu_default = .2
+        mu_default = .15
         learning_rate = 0.0001
         step_size = 1
-        total_steps_default = 25
+        total_steps_default = 250
         default_sampling_pattern = 'startend'
 
         def get_network(self, size, colors):
