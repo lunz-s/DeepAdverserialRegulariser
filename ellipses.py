@@ -33,7 +33,7 @@ class ar(adversarial_regulariser):
     mu_default = .4
     learning_rate = 0.0001
     step_size = .3
-    total_steps_default = 200
+    total_steps_default = 150
     default_sampling_pattern = 'startend'
 
     def get_network(self, size, colors):
