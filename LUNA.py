@@ -218,7 +218,7 @@ if number == 6.0:
         mu_default = .15
         learning_rate = 0.0001
         step_size = 1
-        total_steps_default = 250
+        total_steps_default = 25
         default_sampling_pattern = 'startend'
 
         def get_network(self, size, colors):
