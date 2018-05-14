@@ -35,7 +35,7 @@ def quality(truth, recon):
     amount_images = truth.shape[0]
     ssi = 0
     for k in range(amount_images):
-        ssi = ssi + ssim(truth[k,...,0], recon[k,...,0])
+        ssi = ssi + ssim(truth[k,...,0], ut.cut_image(recon[k,...,0]), data_range = 1)
     ssi = ssi/amount_images
     return [l2, psnr, ssi]
 
