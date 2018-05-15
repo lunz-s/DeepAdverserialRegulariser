@@ -158,14 +158,14 @@ if n == 4:
         plt.title('PostProcessing')
         plt.axis('off')
         plt.subplot(154)
-        plt.imshow(ut.cut_image((ar_results[20])[k, ...]),vmin=0, vmax=1)
+        plt.imshow(ut.cut_image((ar_results[25])[k, ...]),vmin=0, vmax=1)
         plt.title('Adv. Reg')
         plt.axis('off')
         plt.subplot(155)
         plt.imshow(ut.cut_image(tv_results[k, ...]),vmin=0, vmax=1)
         plt.title('TV')
         plt.axis('off')
-        path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/Computed_Tomography/ellipses/Comparison/'
+        path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/Denoising/BSDS/Comparison/'
         ut.create_single_folder(path)
         plt.savefig(path + str(k) + '.png')
         plt.close()
