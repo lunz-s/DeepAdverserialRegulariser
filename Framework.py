@@ -1025,16 +1025,17 @@ class total_variation(generic_framework):
         amount_test_images = 32
         y, true, fbp = self.generate_training_data(amount_test_images)
         for l in lmd:
-            error = np.zeros(amount_test_images)
-            or_error = np.zeros(amount_test_images)
+            error = np.zeros((amount_test_images, self.colors))
+            or_error = np.zeros((amount_test_images, self.colors))
             guess = np.copy(fbp)
-            for k in range(amount_test_images):
-                recon = self.tv_reconstruction(y[k, ..., 0], l)
-                guess[k,...,0] = recon
-                error[k] = np.sum(np.square(recon - true[k, ..., 0]))
-                or_error[k] = np.sum(np.square(fbp[k, ..., 0] - true[k, ..., 0]))
-            total_e = np.mean(np.sqrt(error))
-            total_o = np.mean(np.sqrt(or_error))
+            for j in range(self.colors):
+                for k in range(amount_test_images):
+                    recon = self.tv_reconstruction(y[k, ..., j], l)
+                    guess[k,...,j] = recon
+                    error[k,j] = np.sum(np.square(recon - true[k, ..., j]))
+                    or_error[k,j] = np.sum(np.square(fbp[k, ..., j] - true[k, ..., j]))
+            total_e = np.mean(np.sqrt(np.sum(error, axis= 1)))
+            total_o = np.mean(np.sqrt(np.sum(or_error, axis = 1)))
             self.visualize(true, fbp, guess, 'Images/Lambda_'+str(l))
             print('Lambda: ' + str(l) + ', MSE: ' + str(total_e) + ', OriginalError: ' + str(total_o))
 

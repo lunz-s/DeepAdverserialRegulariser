@@ -43,9 +43,9 @@ def quality(truth, recon):
 class ar(adversarial_regulariser):
     experiment_name = 'ConvNet'
     noise_level = nl
-    mu_default = .4
+    mu_default = 50
     learning_rate = 0.0001
-    step_size = .3
+    step_size = .01
     total_steps_default = 150
     default_sampling_pattern = 'startend'
 
@@ -65,7 +65,7 @@ class ar(adversarial_regulariser):
 class tv(total_variation):
     experiment_name = 'Standard'
     noise_level = nl
-    def_lambda = 0.0015
+    def_lambda = 0.1
 
     def get_Data_pip(self):
         return BSDS()
@@ -122,7 +122,7 @@ if n == 3:
     print(tv.noise_level)
     lmb = []
     for k in range(10):
-        lmb.append(0.0002 * (k + 1))
+        lmb.append(3 ** (k -10))
     tv.find_TV_lambda(lmb)
 
 if n == 4:
@@ -146,23 +146,23 @@ if n == 4:
     for k in range(10):
         plt.figure()
         plt.subplot(151)
-        plt.imshow(ut.cut_image(x_true[k, ...]), cmap='Greys',vmin=0, vmax=1)
+        plt.imshow(ut.cut_image(x_true[k, ...]),vmin=0, vmax=1)
         plt.axis('off')
         plt.title('Ground_truth')
         plt.subplot(152)
-        plt.imshow(ut.cut_image(fbp[k, ...]), cmap='Greys',vmin=0, vmax=1)
+        plt.imshow(ut.cut_image(fbp[k, ...]),vmin=0, vmax=1)
         plt.axis('off')
         plt.title('FBP')
         plt.subplot(153)
-        plt.imshow(ut.cut_image(pp_results[k, ...]), cmap='Greys',vmin=0, vmax=1)
+        plt.imshow(ut.cut_image(pp_results[k, ...]),vmin=0, vmax=1)
         plt.title('PostProcessing')
         plt.axis('off')
         plt.subplot(154)
-        plt.imshow(ut.cut_image((ar_results[20])[k, ...]), cmap='Greys',vmin=0, vmax=1)
+        plt.imshow(ut.cut_image((ar_results[20])[k, ...]),vmin=0, vmax=1)
         plt.title('Adv. Reg')
         plt.axis('off')
         plt.subplot(155)
-        plt.imshow(ut.cut_image(tv_results[k, ...]), cmap='Greys',vmin=0, vmax=1)
+        plt.imshow(ut.cut_image(tv_results[k, ...]),vmin=0, vmax=1)
         plt.title('TV')
         plt.axis('off')
         path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/Computed_Tomography/ellipses/Comparison/'
