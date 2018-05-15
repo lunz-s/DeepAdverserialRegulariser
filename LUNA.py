@@ -342,7 +342,7 @@ if number == 10.0:
     print('FBP: ' + str(quality(x_true, fbp)))
 
     for j in range(10):
-        for k in range(10):
+        for k in range(30):
             plt.figure()
             plt.subplot(151)
             plt.imshow(ut.cut_image(x_true[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
@@ -357,7 +357,7 @@ if number == 10.0:
             plt.title('PostProcessing')
             plt.axis('off')
             plt.subplot(154)
-            plt.imshow(ut.cut_image((ar_results[17 + j])[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
+            plt.imshow(ut.cut_image((ar_results[25 + j])[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
             plt.title('Adv. Reg')
             plt.axis('off')
             plt.subplot(155)
