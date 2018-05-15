@@ -143,7 +143,7 @@ if n == 4:
     tv.end()
     print('FBP: ' + str(quality(x_true, fbp)))
 
-    for k in range(10):
+    for k in range(30):
         plt.figure()
         plt.subplot(151)
         plt.imshow(ut.cut_image(x_true[k, ...]),vmin=0, vmax=1)
