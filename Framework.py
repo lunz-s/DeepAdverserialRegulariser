@@ -1041,10 +1041,12 @@ class total_variation(generic_framework):
 
     def evaluate(self, y , fbp):
         guess = np.copy(fbp)
+        print(self.def_lambda)
         amount_images = y.shape[0]
-        for k in range(amount_images):
-            recon = self.tv_reconstruction(y[k, ..., 0], self.def_lambda)
-            guess[k, ..., 0] = recon
+        for j in range(self.colors):
+            for k in range(amount_images):
+                recon = self.tv_reconstruction(y[k, ..., j], self.def_lambda)
+                guess[k, ..., j] = recon
         return guess
 
 
