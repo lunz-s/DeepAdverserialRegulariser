@@ -30,10 +30,10 @@ nl_el = 0.01
 class ar(adversarial_regulariser):
     experiment_name = 'ConvNet'
     noise_level = nl_el
-    mu_default = .4
+    mu_default = .25
     learning_rate = 0.0001
-    step_size = .3
-    total_steps_default = 150
+    step_size = .4
+    total_steps_default = 100
     default_sampling_pattern = 'startend'
 
     def get_network(self, size, colors):
@@ -58,7 +58,6 @@ class tv(total_variation):
 class pp(postprocessing):
     experiment_name = 'Standard'
     noise_level = nl_el
-    def_lambda = 0.0007
 
     def get_Data_pip(self):
         return ellipses()
@@ -99,8 +98,8 @@ if n == 3:
     tv = tv()
     print(tv.noise_level)
     lmb = []
-    for k in range(10):
-        lmb.append(0.0002 * (k + 1))
+    for k in range(5):
+        lmb.append(3 **(k -12))
     tv.find_TV_lambda(lmb)
 
 if n == 4:
