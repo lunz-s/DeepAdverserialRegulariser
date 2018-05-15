@@ -99,7 +99,7 @@ if n == 3:
     print(tv.noise_level)
     lmb = []
     for k in range(5):
-        lmb.append(3 **(k -12))
+        lmb.append(3 **(k -8))
     tv.find_TV_lambda(lmb)
 
 if n == 4:
