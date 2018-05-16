@@ -373,6 +373,8 @@ if number == 10.0:
 
             plt.figure()
             plt.imshow(y[k,...,0])
-            plt.savefig(path + 'Sinogram' + str(k) + '.png')
             plt.axis('off')
+            plt.savefig(path + 'Sinogram' + str(k) + '.png')
+            plt.close()
+
 
