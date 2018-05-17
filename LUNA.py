@@ -293,7 +293,7 @@ if number == 6.0:
         tv.end()
         print('FBP: ' + str(quality(x_true, fbp)))
         for j in range(10):
-            for k in range(10):
+            for k in range(30):
                 plt.figure()
                 plt.subplot(151)
                 plt.imshow(ut.cut_image(x_true[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
@@ -319,6 +319,12 @@ if number == 6.0:
                        'Computed_Tomography/LUNA/Comparison_LowNoise/Iterate' + str(25+j) +'/'
                 ut.create_single_folder(path)
                 plt.savefig(path + str(k) + '.png')
+                plt.close()
+
+                plt.figure()
+                plt.imshow(y[k, ..., 0], cmap='Greys')
+                plt.axis('off')
+                plt.savefig(path + 'Sinogram' + str(k) + '.png')
                 plt.close()
 
 
