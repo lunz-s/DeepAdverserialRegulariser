@@ -304,17 +304,19 @@ if number == 6.0:
                 plt.axis('off')
                 plt.title('FBP')
                 plt.subplot(153)
-                plt.imshow(ut.cut_image(pp_results[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
-                plt.title('PostProcessing')
-                plt.axis('off')
-                plt.subplot(154)
-                plt.imshow(ut.cut_image((ar_results[25+j])[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
-                plt.title('Adv. Reg')
-                plt.axis('off')
-                plt.subplot(155)
                 plt.imshow(ut.cut_image(tv_results[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
                 plt.title('TV')
                 plt.axis('off')
+                plt.subplot(154)
+                plt.imshow(ut.cut_image(pp_results[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
+                plt.title('PostProcessing')
+                plt.axis('off')
+                plt.subplot(155)
+                plt.imshow(ut.cut_image((ar_results[25+j])[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
+                plt.title('Adv. Reg')
+                plt.axis('off')
+
+
                 path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/' \
                        'Computed_Tomography/LUNA/Comparison_LowNoise/Iterate' + str(25+j) +'/'
                 ut.create_single_folder(path)
