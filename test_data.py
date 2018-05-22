@@ -20,6 +20,8 @@ def l2(pic):
 
 
 data_gen = generic_framework()
+average = 0
+average_fbp = 0
 for i in range(32):
     image = data_gen.data_pip.load_data(training_data=False)
     print(image.shape)
@@ -38,5 +40,11 @@ for i in range(32):
     error_fbp = l2(fbp - image[...,0])
     perc_fbp = error_fbp / norm_fbp
 
+    average = average + perc
+    average_fbp = average_fbp + perc_fbp
+
     print('Data: {}, Noise: {}, perc: {}'.format(norm, error, perc))
     print('FBP: {}, Noise: {}, perc: {}'.format(norm_fbp, error_fbp, perc_fbp))
+
+print('Average: ' + str(average/32))
+print('Average FBP: ' + str(average_fbp/32))
