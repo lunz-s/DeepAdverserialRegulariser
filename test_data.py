@@ -34,7 +34,7 @@ for i in range(32):
 
     fbp = data_gen.model.inverse(noisy_data)
     norm_fbp = l2(fbp)
-    error_fbp = l2(fbp - image)
+    error_fbp = l2(fbp - image[...,0])
     perc_fbp = error_fbp / norm_fbp
 
     print('Data: {}, Noise: {}, perc: {}'.format(norm, error, perc))
