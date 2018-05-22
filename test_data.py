@@ -22,6 +22,7 @@ def l2(pic):
 data_gen = generic_framework()
 for i in range(32):
     image = data_gen.data_pip.load_data(training_data=False)
+    print(image.shape)
     data = data_gen.model.forward_operator(image[..., 0])
 
     # add white Gaussian noise
