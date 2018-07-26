@@ -21,6 +21,9 @@ from Framework import total_variation
 from networks import multiscale_l1_classifier
 from networks import resnet_classifier
 from networks import improved_binary_classifier
+from networks import local_classifier
+
+from data_pips import LUNA_pruned
 
 number = input("Please enter number of experiment you want to run: ")
 
@@ -269,19 +272,28 @@ if number == 7:
         default_sampling_pattern = 'startend'
 
         def get_network(self, size, colors):
-            return improved_binary_classifier(size=size, colors=colors)
+            return local_classifier(size=size, colors=colors)
 
         def unreg_mini(self, y, fbp):
             return self.update_pic(15, 1, y, fbp, 0)
 
+        def get_Data_pip(self):
+            return LUNA_pruned()
+
     class smallData_tv(total_variation):
         experiment_name = 'smallData_TV'
         noise_level = 0.02
+        def_lambda = 0.003
+
+        def get_Data_pip(self):
+            return LUNA_pruned()
 
     class smallData_pp(postprocessing):
         experiment_name = 'smallData_pp'
         noise_level = 0.02
-        def_lambda = 0.003
+
+        def get_Data_pip(self):
+            return LUNA_pruned()
 
     n = input('exp: ')
 
