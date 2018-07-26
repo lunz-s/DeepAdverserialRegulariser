@@ -50,6 +50,32 @@ class multiscale_l1_classifier(object):
 
         return output
 
+class local_classifier(object):
+    def __init__(self, size, colors):
+        self.size = size
+        self.reuse = False
+        self.colors = colors
+
+    def net(self, input):
+        # convolutional network for feature extraction
+        conv1 = tf.layers.conv2d(inputs=input, filters=16, kernel_size=[5, 5], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv1')
+
+        conv2 = tf.layers.conv2d(inputs=conv1, filters=16, kernel_size=[3, 3], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv2')
+
+        conv3 = tf.layers.conv2d(inputs=conv2, filters=32, kernel_size=[3, 3], padding="same",
+                                 activation=lrelu, reuse=self.reuse, name='conv3')
+
+        output = tf.reduce_mean(inputs=conv3, axis=(1,2,3))
+        tf.expand_dims(output, axis=1)
+
+        # change reuse variable for next call of network method
+        self.reuse = True
+
+        # Output network results
+        return output
+
 class binary_classifier(object):
     def __init__(self, size, colors):
         self.size = size

@@ -123,6 +123,63 @@ class LUNA(data_pip):
         output[...,0] = pic
         return output
 
+# returns 128x128 image from the LUNA challenge dataset
+class LUNA_pruned(data_pip):
+    name = 'LUNA_reduced'
+    colors = 1
+
+    def __init__(self):
+        name = platform.node()
+        Train_Path = ''
+        Eval_Path = ''
+        if name == 'LAPTOP-E6AJ1CPF':
+            Train_Path = './LUNA/Train_Data'
+            Eval_Path = './LUNA/Eval_Data'
+        elif name == 'motel':
+            Train_Path = '/local/scratch/public/sl767/LUNA/Training_Data_reduced'
+            Eval_Path = '/local/scratch/public/sl767/LUNA/Evaluation_Data'
+        # List the existing training data
+        self.training_list = ut.find('*.dcm', Train_Path)
+        self.training_list_length = len(self.training_list)
+        print('Training Data found: ' + str(self.training_list_length))
+        self.eval_list = ut.find('*.dcm', Eval_Path)
+        self.eval_list_length = len(self.eval_list)
+        print('Evaluation Data found: ' + str(self.eval_list_length))
+
+    # methodes for obtaining the medical data
+    def get_random_path(self, training_data=True):
+        if training_data:
+            path = self.training_list[random.randint(0, self.training_list_length - 1)]
+        else:
+            path = self.eval_list[random.randint(0, self.eval_list_length - 1)]
+        return path
+
+    # resizes image to format 128x128
+    def reshape_pic(self, pic):
+        pic = ut.normalize_image(pic)
+        pic = imresize(pic, [128, 128])
+        pic = ut.scale_to_unit_intervall(pic)
+        return pic
+
+    # the data method
+    def load_data(self, training_data=True):
+        k = -10000
+        pic = np.zeros((128, 128))
+        while k < 0:
+            try:
+                path = self.get_random_path(training_data=training_data)
+                dc_file = dc.read_file(path)
+                pic = dc_file.pixel_array
+                if pic.shape == (512, 512):
+                    pic = self.reshape_pic(pic)
+                    k = 1
+            except UnboundLocalError:
+                k = - 10000
+                print('UnboundLocalError caught')
+        output = np.zeros((128, 128, 1))
+        output[..., 0] = pic
+        return output
+
 # returns 128x128 image of randomly sampled ellipses
 class ellipses(data_pip):
     name = 'ellipses'
