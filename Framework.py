@@ -561,6 +561,7 @@ class postprocessing(generic_framework):
             self.sess.run(self.optimizer, feed_dict={self.true : x_true,
                                                     self.y : fbp})
             if k%50 == 0:
+                y, x_true, fbp = self.generate_training_data(self.batch_size, training_data=False)
                 iteration, loss = self.sess.run([self.global_step, self.loss], feed_dict={self.true : x_true,
                                                     self.y : fbp})
                 print('Iteration: ' + str(iteration) + ', MSE: ' +str(loss))
