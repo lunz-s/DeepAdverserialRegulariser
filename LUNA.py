@@ -14,7 +14,6 @@ from forward_models import ct
 from forward_models import denoising
 
 from Framework import adversarial_regulariser
-from Framework import positiv_adversarial_regulariser
 from Framework import postprocessing
 from Framework import iterative_scheme
 from Framework import total_variation
