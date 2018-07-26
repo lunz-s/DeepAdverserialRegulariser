@@ -88,7 +88,7 @@ class ct(forward_model):
         i_shape = measurement.shape
         if len(i_shape) == 4:
             o_shape = self.get_image_size()
-            result = np.zeros(shape=[i_shape[0]. o_shape[0], o_shape[1], 1])
+            result = np.zeros(shape=[i_shape[0], o_shape[0], o_shape[1], 1])
             for k in range(i_shape[0]):
                 ip = self.operator.range.element(measurement[k,...,0])
                 result[k,...,0] = self.adjoint_operator(ip)
