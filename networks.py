@@ -65,7 +65,7 @@ class local_classifier(object):
                                  activation=lrelu, reuse=self.reuse, name='conv2')
 
         conv3 = tf.layers.conv2d(inputs=conv2, filters=32, kernel_size=[3, 3], padding="same",
-                                 activation=lrelu, reuse=self.reuse, name='conv3')
+                                 reuse=self.reuse, name='conv3')
 
         output = tf.reduce_mean(inputs=conv3, axis=(1,2,3))
         tf.expand_dims(output, axis=1)
