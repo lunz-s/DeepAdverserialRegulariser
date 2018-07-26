@@ -78,10 +78,10 @@ class ct(forward_model):
             result = np.zeros(shape=[i_shape[0], o_shape[0], o_shape[1], 1])
             for k in range(i_shape[0]):
                 ip = self.space.element(image[k,...,0])
-                result[k,...,0] = self.ray_transform(ip)
+                result[k,...,0] = self.operator(ip)
         else:
             ip = self.space.element(image)
-            result=self.ray_transform(ip)
+            result=self.operator(ip)
         return result
 
     def forward_operator_adjoint(self, measurement):
@@ -91,10 +91,10 @@ class ct(forward_model):
             result = np.zeros(shape=[i_shape[0]. o_shape[0], o_shape[1], 1])
             for k in range(i_shape[0]):
                 ip = self.operator.range.element(measurement[k,...,0])
-                result[k,...,0] = self.ray_transform_adj(ip)
+                result[k,...,0] = self.adjoint_operator(ip)
         else:
             ip = self.operator.range.element(measurement)
-            result=self.ray_transform_adj(ip)
+            result=self.adjoint_operator(ip)
         return result
 
     def inverse(self, measurement):
