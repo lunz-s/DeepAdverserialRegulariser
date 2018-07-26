@@ -497,7 +497,6 @@ class adversarial_regulariser(generic_framework):
             results.append(guess)
         return results
 
-
 # Framework for postprocessing
 class postprocessing(generic_framework):
     model_name = 'PostProcessing'
@@ -577,6 +576,19 @@ class postprocessing(generic_framework):
         output = self.sess.run(self.out, feed_dict={self.true: fbp,
                                                     self.y: fbp})
         return output
+
+    # implements the RED methode with the denoising neural network as denoising model.
+    def evaluate_red(self, y, initial_guess, step_size, reg_para, steps):
+        guess = initial_guess
+        for k in range(steps):
+            data_misfit = self.model.forward_operator(guess) - y
+            gradient_data = self.model.forward_operator_adjoint(data_misfit)
+            gradient_reg = guess - self.evaluate(y, guess)
+            gradient = gradient_data + reg_para*gradient_reg
+            guess = guess - step_size * gradient
+        return guess
+
+
 
 # implementation of iterative scheme from Jonas and Ozans paper
 class iterative_scheme(generic_framework):

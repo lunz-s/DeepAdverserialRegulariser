@@ -24,6 +24,9 @@ class forward_model(object):
     def forward_operator(self, image):
         pass
 
+    def forward_operator_adjoint(self, measurement):
+        pass
+
     def inverse(self, measurement):
         pass
 
@@ -69,8 +72,22 @@ class ct(forward_model):
         return self.operator.range.shape
 
     def forward_operator(self, image):
-        input = self.space.element(image)
-        return self.operator(input)
+        i_shape = image.shape
+        o_shape = self.get_measurement_size()
+        result = np.zeros(shape=[i_shape[0]. o_shape[0], o_shape[1], 1])
+        for k in range(i_shape[0]):
+            input = self.space.element(image[k,...,0])
+            result[k,...,0] = self.ray_transform(input)
+        return result
+
+    def forward_operator_adjoint(self, measurement):
+        i_shape = measurement.shape
+        o_shape = self.get_image_size()
+        result = np.zeros(shape=[i_shape[0]. o_shape[0], o_shape[1], 1])
+        for k in range(i_shape[0]):
+            input = self.operator.range.element(measurement[k,...,0])
+            result[k,...,0] = self.ray_transform_adj(input)
+        return result
 
     def inverse(self, measurement):
         input = self.operator.range.element(measurement)
