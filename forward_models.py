@@ -74,7 +74,7 @@ class ct(forward_model):
     def forward_operator(self, image):
         i_shape = image.shape
         o_shape = self.get_measurement_size()
-        result = np.zeros(shape=[i_shape[0]. o_shape[0], o_shape[1], 1])
+        result = np.zeros(shape=[i_shape[0], o_shape[0], o_shape[1], 1])
         for k in range(i_shape[0]):
             input = self.space.element(image[k,...,0])
             result[k,...,0] = self.ray_transform(input)
