@@ -80,7 +80,8 @@ class ct(forward_model):
                 ip = self.space.element(image[k,...,0])
                 result[k,...,0] = self.ray_transform(ip)
         else:
-            result=self.ray_transform(image)
+            ip = self.space.element(image)
+            result=self.ray_transform(ip)
         return result
 
     def forward_operator_adjoint(self, measurement):
@@ -92,7 +93,8 @@ class ct(forward_model):
                 ip = self.operator.range.element(measurement[k,...,0])
                 result[k,...,0] = self.ray_transform_adj(ip)
         else:
-            result=self.ray_transform_adj(measurement)
+            ip = self.operator.range.element(measurement)
+            result=self.ray_transform_adj(ip)
         return result
 
     def inverse(self, measurement):
