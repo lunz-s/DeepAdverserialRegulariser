@@ -267,7 +267,7 @@ if number == 7:
     class smallData_ar(adversarial_regulariser):
         experiment_name = 'smallData_localAR'
         noise_level = 0.02
-        learning_rate = 0.0002
+        learning_rate = 0.0001
         mu_default = .9
         step_size = .4
         total_steps_default = 200
