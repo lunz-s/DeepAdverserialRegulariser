@@ -25,7 +25,6 @@ from networks import local_classifier
 
 from data_pips import LUNA_pruned
 
-number = input("Please enter number of experiment you want to run: ")
 
 nl1 = 0.02
 
@@ -40,6 +39,8 @@ def quality(truth, recon):
         ssi = ssi + ssim(truth[k,...,0], ut.cut_image(recon[k,...,0]))
     ssi = ssi/amount_images
     return [l2, psnr, ssi]
+
+number = input("Please enter number of experiment you want to run: ")
 
 # Experiments 0.0: Step size checks for solving variational problem later
 if number == 0:
@@ -160,11 +161,12 @@ if number == 6.0:
     class low_noise_tv(total_variation):
         experiment_name = 'LowNoise'
         noise_level = 0.005
+        def_lambda = 0.0007
 
     class low_noise_pp(postprocessing):
         experiment_name = 'LowNoise'
         noise_level = 0.005
-        def_lambda = 0.0007
+
 
     n = input('exp: ')
 
@@ -266,8 +268,8 @@ if number == 7:
         experiment_name = 'smallData_localAR'
         noise_level = 0.02
         learning_rate = 0.0002
-        mu_default = .7
-        step_size = .3
+        mu_default = .9
+        step_size = .4
         total_steps_default = 200
         default_sampling_pattern = 'startend'
 
