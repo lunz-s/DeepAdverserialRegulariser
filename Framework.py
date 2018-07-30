@@ -565,6 +565,9 @@ class postprocessing(generic_framework):
                 iteration, loss = self.sess.run([self.global_step, self.loss], feed_dict={self.true : x_true,
                                                     self.y : fbp})
                 print('Training Data, Iteration: ' + str(iteration) + ', MSE: ' +str(loss))
+                output = self.sess.run(self.out, feed_dict={self.true : x_true,
+                                                    self.y : fbp})
+                self.visualize(x_true, fbp, output, 'Iteration_{}'.format(iteration))
                 y, x_true, fbp = self.generate_training_data(self.batch_size, training_data=False)
                 iteration, loss = self.sess.run([self.global_step, self.loss], feed_dict={self.true : x_true,
                                                     self.y : fbp})
