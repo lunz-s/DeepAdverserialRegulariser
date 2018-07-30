@@ -268,8 +268,8 @@ if number == 7:
         experiment_name = 'smallData_localAR'
         noise_level = 0.02
         learning_rate = 0.0001
-        mu_default = .9
-        step_size = .4
+        mu_default = .7
+        step_size = .5
         total_steps_default = 200
         default_sampling_pattern = 'startend'
 
@@ -281,6 +281,11 @@ if number == 7:
 
         def get_Data_pip(self):
             return LUNA_pruned()
+
+    class smallData_fullAr(smallData_ar):
+        def get_network(self, size, colors):
+            return improved_binary_classifier(size=size, colors=colors)
+
 
     class smallData_tv(total_variation):
         experiment_name = 'smallData_TV'
@@ -302,25 +307,20 @@ if number == 7:
     if n == 1:
         # create object of type experiment1
         adv_reg = smallData_ar()
-        adv_reg.set_total_steps(30)
+        adv_reg.set_total_steps(70)
         # adv_reg.find_good_lambda()
         for k in range(5):
             adv_reg.pretrain_Wasser_DataMinimizer(500)
         adv_reg.evaluate_image_optimization(steps=70)
 
     if n == 1.1:
-        adv_reg = low_noise_ar()
-        adv_reg.find_good_lambda()
-
-        repeat = 1
-        while repeat == 1:
-            ss = input('Please insert desired steps size: ')
-            a_s = input('Please insert amount of steps: ')
-            mu = input('Please insert regularisation parameter mu: ')
-            adv_reg.evaluate_image_optimization(batch_size=32, mu=mu, step_s=ss,
-                                                steps=a_s, starting_point='Mini')
-            repeat = input('Repeat experiment?')
-        adv_reg.end()
+        # create object of type experiment1
+        adv_reg = smallData_fullAr()
+        adv_reg.set_total_steps(70)
+        # adv_reg.find_good_lambda()
+        for k in range(2):
+            adv_reg.pretrain_Wasser_DataMinimizer(500)
+        adv_reg.evaluate_image_optimization(steps=70)
 
     if n ==2:
         recon = smallData_pp()
