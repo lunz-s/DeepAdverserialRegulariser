@@ -391,6 +391,135 @@ if number == 7:
                 plt.savefig(path + 'Sinogram' + str(k) + '.png')
                 plt.close()
 
+# experiments on small dataset
+if number == 8:
+    ### Comparison experiments: Standard architecture
+    class tinyData_ar(adversarial_regulariser):
+        experiment_name = 'tinyData_localAR'
+        noise_level = 0.02
+        learning_rate = 0.0001
+        mu_default = .7
+        step_size = .5
+        total_steps_default = 200
+        default_sampling_pattern = 'startend'
+
+        def get_network(self, size, colors):
+            return local_classifier(size=size, colors=colors)
+
+        def unreg_mini(self, y, fbp):
+            return self.update_pic(15, 1, y, fbp, 0)
+
+        def get_Data_pip(self):
+            return LUNA_pruned()
+
+    class tinyData_fullAr(tinyData_ar):
+        experiment_name = 'tinyData_fullAR'
+        def get_network(self, size, colors):
+            return improved_binary_classifier(size=size, colors=colors)
+
+
+    class tinyData_tv(total_variation):
+        experiment_name = 'tinyData_TV'
+        noise_level = 0.02
+        def_lambda = 0.003
+
+        def get_Data_pip(self):
+            return LUNA_pruned()
+
+    class tinyData_pp(postprocessing):
+        experiment_name = 'tinyData_pp'
+        noise_level = 0.02
+
+        def get_Data_pip(self):
+            return LUNA_pruned()
+
+    n = input('exp: ')
+
+    if n == 1:
+        # create object of type experiment1
+        adv_reg = tinyData_ar()
+        adv_reg.set_total_steps(70)
+        # adv_reg.find_good_lambda()
+        for k in range(2):
+            adv_reg.pretrain_Wasser_DataMinimizer(500)
+        adv_reg.evaluate_image_optimization(steps=70)
+
+    if n == 1.1:
+        # create object of type experiment1
+        adv_reg = tinyData_fullAr()
+        adv_reg.set_total_steps(70)
+        # adv_reg.find_good_lambda()
+        for k in range(2):
+            adv_reg.pretrain_Wasser_DataMinimizer(500)
+        adv_reg.evaluate_image_optimization(steps=70)
+
+    if n ==2:
+        recon = tinyData_pp()
+        print(recon.noise_level)
+        for k in range(5):
+            recon.train(500)
+
+    if n == 3:
+        tv = tinyData_tv()
+        print(tv.noise_level)
+        lmb = []
+        for k in range(10):
+            lmb.append(0.0002 * (k + 1))
+        tv.find_TV_lambda(lmb)
+
+    if n == 4:
+        batch_size = 32
+        ar = tinyData_ar()
+        y, x_true, fbp = ar.generate_training_data(batch_size=batch_size, training_data=False)
+        ar_results = ar.evaluate(y, fbp)
+        for res in ar_results:
+            print('AR: ' + str(quality(x_true, res)))
+        ar.end()
+        pp = tinyData_pp()
+        pp_results = pp.evaluate(y, fbp)
+        print('PP: ' + str(quality(x_true, pp_results)))
+        pp.end()
+        tv = tinyData_tv()
+        tv_results = tv.evaluate(y, fbp)
+        print('TV: ' + str(quality(x_true, tv_results)))
+        tv.end()
+        print('FBP: ' + str(quality(x_true, fbp)))
+        for j in range(10):
+            for k in range(30):
+                plt.figure()
+                plt.subplot(151)
+                plt.imshow(ut.cut_image(x_true[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
+                plt.axis('off')
+                plt.title('Ground_truth')
+                plt.subplot(152)
+                plt.imshow(ut.cut_image(fbp[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
+                plt.axis('off')
+                plt.title('FBP')
+                plt.subplot(153)
+                plt.imshow(ut.cut_image(tv_results[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
+                plt.title('TV')
+                plt.axis('off')
+                plt.subplot(154)
+                plt.imshow(ut.cut_image(pp_results[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
+                plt.title('PostProcessing')
+                plt.axis('off')
+                plt.subplot(155)
+                plt.imshow(ut.cut_image((ar_results[25+j])[k, ..., 0]), cmap='Greys',vmin=0, vmax=1)
+                plt.title('Adv. Reg')
+                plt.axis('off')
+
+
+                path = '/local/scratch/public/sl767/DeepAdversarialRegulariser/Saves/' \
+                       'Computed_Tomography/LUNA/Comparison_TinyDataset/Iterate' + str(25+j) +'/'
+                ut.create_single_folder(path)
+                plt.savefig(path + str(k) + '.png')
+                plt.close()
+
+                plt.figure()
+                plt.imshow(y[k, ..., 0], cmap='Greys')
+                plt.axis('off')
+                plt.savefig(path + 'Sinogram' + str(k) + '.png')
+                plt.close()
 
 if number == 10.0:
     # compare all existing methods
