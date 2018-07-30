@@ -283,6 +283,7 @@ if number == 7:
             return LUNA_pruned()
 
     class smallData_fullAr(smallData_ar):
+        experiment_name = 'smallData_fullAR'
         def get_network(self, size, colors):
             return improved_binary_classifier(size=size, colors=colors)
 
