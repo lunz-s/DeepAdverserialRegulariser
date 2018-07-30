@@ -353,19 +353,19 @@ class adversarial_regulariser(generic_framework):
 
 
     # evaluates and prints the network performance
-    def evaluate_Network(self, mu = None, amount_steps = None, starting_point=None):
+    def evaluate_Network(self, mu = None, batch_size=32, amount_steps = None, starting_point=None):
         if amount_steps == None:
             amount_steps = self.total_steps
         if mu == None:
             mu = self.mu_default
         if starting_point ==None:
             starting_point = 'Mini'
-        y, x_true, fbp = self.generate_training_data(batch_size=32, training_data=False)
+        y, x_true, fbp = self.generate_training_data(batch_size=batch_size, training_data=False)
         guess = np.copy(fbp)
         if starting_point == 'Mini':
             guess = self.unreg_mini(y, fbp=fbp)
         # generate random distribution for rays
-        epsilon = np.random.uniform(size=(self.batch_size))
+        epsilon = np.random.uniform(size=(batch_size))
         step, Was, reg, norm = self.sess.run([self.global_step, self.wasserstein_loss, self.regulariser_was,
                                         self.norm_gradient],
                                                      feed_dict={self.gen_im: guess, self.true_im: x_true,
@@ -440,7 +440,7 @@ class adversarial_regulariser(generic_framework):
             mu = self.mu_default
         for k in range(steps):
             if k % 20 == 0:
-                self.evaluate_Network(mu, starting_point='Mini')
+                self.evaluate_Network(mu, 32, starting_point='Mini')
             if k % 100 == 0:
                 self.evaluate_image_optimization(32, starting_point='Mini')
             y, x_true, fbp = self.generate_training_data(self.batch_size)
