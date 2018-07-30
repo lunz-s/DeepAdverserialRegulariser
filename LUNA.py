@@ -470,7 +470,7 @@ if number == 8:
     if n == 4:
         batch_size = 32
         ar = tinyData_fullAr()
-        y, x_true, fbp = ar.generate_training_data(batch_size=batch_size, training_data=False)
+        y, x_true, fbp = ar.generate_training_data(batch_size=128, training_data=False)
         ar_results = ar.evaluate(y, fbp)
         for res in ar_results:
             print('AR: ' + str(quality(x_true, res)))
