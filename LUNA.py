@@ -24,7 +24,7 @@ from networks import improved_binary_classifier
 from networks import local_classifier
 
 from data_pips import LUNA_pruned
-
+from data_pips import LUNA_tiny
 
 nl1 = 0.02
 
@@ -410,7 +410,7 @@ if number == 8:
             return self.update_pic(15, 1, y, fbp, 0)
 
         def get_Data_pip(self):
-            return LUNA_pruned()
+            return LUNA_tiny()
 
     class tinyData_fullAr(tinyData_ar):
         experiment_name = 'tinyData_fullAR'
@@ -431,7 +431,7 @@ if number == 8:
         noise_level = 0.02
 
         def get_Data_pip(self):
-            return LUNA_pruned()
+            return LUNA_tiny()
 
     n = input('exp: ')
 
