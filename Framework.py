@@ -319,7 +319,7 @@ class adversarial_regulariser(generic_framework):
             starting_point = 'Mini'
         print('Mu: {}, AmountSteps: {}, Step_size: {}, '
               'batch_size: {}, starting_point: {}'.format(mu,steps, step_s, batch_size, starting_point))
-        y, x_true, fbp = self.generate_training_data(batch_size)
+        y, x_true, fbp = self.generate_training_data(batch_size, training_data=False)
         guess = np.copy(fbp)
         if starting_point == 'Mini':
             guess = self.unreg_mini(y, fbp)
@@ -360,7 +360,7 @@ class adversarial_regulariser(generic_framework):
             mu = self.mu_default
         if starting_point ==None:
             starting_point = 'Mini'
-        y, x_true, fbp = self.generate_training_data(batch_size=self.batch_size)
+        y, x_true, fbp = self.generate_training_data(batch_size=32, training_data=False)
         guess = np.copy(fbp)
         if starting_point == 'Mini':
             guess = self.unreg_mini(y, fbp=fbp)
@@ -442,7 +442,7 @@ class adversarial_regulariser(generic_framework):
             if k % 20 == 0:
                 self.evaluate_Network(mu, starting_point='Mini')
             if k % 100 == 0:
-                self.evaluate_image_optimization(64, starting_point='Mini')
+                self.evaluate_image_optimization(32, starting_point='Mini')
             y, x_true, fbp = self.generate_training_data(self.batch_size)
             # optimize the fbp to fit the data term
             mini = self.unreg_mini(y, fbp)
