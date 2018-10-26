@@ -1,20 +1,12 @@
 import os
 import tensorflow as tf
-import fnmatch
-import matplotlib
-from xml.etree import ElementTree
+
 import numpy as np
-import random
-import odl
-import scipy.ndimage
+
 import fnmatch
 import matplotlib
 matplotlib.use('agg')
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import dicom as dc
-from scipy.misc import imresize
-import platform
+
 from skimage.measure import compare_ssim as ssim
 
 def quality(truth, recon):

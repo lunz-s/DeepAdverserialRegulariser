@@ -1,16 +1,12 @@
 import random
 import numpy as np
-import scipy.ndimage
+
 import matplotlib
 matplotlib.use('agg')
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import platform
+
 import odl
 import odl.contrib.tensorflow
-import dicom as dc
-from scipy.misc import imresize
-import util as ut
+
 
 class forward_model(object):
     name = 'default'

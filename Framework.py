@@ -11,8 +11,6 @@ import odl
 import odl.contrib.tensorflow
 from skimage.measure import compare_ssim as ssim
 
-import dicom as dc
-from scipy.misc import imresize
 import tensorflow as tf
 import util as ut
 
@@ -21,7 +19,7 @@ from data_pips import LUNA
 from networks import binary_classifier
 from networks import UNet
 from networks import fully_convolutional
-from data_pips import BSDS
+
 
 
 # This class provides methods necessary

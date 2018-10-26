@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import platform
 import odl
-import dicom as dc
+import pydicom as dc
 from scipy.misc import imresize
 import util as ut
 
