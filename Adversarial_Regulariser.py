@@ -14,7 +14,7 @@ class Experiment1(AdversarialRegulariser):
 
     # relation between L2 error and regulariser
     # 0 corresponds to pure L2 loss, infty to pure adversarial loss
-    mu_default = .7
+    mu_default = .5
 
     learning_rate = 0.0001
     step_size = .5
