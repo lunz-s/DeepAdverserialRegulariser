@@ -329,7 +329,7 @@ class AdversarialRegulariser(GenericFramework):
     def evaluate(self, guess, measurement):
         fbp = np.copy(guess)
         if self.starting_point == 'Mini':
-            fbp = self.unreg_mini(y, fbp)
+            fbp = self.unreg_mini(measurement, fbp)
         return self.update_pic(steps=self.total_steps, measurement=measurement, guess=fbp,
                                stepsize=self.step_size, mu=self.mu_default)
 
