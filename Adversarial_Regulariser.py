@@ -9,12 +9,12 @@ SAVES_PATH = '/local/scratch/public/sl767/DeepAdversarialRegulariser/'
 
 
 class Experiment1(AdversarialRegulariser):
-    experiment_name = 'LowNoise'
-    noise_level = 0.005
+    experiment_name = 'MediumNoise'
+    noise_level = 0.01
 
     # relation between L2 error and regulariser
     # 0 corresponds to pure L2 loss, infty to pure adversarial loss
-    mu_default = .15
+    mu_default = .3
 
     learning_rate = 0.0001
     step_size = .7
@@ -36,8 +36,8 @@ class Experiment1(AdversarialRegulariser):
 
 experiment = Experiment1(DATA_PATH, SAVES_PATH)
 experiment.find_good_lambda(32)
-# for k in range(7):
-#     experiment.train(200)
-# experiment.log_optimization(32, 200, 0.7, .1)
-# experiment.log_optimization(32, 200, 0.7, .15)
-experiment.log_optimization(32, 200, 0.7, .9)
+for k in range(7):
+    experiment.train(200)
+experiment.log_optimization(32, 200, 0.7, .3)
+experiment.log_optimization(32, 200, 0.7, .4)
+experiment.log_optimization(32, 200, 0.7, .5)
