@@ -105,12 +105,12 @@ class ConvNetClassifier(network):
                                  activation=lrelu, reuse=tf.AUTO_REUSE, name='conv6', strides=2)
 
         # reshape for classification - assumes image size is multiple of 32
-        finishing_size = int(self.size[0]* self.size[1]/(16*16))
+        finishing_size = int(self.size[0] * self.size[1]/(16*16))
         dimensionality = finishing_size * 128
         reshaped = tf.reshape(conv6, [-1, dimensionality])
 
         # dense layer for classification
-        dense = tf.layers.dense(inputs = reshaped, units=256, activation=lrelu, reuse=tf.AUTO_REUSE, name='dense1')
+        dense = tf.layers.dense(inputs=reshaped, units=256, activation=lrelu, reuse=tf.AUTO_REUSE, name='dense1')
         output = tf.layers.dense(inputs=dense, units=1, reuse=tf.AUTO_REUSE, name='dense2')
 
         # Output network results
