@@ -186,8 +186,7 @@ class AdversarialRegulariser(GenericFramework):
         # Measure quality of reconstruction
         self.ground_truth = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], self.colors],
                                            dtype=tf.float32)
-        self.clipped_recon = tf.clip_by_value(self.reconstruction, tf.constant(0.0), tf.constant(1.0))
-        self.quality = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(self.ground_truth - self.clipped_recon),
+        self.quality = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(self.ground_truth - self.reconstruction),
                                                             axis=(1, 2, 3))))
 
         # logging tools
@@ -199,14 +198,14 @@ class AdversarialRegulariser(GenericFramework):
         with tf.name_scope('Picture_Optimization'):
             data_loss = tf.summary.scalar('Data_Loss', self.data_error)
             wasser_loss = tf.summary.scalar('Wasserstein_Loss', self.was_output)
-            recon = tf.summary.image('Reconstruction', self.clipped_recon, max_outputs=1)
+            recon = tf.summary.image('Reconstruction', self.reconstruction, max_outputs=1)
             ground_truth = tf.summary.image('Ground_truth', self.ground_truth, max_outputs=1)
             quality_assesment = tf.summary.scalar('L2_to_ground_truth', self.quality)
             self.merged_pic = tf.summary.merge([data_loss, wasser_loss, quality_assesment, recon, ground_truth])
         with tf.name_scope('Reconstruction_Quality'):
             data_loss = tf.summary.scalar('Data_Loss', self.data_error)
             wasser_loss = tf.summary.scalar('Wasserstein_Loss', self.was_output)
-            recon = tf.summary.image('Reconstruction', self.clipped_recon, max_outputs=1)
+            recon = tf.summary.image('Reconstruction', self.reconstruction, max_outputs=1)
             ground_truth = tf.summary.image('Ground_truth', self.ground_truth, max_outputs=1)
             quality_assesment = tf.summary.scalar('L2_to_ground_truth', self.quality)
             self.training_eval = tf.summary.merge([data_loss, wasser_loss, quality_assesment, recon, ground_truth])
