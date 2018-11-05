@@ -82,22 +82,22 @@ class CT(ForwardModel):
     def forward_operator(self, image):
         assert len(image.shape) == 3
         assert image.shape[-1] == 1
-        ip = self.space.element(image[...,0])
-        result = np.expand_dims(self.operator(ip), axis=0)
+        ip = self.space.element(image[..., 0])
+        result = np.expand_dims(self.operator(ip), axis=-1)
         return result
 
     def forward_operator_adjoint(self, measurement):
         assert len(measurement.shape) == 3
         assert measurement.shape[-1] == 1
-        ip = self.operator.range.element(measurement[...,0])
-        result = np.expand_dims(self.adjoint_operator(ip), axis=0)
+        ip = self.operator.range.element(measurement[..., 0])
+        result = np.expand_dims(self.adjoint_operator(ip), axis=-1)
         return result
 
     def inverse(self, measurement):
         assert len(measurement.shape) == 3
         assert measurement.shape[-1] == 1
-        m = self.operator.range.element(measurement[...,0])
-        return np.expand_dims(self.fbp(m), axis=0)
+        m = self.operator.range.element(measurement[..., 0])
+        return np.expand_dims(self.fbp(m), axis=-1)
 
     def tensorflow_operator(self, tensor):
         return self.ray_transform(tensor)
