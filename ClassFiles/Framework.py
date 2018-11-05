@@ -253,7 +253,7 @@ class AdversarialRegulariser(GenericFramework):
                 minimum = True
             else:
                 guess = guess_update
-        logs, step = self.sess.run([self.merged_pic, self.global_step], feed_dict={self.reconstruction: guess,
+        logs, step = self.sess.run([self.training_eval, self.global_step], feed_dict={self.reconstruction: guess,
                                                          self.data_term: y,
                                                          self.ground_truth: x_true,
                                                          self.mu: self.mu_default})

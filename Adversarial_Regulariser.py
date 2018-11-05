@@ -36,6 +36,8 @@ class Experiment1(AdversarialRegulariser):
 
 experiment = Experiment1(DATA_PATH, SAVES_PATH)
 experiment.find_good_lambda(32)
-for k in range(10):
-    experiment.train(200)
-experiment.log_optimization(32, 50, 0.5, .7)
+# for k in range(10):
+#     experiment.train(200)
+experiment.log_optimization(32, 200, 0.3, .7)
+experiment.log_optimization(32, 200, 0.3, .5)
+experiment.log_optimization(32, 200, 0.3, .3)
