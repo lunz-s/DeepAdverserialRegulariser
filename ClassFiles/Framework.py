@@ -186,7 +186,7 @@ class AdversarialRegulariser(GenericFramework):
         # Measure quality of reconstruction
         self.ground_truth = tf.placeholder(shape=[None, self.image_space[0], self.image_space[0], self.colors],
                                            dtype=tf.float32)
-        self.clipped_recon = tf.clip_by_value(self.reconstruction, 0.0, 1.0)
+        self.clipped_recon = tf.clip_by_value(self.reconstruction, tf.constant(0.0), tf.constant(1.0))
         self.quality = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(self.ground_truth - self.clipped_recon),
                                                             axis=(1, 2, 3))))
 
