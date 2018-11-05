@@ -63,7 +63,7 @@ class GenericFramework(ABC):
 
             # add white Gaussian noise
             noisy_data = data + self.noise_level*np.random.normal(size=(self.measurement_space[0],
-                                                                        self.measurement_space[0],
+                                                                        self.measurement_space[1],
                                                                         self.colors))
             print(noisy_data.shape)
             fbp[i, ...] = self.model.inverse(noisy_data)
