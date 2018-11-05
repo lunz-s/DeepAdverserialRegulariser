@@ -96,7 +96,6 @@ class GenericFramework(ABC):
 class AdversarialRegulariser(GenericFramework):
     model_name = 'Adversarial_Regulariser'
     # the absolut noise level
-    noise_level = 0.01
     batch_size = 16
     # relation between L2 error and regulariser
     # 0 corresponds to pure L2 loss, infty to pure adversarial loss
@@ -110,7 +109,7 @@ class AdversarialRegulariser(GenericFramework):
     # the amount of steps of gradient descent taken on loss functional
     total_steps_default = 30
     # default sampling pattern
-    starting_point = 'fbp'
+    starting_point = 'Mini'
 
     def set_total_steps(self, steps):
         self.total_steps = steps
@@ -304,15 +303,18 @@ class AdversarialRegulariser(GenericFramework):
     def train(self, steps):
         # the training routine
         for k in range(steps):
-            if k % 50 == 0:
+            if k % 100 == 0:
                 self.log_network_training()
                 self.log_minimum()
             y, x_true, fbp = self.generate_training_data(self.batch_size)
+            guess = np.copy(fbp)
+            if self.starting_point == 'Mini':
+                guess = self.unreg_mini(y, fbp=fbp)
             # generate random distribution for rays
             epsilon = np.random.uniform(size=self.batch_size)
             # optimize network
             self.sess.run(self.optimizer,
-                          feed_dict={self.gen_im: fbp, self.true_im: x_true, self.random_uint: epsilon})
+                          feed_dict={self.gen_im: guess, self.true_im: x_true, self.random_uint: epsilon})
         self.save(self.global_step)
 
     def find_good_lambda(self, sample=64):
