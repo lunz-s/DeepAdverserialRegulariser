@@ -65,7 +65,6 @@ class GenericFramework(ABC):
             noisy_data = data + self.noise_level*np.random.normal(size=(self.measurement_space[0],
                                                                         self.measurement_space[1],
                                                                         self.colors))
-            print(noisy_data.shape)
             fbp[i, ...] = self.model.inverse(noisy_data)
             x_true[i, ...] = image
             y[i, ...] = noisy_data
@@ -96,11 +95,11 @@ class GenericFramework(ABC):
 
 class AdversarialRegulariser(GenericFramework):
     model_name = 'Adversarial_Regulariser'
-    # override noise level
+    # the absolut noise level
     noise_level = 0.01
-    # The batch size
     batch_size = 16
     # relation between L2 error and regulariser
+    # 0 corresponds to pure L2 loss, infty to pure adversarial loss
     mu_default = 1.5
     # weight on gradient norm regulariser for wasserstein network
     lmb = 20
@@ -324,7 +323,8 @@ class AdversarialRegulariser(GenericFramework):
                                        self.data_term: y,
                                        self.ground_truth: x_true,
                                        self.mu: 0})
-        print(np.mean(np.sqrt(np.sum(np.square(gradient_truth[0]), axis=(1, 2, 3)))))
+        print('Value of mu around equilibrium: ' + str(np.mean(np.sqrt(np.sum(
+              np.square(gradient_truth[0]), axis=(1, 2, 3))))))
 
     def evaluate(self, guess, measurement):
         fbp = np.copy(guess)

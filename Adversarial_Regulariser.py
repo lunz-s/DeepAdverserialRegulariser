@@ -11,7 +11,11 @@ SAVES_PATH = '/local/scratch/public/sl767/DeepAdversarialRegulariser/'
 class Experiment1(AdversarialRegulariser):
     experiment_name = 'Low_Noise'
     noise_level = 0.02
+
+    # relation between L2 error and regulariser
+    # 0 corresponds to pure L2 loss, infty to pure adversarial loss
     mu_default = .7
+
     learning_rate = 0.0001
     step_size = .5
     total_steps_default = 30
