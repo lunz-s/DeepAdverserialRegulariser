@@ -40,7 +40,7 @@ class GenericFramework(ABC):
 
         # finding the correct path for saving models
         self.path = saves_path+'Saves/{}/{}/{}/{}/'.format(self.model.name, self.data_pip.name,
-                                                            self.model_name, self.experiment_name)
+                                                           self.model_name, self.experiment_name)
         # start tensorflow sesssion
         self.sess = tf.InteractiveSession()
 
@@ -65,6 +65,7 @@ class GenericFramework(ABC):
             noisy_data = data + self.noise_level*np.random.normal(size=(self.measurement_space[0],
                                                                         self.measurement_space[0],
                                                                         self.colors))
+            print(noisy_data.shape)
             fbp[i, ...] = self.model.inverse(noisy_data)
             x_true[i, ...] = image
             y[i, ...] = noisy_data
