@@ -40,3 +40,4 @@ for k in range(7):
     experiment.train(200)
 experiment.log_optimization(32, 200, 0.3, .7)
 experiment.log_optimization(32, 200, 0.3, .5)
+experiment.log_optimization(32, 200, 0.3, .3)
