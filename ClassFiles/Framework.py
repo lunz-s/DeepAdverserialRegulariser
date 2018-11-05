@@ -255,9 +255,9 @@ class AdversarialRegulariser(GenericFramework):
             else:
                 guess = guess_update
         logs, step = self.sess.run([self.training_eval, self.global_step], feed_dict={self.reconstruction: guess,
-                                                         self.data_term: y,
-                                                         self.ground_truth: x_true,
-                                                         self.mu: self.mu_default})
+                                                                                      self.data_term: y,
+                                                                                      self.ground_truth: x_true,
+                                                                                      self.mu: self.mu_default})
         self.writer.add_summary(logs, step)
 
     def log_network_training(self):
