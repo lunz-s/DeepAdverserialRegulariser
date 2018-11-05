@@ -2,10 +2,10 @@
 Code for the paper [Adversarial Regularizer in Inverse Problems](https://arxiv.org/abs/1805.11572).
 
 Inverse Problems are traditionally solved using purely model-based methods, as in variational regularization methods. 
-We propose a new framework for applying data-driven approaches to inverse problems, using a neural network as a 
+We propose a new framework for applying data-driven approaches to inverse problems, using a neural network as
 regularization functional. 
 
-The network is trained as a critic in [WGANs](https://arxiv.org/abs/1701.07875), learning to discriminate between the
+The network is trained as a critic as in [WGANs](https://arxiv.org/abs/1701.07875), learning to discriminate between the
 distribution of ground truth images and the distribution of unregularized reconstruction. Once trained, the network is
 applied by solving the corresponding variational problem.
 
@@ -26,12 +26,13 @@ The package requirements are numpy, tensorflow, scipy, scikit-image, matplotlib,
 All requirements can be installed directly into the conda environment advReg via
 ```bash
 $ conda env create -f advReg.yml
+$ source activate advReg
 ```
 
-The tensorboard loggings can be found in SAVES_PATH/Logs.
+The tensorboard loggings can be found in SAVES_PATH.
 
 # Customization
 
 To add custom data sets, forward operators for different inverse problems or network architectures, write your custom 
 implementation of the corresponding abstract classes in ClassFiles. Finally, set the
-get_Data_pip, get_model or get_network in your experiments to use your custom class.
+get_Data_pip, get_model or get_network in your experiments accordingly.
