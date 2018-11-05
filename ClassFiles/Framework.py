@@ -274,7 +274,7 @@ class AdversarialRegulariser(GenericFramework):
         self.writer.add_summary(logs, step)
 
     def log_optimization(self, batch_size=None, steps=None, step_s=None,
-                                    mu=None, starting_point=None):
+                         mu=None, starting_point=None):
         # Logs every step of picture optimization.
         # Can be used to play with the variational formulation once training is complete
         if batch_size is None:
