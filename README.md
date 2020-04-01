@@ -5,9 +5,12 @@ Inverse Problems are traditionally solved using purely model-based methods, as i
 We propose a new framework for applying data-driven approaches to inverse problems, using a neural network as
 regularization functional. 
 
+# Method
+
 The network is trained as a critic as in [WGANs](https://arxiv.org/abs/1701.07875), learning to discriminate between the
-distribution of ground truth images and the distribution of unregularized reconstruction. Once trained, the network is
-applied by solving the corresponding variational problem.
+distribution of ground truth images and the distribution of unregularized reconstruction.
+
+Once trained, we use the learned regularization functional to solve inverse problems by minizing the associated variational functional. In the context of computed tomography we employ early stopping to obtain the best results.
 
 # Results
 Reconstructions obtained on the LIDC/IDRI dataset
